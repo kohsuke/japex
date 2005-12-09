@@ -1,23 +1,12 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
 	<TITLE>Japex Micro-benchmark Framework</TITLE>
-	<link rel="alternate" type="application/rss+xml"
-		 href="/servlets/ProjectNewsRSS">
-	<style>
-	    .app H3 {
-		clear: none;
-	    }
-	    .axial {
-		display: none;
-	    }
-	    #apphead {
-		display: none;
-	    }
-	</style>
-</HEAD>
-<BODY LANG="en-US" DIR="LTR">
-<script>
+	<META NAME="GENERATOR" CONTENT="NeoOffice/J 1.1  (Unix)">
+	<META NAME="CREATED" CONTENT="20051209;13525700">
+	<META NAME="CHANGED" CONTENT="20051209;14331100">
+	<SCRIPT>
 // kill "description" h3 bar
 ld = document.getElementById("longdescription");
 for( n=ld.firstChild; n!=null; n=n.nextSibling ) {
@@ -26,64 +15,118 @@ for( n=ld.firstChild; n!=null; n=n.nextSibling ) {
     break;
   }
 }
-</script>
-<TABLE BORDER=0 CELLPADDING=2 CELLSPACING=2>
+</SCRIPT>
+</HEAD>
+<BODY LANG="en-US" DIR="LTR">
+<TABLE BORDER=0 CELLPADDING=2 CELLSPACING=2 STYLE="page-break-before: always">
 	<TR>
 		<TD>
-			<P><IMG SRC="duke.gif" NAME="Graphic1" ALIGN=MIDDLE WIDTH=86 HEIGHT=86 BORDER=0></TD>
+			<P><A HREF="images/duke.gif"><IMG SRC="duke.gif" NAME="Graphic1" ALIGN=MIDDLE WIDTH=86 HEIGHT=86 BORDER=0></A></P>
+		</TD>
 		<TD>
 			<H1>Japex Project</H1>
 		</TD>
 	</TR>
 </TABLE>
 <P>Welcome to the Japex Project at Java.net.</P>
-
 <H3><A NAME="overview"></A>Overview</H3>
 <UL>
-	<LI><STRONG>Licenses:</STRONG> <A HREF="http://www.apache.org/licenses/LICENSE-2.0">ASL
+	<LI><P STYLE="margin-bottom: 0in"><STRONG>Licenses:</STRONG> <A HREF="http://www.apache.org/licenses/LICENSE-2.0">ASL
 	2.0</A> 
-	<LI><STRONG>Users Mailing List: </STRONG><A HREF="mailto:users@japex.dev.java.net">users@japex.dev.java.net</A>
+	</P>
+	<LI><P><STRONG>Users Mailing List: </STRONG><A HREF="mailto:users@japex.dev.java.net">users@japex.dev.java.net</A>
+		</P>
 </UL>
-
 <H3><A NAME="introduction"></A>Introduction</H3>
-<P>Profiling is an art, an art that it is very hard to master. Writing
-micro-benchmarks is one of the many tools available to programmers
-today. Micro-benchmarks are simple benchmarks that rarely involve
-complicated deployments and are often used to test specific parts
-of an application. They are also characterized by the use of
-wall-clock blocks: start a clock, run the code, stop the clock
-and report the result.</P>
-<P> The lack of common tools for writing micro-benchmarks makes comparing
-results published by different people impractical. Questions such
-as "When did you start/stop the clock?" or "What exactly did you
-include in the wall-clock block?" or "Are you reporting latency
-or throughput?" often arise.</P>
-<P>Japex is a simple yet powerful tool to write Java-based micro- benchmarks.
-It started as simple project over a year ago, primarily aimed at testing
-XML and Fast Infoset performance, but has evolved in to a
-rather sophisticated framework with support for XML and HTML output as
-well as various types of charts for displaying the results. It is  similar
-in spirit to <a href="http://www.junit.org">JUnit</a> in that if factors out most of the repetitive
-programming logic that is necessary to write in micro-benchmarks. This
-logic includes loading and initializing multiple drivers, warming up the
-VM, timing the inner loop, etc. One of the key design goals for 
-Japex was extensibility. Via the use
-of a simple model of input and output parameters, it is possible to
-write micro-benchmarks to test practically anything.</P>
-
+<P>Profiling is an art, an art that it is very hard to master.
+Writing micro-benchmarks is one of the many tools available to
+programmers today. Micro-benchmarks are simple benchmarks that rarely
+involve complicated deployments and are often used to test specific
+parts of an application. They are also characterized by the use of
+wall-clock blocks: start a clock, run the code, stop the clock and
+report the result.</P>
+<P>The lack of common tools for writing micro-benchmarks makes
+comparing results published by different people impractical.
+Questions such as &quot;When did you start/stop the clock?&quot; or
+&quot;What exactly did you include in the wall-clock block?&quot; or
+&quot;Are you reporting latency or throughput?&quot; often arise.</P>
+<P>Japex is a simple yet powerful tool to write Java-based micro-
+benchmarks. It started as simple project over a year ago, primarily
+aimed at testing XML and Fast Infoset performance, but has evolved in
+to a rather sophisticated framework with support for XML and HTML
+output as well as various types of charts for displaying the results.
+It is similar in spirit to <A HREF="http://www.junit.org/">JUnit</A>
+in that if factors out most of the repetitive programming logic that
+is necessary to write in micro-benchmarks. This logic includes
+loading and initializing multiple drivers, warming up the VM, timing
+the inner loop, etc. One of the key design goals for Japex was
+extensibility. Via the use of a simple model of input and output
+parameters, it is possible to write micro-benchmarks to test
+practically anything.</P>
 <H3>Samples</H3>
-<UL>
-</UL>
-
+<TABLE WIDTH=100% BORDER=0 CELLPADDING=0 CELLSPACING=0>
+	<COL WIDTH=85*>
+	<COL WIDTH=85*>
+	<COL WIDTH=85*>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P>Configuration File (input)</P>
+		</TD>
+		<TD WIDTH=33%>
+			<P>XML Report (output)</P>
+		</TD>
+		<TD WIDTH=33%>
+			<P>HTML Report (output)</P>
+		</TD>
+	</TR>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P><BR>
+			</P>
+		</TD>
+		<TD WIDTH=33%>
+			<P><BR>
+			</P>
+		</TD>
+		<TD WIDTH=33%>
+			<P><BR>
+			</P>
+		</TD>
+	</TR>
+</TABLE>
+<P><BR><BR>
+</P>
+<TABLE WIDTH=100% BORDER=0 CELLPADDING=0 CELLSPACING=0>
+	<COL WIDTH=85*>
+	<COL WIDTH=85*>
+	<COL WIDTH=85*>
+	<TR VALIGN=TOP>
+		<TD WIDTH=33%>
+			<P><A HREF="images/bar.jpg"><IMG SRC="images/bar.jpg" NAME="Graphic2" ALIGN=LEFT WIDTH=282 HEIGHT=211 BORDER=0><BR CLEAR=LEFT></A><BR>
+			</P>
+		</TD>
+		<TD WIDTH=33%>
+			<P><A HREF="images/line.jpg"><IMG SRC="images/line.jpg" NAME="Graphic3" ALIGN=LEFT WIDTH=282 HEIGHT=211 BORDER=0><BR CLEAR=LEFT></A><BR>
+			</P>
+		</TD>
+		<TD WIDTH=33%>
+			<P><A HREF="images/scatter.jpg"><IMG SRC="images/scatter.jpg" NAME="Graphic4" ALIGN=LEFT WIDTH=282 HEIGHT=211 BORDER=0><BR CLEAR=LEFT></A><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR>
+		<TD COLSPAN=3 WIDTH=100% VALIGN=TOP>
+			<P ALIGN=CENTER><B>Chart Types Supported by Japex</B></P>
+		</TD>
+	</TR>
+</TABLE>
+<P><BR><BR>
+</P>
 <H3>Downloads</H3>
-<UL>
-</UL>
-
 <H3>Current status</H3>
-<P></P>
 <H3><A NAME="terms and conditions"></A>Terms and Conditions</H3>
-<P>The Japex code is made available under the terms of the Apache Source
-License, version 2.0 (<A HREF="http://www.apache.org/licenses/LICENSE-2.0">ASL
+<P>The Japex code is made available under the terms of the Apache
+Source License, version 2.0 (<A HREF="http://www.apache.org/licenses/LICENSE-2.0">ASL
 2.0</A>). ASL is a widely accepted and very flexible license; version
 2.0 adds explicit terms to cover the conditions for accepting
 contributions, reflecting experience gathered with the previous
