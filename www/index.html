@@ -5,7 +5,7 @@
 	<TITLE>Japex Micro-benchmark Framework</TITLE>
 	<META NAME="GENERATOR" CONTENT="NeoOffice/J 1.1  (Unix)">
 	<META NAME="CREATED" CONTENT="20051209;13525700">
-	<META NAME="CHANGED" CONTENT="20051209;18332800">
+	<META NAME="CHANGED" CONTENT="20051221;10235100">
 	<SCRIPT>
 // kill "description" h3 bar
 ld = document.getElementById("longdescription");
@@ -35,17 +35,17 @@ Writing micro-benchmarks is one of the many tools available to
 programmers today. Micro-benchmarks are simple benchmarks that rarely
 involve complicated deployments and are often used to test specific
 parts of an application. They are also characterized by the use of
-wall-clock blocks: start a clock, run the code, stop the clock and
-report the result.</P>
+<I>wall-clock</I> blocks: start a clock, run the code, stop the clock
+and report the result.</P>
 <P>The lack of common tools for writing micro-benchmarks makes
 comparing results published by different people impractical.
 Questions such as &quot;When did you start/stop the clock?&quot; or
 &quot;What exactly did you include in the wall-clock block?&quot; or
 &quot;Are you reporting latency or throughput?&quot; often arise.</P>
-<P>Japex is a simple yet powerful tool to write Java-based micro-
-benchmarks. It started as simple project over a year ago, primarily
-aimed at testing XML and <A HREF="https://fi.dev.java.net/">Fast
-Infoset</A> performance, but has evolved in to a rather sophisticated
+<P>Japex is a simple yet powerful tool to write Java-based
+micro-benchmarks. It started as simple project over a year ago,
+primarily aimed at testing XML and <A HREF="https://fi.dev.java.net/">Fast
+Infoset</A> performance, but has evolved into a rather sophisticated
 framework with support for XML and HTML output as well as various
 types of charts for displaying the results. It is similar in spirit
 to <A HREF="http://www.junit.org/">JUnit</A> in that if factors out
@@ -55,15 +55,14 @@ multiple drivers, warming up the VM, timing the inner loop, etc. One
 of the key design goals for Japex was extensibility. Via the use of a
 simple model of input and output parameters, it is possible to write
 micro-benchmarks to test practically anything.</P>
-<H3>Resources</H3>
-<UL>
-	<LI><P STYLE="margin-bottom: 0in"><STRONG>Licenses:</STRONG> <A HREF="http://www.apache.org/licenses/LICENSE-2.0">ASL
-	2.0</A></P>
-	<LI><P STYLE="margin-bottom: 0in"><STRONG>Users Mailing List:
-	</STRONG><A HREF="mailto:users@japex.dev.java.net">users@japex.dev.java.net</A>
-		</P>
-</UL>
 <H3>Overview</H3>
+<P>A Japex micro-benchmark comprises of a set of Japex Drivers (i.e.,
+Java classes extending <FONT SIZE=2 STYLE="font-size: 10pt"><FONT FACE="Andale Mono, monospace">com.sun.japex.JapexDriverBase</FONT></FONT>)
+and at least one configuration file to describe the drivers under
+test, the list of test cases and the various parameters used to
+control the length of the test, the type of output report, etc. You
+can click on the image below to see an example of each input and
+output file.</P>
 <CENTER>
 	<TABLE WIDTH=848 BORDER=0 CELLPADDING=0 CELLSPACING=0>
 		<COL WIDTH=185>
@@ -88,7 +87,7 @@ micro-benchmarks to test practically anything.</P>
 				</P>
 			</TD>
 			<TD WIDTH=516>
-				<P ALIGN=CENTER><IMG SRC="images/japexio.jpg" NAME="Graphic5" ALIGN=LEFT WIDTH=460 HEIGHT=245 BORDER=0><BR CLEAR=LEFT><BR>
+				<P ALIGN=CENTER><MAP NAME="MAP1"><AREA SHAPE=RECT COORDS="172,84,277,171" HREF="https://japex.dev.java.net/" TARGET="_self" ALT="Japex"><AREA SHAPE=RECT COORDS="354,135,460,245" HREF="https://japex.dev.java.net/sample/report.html" TARGET="_self" ALT="HTML Report"><AREA SHAPE=RECT COORDS="354,0,460,107" HREF="https://japex.dev.java.net/sample/report.xml" TARGET="_self" ALT="XML Report"><AREA SHAPE=RECT COORDS="0,74,104,184" HREF="https://japex.dev.java.net/sample/config.xml" TARGET="_self" ALT="Config File"></MAP><IMG SRC="images/japexio.jpg" NAME="Graphic5" ALIGN=LEFT WIDTH=460 HEIGHT=245 BORDER=0 USEMAP="#MAP1"><BR CLEAR=LEFT><BR>
 				</P>
 			</TD>
 			<TD WIDTH=147>
@@ -98,6 +97,13 @@ micro-benchmarks to test practically anything.</P>
 		</TR>
 	</TABLE>
 </CENTER>
+<P><BR><BR>
+</P>
+<P>The type of output chart that is generated as part of the HTML
+report depends on the type of benchmark and the value of
+<FONT SIZE=2 STYLE="font-size: 10pt"><FONT FACE="Andale Mono, monospace">japex.chartType</FONT></FONT>
+parameter. Click on the images below for an example of the types of
+charts that are currently supported by Japex.</P>
 <TABLE WIDTH=100% BORDER=0 CELLPADDING=0 CELLSPACING=0>
 	<COL WIDTH=85*>
 	<COL WIDTH=85*>
@@ -124,8 +130,29 @@ micro-benchmarks to test practically anything.</P>
 </TABLE>
 <P><BR><BR>
 </P>
-<H3>Downloads</H3>
-<H3>Current status</H3>
+<H3>Resources</H3>
+<UL>
+	<LI><P STYLE="margin-bottom: 0in"><B>Downloading:</B></P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in"><SPAN STYLE="font-weight: medium">Latest
+		build: </SPAN>???</P>
+		<LI><P STYLE="margin-bottom: 0in"><STRONG><SPAN STYLE="font-weight: medium">CVS
+		Source tree:</SPAN> <SPAN STYLE="font-weight: medium"><FONT SIZE=2 STYLE="font-size: 10pt"><FONT FACE="Andale Mono, monospace">cvs
+		-d :pserver:&lt;login&gt;@cvs.dev.java.net:/cvs co japex</FONT></FONT></SPAN></STRONG></P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in"><STRONG>Documentation: </STRONG>
+	</P>
+	<UL>
+		<LI><P STYLE="margin-bottom: 0in"><STRONG><SPAN STYLE="font-weight: medium">Japex
+		manual</SPAN></STRONG></P>
+		<LI><P STYLE="margin-bottom: 0in"><STRONG><SPAN STYLE="font-weight: medium">Blogs</SPAN></STRONG></P>
+	</UL>
+	<LI><P STYLE="margin-bottom: 0in"><STRONG>Licenses:</STRONG> <A HREF="http://www.apache.org/licenses/LICENSE-2.0">ASL
+	2.0</A></P>
+	<LI><P STYLE="margin-bottom: 0in"><STRONG>Users Mailing List:
+	</STRONG><A HREF="mailto:users@japex.dev.java.net">users@japex.dev.java.net</A>
+		</P>
+</UL>
 <H3><A NAME="terms and conditions"></A>Terms and Conditions</H3>
 <P>The Japex code is made available under the terms of the Apache
 Source License, version 2.0 (<A HREF="http://www.apache.org/licenses/LICENSE-2.0">ASL
