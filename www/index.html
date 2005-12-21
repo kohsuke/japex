@@ -5,7 +5,7 @@
 	<TITLE>Japex Micro-benchmark Framework</TITLE>
 	<META NAME="GENERATOR" CONTENT="NeoOffice/J 1.1  (Unix)">
 	<META NAME="CREATED" CONTENT="20051209;13525700">
-	<META NAME="CHANGED" CONTENT="20051221;10263800">
+	<META NAME="CHANGED" CONTENT="20051221;10342300">
 	<SCRIPT>
 // kill "description" h3 bar
 ld = document.getElementById("longdescription");
@@ -57,7 +57,7 @@ simple model of input and output parameters, it is possible to write
 micro-benchmarks to test practically anything.</P>
 <H3>Overview</H3>
 <P>A Japex micro-benchmark comprises of a set of Japex Drivers (i.e.,
-Java classes extending <FONT SIZE=2 STYLE="font-size: 10pt"><FONT FACE="Andale Mono, monospace">com.sun.japex.JapexDriverBase</FONT></FONT>)
+Java classes extending <FONT SIZE=2><FONT FACE="Andale Mono, monospace">com.sun.japex.JapexDriverBase</FONT></FONT>)
 and at least one configuration file to describe the drivers under
 test, the list of test cases and the various parameters used to
 control the length of the test, the type of output report, etc. You
@@ -99,49 +99,48 @@ output file.</P>
 </CENTER>
 <P>The type of output chart that is generated as part of the HTML
 report depends on the type of benchmark and the value of
-<FONT SIZE=2 STYLE="font-size: 10pt"><FONT FACE="Andale Mono, monospace">japex.chartType</FONT></FONT>
+<FONT SIZE=2><FONT FACE="Andale Mono, monospace">japex.chartType</FONT></FONT>
 parameter. Click on the images below for an example of the types of
 charts that are currently supported by Japex.</P>
-<TABLE WIDTH=100% BORDER=0 CELLPADDING=0 CELLSPACING=0>
-	<COL WIDTH=85*>
-	<COL WIDTH=85*>
-	<COL WIDTH=85*>
-	<TR>
-		<TD COLSPAN=3 WIDTH=100% HEIGHT=20 VALIGN=TOP>
-			<P ALIGN=CENTER><B>Chart Types Supported by Japex</B></P>
-		</TD>
-	</TR>
-	<TR VALIGN=TOP>
-		<TD WIDTH=33%>
-			<P><A HREF="images/bar.jpg"><IMG SRC="images/bar.jpg" NAME="Graphic2" ALIGN=LEFT WIDTH=198 HEIGHT=148 BORDER=0><BR CLEAR=LEFT></A><BR>
-			</P>
-		</TD>
-		<TD WIDTH=33%>
-			<P><A HREF="images/line.jpg"><IMG SRC="images/line.jpg" NAME="Graphic3" ALIGN=LEFT WIDTH=198 HEIGHT=148 BORDER=0><BR CLEAR=LEFT></A><BR>
-			</P>
-		</TD>
-		<TD WIDTH=33%>
-			<P><A HREF="images/scatter.jpg"><IMG SRC="images/scatter.jpg" NAME="Graphic4" ALIGN=LEFT WIDTH=198 HEIGHT=148 BORDER=0><BR CLEAR=LEFT></A><BR>
-			</P>
-		</TD>
-	</TR>
-</TABLE>
+<CENTER>
+	<TABLE WIDTH=636 BORDER=0 CELLPADDING=0 CELLSPACING=0>
+		<COL WIDTH=212>
+		<COL WIDTH=212>
+		<COL WIDTH=211>
+		<TR>
+			<TD COLSPAN=3 WIDTH=636 HEIGHT=20 VALIGN=TOP>
+				<P ALIGN=CENTER><B>Chart Types Supported by Japex</B></P>
+			</TD>
+		</TR>
+		<TR VALIGN=TOP>
+			<TD WIDTH=212>
+				<P ALIGN=CENTER><A HREF="images/bar.jpg"><IMG SRC="images/bar.jpg" NAME="Graphic2" ALIGN=LEFT WIDTH=198 HEIGHT=148 BORDER=0><BR CLEAR=LEFT></A><BR>
+				</P>
+			</TD>
+			<TD WIDTH=212>
+				<P ALIGN=CENTER><A HREF="images/line.jpg"><IMG SRC="images/line.jpg" NAME="Graphic3" ALIGN=LEFT WIDTH=198 HEIGHT=148 BORDER=0><BR CLEAR=LEFT></A><BR>
+				</P>
+			</TD>
+			<TD WIDTH=211>
+				<P ALIGN=CENTER><A HREF="images/scatter.jpg"><IMG SRC="images/scatter.jpg" NAME="Graphic4" ALIGN=LEFT WIDTH=198 HEIGHT=148 BORDER=0><BR CLEAR=LEFT></A><BR>
+				</P>
+			</TD>
+		</TR>
+	</TABLE>
+</CENTER>
 <H3>Resources</H3>
 <UL>
 	<LI><P STYLE="margin-bottom: 0in"><B>Downloading:</B></P>
 	<UL>
-		<LI><P STYLE="margin-bottom: 0in"><SPAN STYLE="font-weight: medium">Latest
-		build: </SPAN>???</P>
-		<LI><P STYLE="margin-bottom: 0in"><SPAN STYLE="font-weight: medium">CVS
-		Source tree:</SPAN> <SPAN STYLE="font-weight: medium"><FONT SIZE=2 STYLE="font-size: 10pt"><FONT FACE="Andale Mono, monospace">cvs
-		-d :pserver:&lt;login&gt;@cvs.dev.java.net:/cvs co japex</FONT></FONT></SPAN></P>
+		<LI><P STYLE="margin-bottom: 0in">Latest build: ???</P>
+		<LI><P STYLE="margin-bottom: 0in">CVS Source tree: <FONT SIZE=2><FONT FACE="Andale Mono, monospace">cvs
+		-d :pserver:&lt;login&gt;@cvs.dev.java.net:/cvs co japex</FONT></FONT></P>
 	</UL>
 	<LI><P STYLE="margin-bottom: 0in"><STRONG>Documentation: </STRONG>
 	</P>
 	<UL>
-		<LI><P STYLE="margin-bottom: 0in"><SPAN STYLE="font-weight: medium">Japex
-		manual</SPAN></P>
-		<LI><P STYLE="margin-bottom: 0in"><SPAN STYLE="font-weight: medium">Blogs</SPAN></P>
+		<LI><P STYLE="margin-bottom: 0in; font-weight: medium">Japex manual</P>
+		<LI><P STYLE="margin-bottom: 0in; font-weight: medium">Blogs</P>
 	</UL>
 	<LI><P STYLE="margin-bottom: 0in"><STRONG>Licenses:</STRONG> <A HREF="http://www.apache.org/licenses/LICENSE-2.0">ASL
 	2.0</A></P>
