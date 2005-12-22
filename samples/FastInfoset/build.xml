@@ -1,0 +1,17 @@
+<project name="Japex Sample"  basedir=".">
+    <property environment="env"/>
+    
+    <property name="config" value="size-config.xml"/>
+    
+    <path id="class.path">
+        <fileset dir="../../dist/lib/" includes="*.jar"/>
+    </path>
+    
+    <target name="run">
+        <java dir="." fork="true" classname="com.sun.japex.Japex">
+            <jvmarg value="-server"/>
+            <classpath refid="class.path"/>
+            <arg line="${config}/"/>
+        </java>
+    </target>
+</project>
