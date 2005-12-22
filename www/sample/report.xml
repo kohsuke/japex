@@ -1,0 +1,66 @@
+<testSuiteReport name="ParsingPerformance" xmlns="http://www.sun.com/japex/testSuiteReport">
+  <resultUnit>TPS</resultUnit>
+  <version>0.100</version>
+  <chartType>barchart</chartType>
+  <osName>SunOS</osName>
+  <classPath>../../dist/lib/*.jar</classPath>
+  <warmupTime>10</warmupTime>
+  <vmInfo>Sun Microsystems Inc. 1.5.0_05-b05</vmInfo>
+  <dateTime>22 Dec 2005/11:01:15 EST</dateTime>
+  <runTime>10</runTime>
+  <reportsDirectory>reports</reportsDirectory>
+  <resultAxis>normal</resultAxis>
+  <resultUnitX>kbs</resultUnitX>
+  <resultAxisX>normal</resultAxisX>
+  <numberOfThreads>1</numberOfThreads>
+  <configFile>parsing-config.xml/</configFile>
+  <includeWarmupRun>false</includeWarmupRun>
+  <osArchitecture>x86</osArchitecture>
+  <runsPerDriver>1</runsPerDriver>
+  <driver name="JAXPDriver">
+    <resultAritMean>1183.321</resultAritMean>
+    <resultHarmMean>486.336</resultHarmMean>
+    <resultGeomMean>756.276</resultGeomMean>
+    <driverClass>com.sun.japex.jdsl.xml.parsing.sax.JAXPSAXDriver</driverClass>
+    <description xmlns="">JAXP SAX Parser</description>
+    <testCase name="inv1.xml">
+      <resultValue>2740.613</resultValue>
+      <inputFile>data/inv1.xml</inputFile>
+    </testCase>
+    <testCase name="inv10.xml">
+      <resultValue>1372.456</resultValue>
+      <inputFile>data/inv10.xml</inputFile>
+    </testCase>
+    <testCase name="inv50.xml">
+      <resultValue>405.999</resultValue>
+      <inputFile>data/inv50.xml</inputFile>
+    </testCase>
+    <testCase name="inv100.xml">
+      <resultValue>214.215</resultValue>
+      <inputFile>data/inv100.xml</inputFile>
+    </testCase>
+  </driver>
+  <driver name="FastInfosetDriver">
+    <resultAritMean>3937.683</resultAritMean>
+    <resultHarmMean>2066.038</resultHarmMean>
+    <resultGeomMean>2853.818</resultGeomMean>
+    <driverClass>com.sun.japex.jdsl.xml.parsing.sax.FastInfosetSAXDriver</driverClass>
+    <description xmlns="">Fast Infoset SAX Parser</description>
+    <testCase name="inv1.xml">
+      <resultValue>8223.303</resultValue>
+      <inputFile>data/inv1.xml</inputFile>
+    </testCase>
+    <testCase name="inv10.xml">
+      <resultValue>4855.200</resultValue>
+      <inputFile>data/inv10.xml</inputFile>
+    </testCase>
+    <testCase name="inv50.xml">
+      <resultValue>1688.088</resultValue>
+      <inputFile>data/inv50.xml</inputFile>
+    </testCase>
+    <testCase name="inv100.xml">
+      <resultValue>984.140</resultValue>
+      <inputFile>data/inv100.xml</inputFile>
+    </testCase>
+  </driver>
+</testSuiteReport>
