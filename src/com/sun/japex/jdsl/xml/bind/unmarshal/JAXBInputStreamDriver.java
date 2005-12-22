@@ -38,7 +38,7 @@ package com.sun.japex.jdsl.xml.bind.unmarshal;
 
 import javax.xml.bind.Unmarshaller;
 import com.sun.japex.TestCase;
-import com.sun.japex.jdsl.xml.bind.unmarhsal.BaseUnmarshallerDriver;
+import com.sun.japex.jdsl.xml.bind.unmarshal.BaseUnmarshallerDriver;
 
 public class JAXBInputStreamDriver extends BaseUnmarshallerDriver {                
     public void run(TestCase testCase) {
