@@ -52,8 +52,15 @@
         </copy>
     </target>
     
+    <target name="compile.jdsl" depends="compile" description="Compiles JDSL only">
+        <javac srcdir="src/com/sun/japex/jdsl" destdir="build/classes" debug="on" optimize="on" deprecation="on">
+            <classpath refid="compile.class.path"/>
+        </javac>
+    </target>
+
     <target name="compile" depends="compile.binding" description="Compile sources">
-        <javac srcdir="src" destdir="build/classes" debug="on" optimize="on" deprecation="on">
+        <javac srcdir="src" destdir="build/classes" debug="on" optimize="on" deprecation="on"
+            excludes="com/sun/japex/jdsl/**">
             <classpath refid="compile.class.path"/>
         </javac>
         <copy todir="build/classes/resources">
@@ -65,14 +72,21 @@
         </copy>
     </target>
     
-    <target name="build" depends="compile" description="Compiles Japex"/>
+    <target name="build" depends="compile, compile.jdsl" description="Compiles Japex"/>
     
-    <target name="dist" depends="compile" description="Build distribution">
+    <target name="dist" depends="compile, compile.jdsl" description="Build distribution">
         <mkdir dir="dist"/>
         <mkdir dir="dist/bin"/>
         <mkdir dir="dist/lib"/>
         
-        <jar jarfile="dist/lib/${app.jar}" basedir="build/classes/"/>
+        <jar jarfile="dist/lib/${app.jar}" 
+             basedir="build/classes/"
+             excludes="com/sun/japex/jdsl/**"/>
+
+        <jar jarfile="dist/lib/jdsl.jar" 
+             basedir="build/classes/"
+             includes="com/sun/japex/jdsl/**"/>
+
         <copy todir="dist/lib/">
             <fileset dir="lib/jwsdp">
                 <include name="*.jar"/>
@@ -87,7 +101,7 @@
     
     <target name="test" depends="dist" description="Test using simple config file">
         <ant dir="${basedir}/samples/FastInfoset" target="run" inheritrefs="true">
-            <property name="config" value="size-config-short.xml"/>
+            <property name="config" value="speed-config.xml"/>
         </ant>
     </target>
     
@@ -97,11 +111,4 @@
         </ant>
     </target>
 
-    <target name="trendreport">
-        <ant antfile="trendreport.xml" dir="." target="trendreport"/>
-    </target>
-    <target name="trend_serializing_dom">
-        <ant antfile="trend_japex_serializing_DOMDriver.xml" dir="." target="trendreport"/>
-    </target>
-    
 </project>
