@@ -1,7 +1,7 @@
-<project name="Japex Sample"  basedir=".">
+<project name="Japex Sample" default="run"  basedir=".">
     <property environment="env"/>
     
-    <property name="config" value="size-config.xml"/>
+    <property name="config" value="speed-config.xml"/>
     
     <path id="class.path">
         <fileset dir="../../dist/lib/" includes="*.jar"/>
