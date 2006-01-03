@@ -7,9 +7,34 @@
     <property name="jwsdp-dir" value="${basedir}/lib/jwsdp/"/>
     <property name="jdsl-dir" value="${basedir}/lib/jdsl/"/>
 
+    <tstamp>
+	<format property="TSTAMP" pattern="hhmmss"/>
+    </tstamp>
+
     <property name="package.dir" value="package"/>
-    <property name="build.id" value="0"/>
+    <property name="build.number" value=""/>
+    <property name="build.id" value="${DSTAMP}-${TSTAMP}"/>
     <property name="release.impl.version" value="1.0"/>
+
+    <!-- task that generates a manifest file -->
+    <macrodef name="createManifest">
+        <attribute name="file"/>
+      <sequential>
+        <copy tofile="@{file}"
+            file="./resources/manifest.mf"
+            overwrite="yes"/>
+        <replace file="@{file}">
+            <replacefilter token="@@@@IMPL_VERSION@@@@"
+                   value="${release.impl.version}"/>
+            <replacefilter token="@@@@VENDOR_ID@@@@"
+                   value="com.sun"/>
+            <replacefilter token="@@@@BUILD_ID@@@@"
+                   value="${build.id}"/>
+            <replacefilter token="@@@@BUILD_NUMBER@@@@"
+                   value="${build.number}"/>
+        </replace>
+        </sequential>
+    </macrodef>
 
     <path id="compile.class.path">
         <fileset dir="${jwsdp-dir}" includes="*.jar"/>
@@ -91,9 +116,12 @@
         <mkdir dir="dist/lib"/>
         <mkdir dir="dist/jdsl"/>
         
+	<createManifest file="${basedir}/build/manifest.rt"/>
+
         <jar jarfile="dist/lib/${app.jar}" 
              basedir="build/classes/"
-             excludes="com/sun/japex/jdsl/**"/>
+             excludes="com/sun/japex/jdsl/**"
+	     manifest="${basedir}/build/manifest.rt"/>
         <copy todir="dist/lib/">
             <fileset dir="lib/jwsdp">
                 <include name="*.jar"/>
@@ -107,7 +135,8 @@
 
         <jar jarfile="dist/jdsl/jdsl.jar" 
              basedir="build/classes/"
-             includes="com/sun/japex/jdsl/**"/>
+             includes="com/sun/japex/jdsl/**"
+	     manifest="${basedir}/build/manifest.rt"/>
         <copy todir="dist/jdsl/">
             <fileset dir="lib/jdsl">
                 <include name="*.jar"/>

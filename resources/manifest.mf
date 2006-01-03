@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Implementation-Title: Japex Micro-benchmark Framework
+Implementation-Version: @@IMPL_VERSION@@
+Implementation-Vendor: Sun Microsystems, Inc.
+Implementation-Vendor-Id: @@VENDOR_ID@@
+Build-Id: @@BUILD_ID@@
+Build-Number: @@BUILD_NUMBER@@
