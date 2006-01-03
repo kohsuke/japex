@@ -2,14 +2,25 @@
     <property environment="env"/>
     
     <property name="app.jar" value="japex.jar"/>
+
     <property name="jfreechart-dir" value="${basedir}/lib/jfreechart/"/>
     <property name="jwsdp-dir" value="${basedir}/lib/jwsdp/"/>
-    
+    <property name="jdsl-dir" value="${basedir}/lib/jdsl/"/>
+
+    <property name="package.dir" value="package"/>
+    <property name="build.id" value="0"/>
+    <property name="release.impl.version" value="1.0"/>
+
     <path id="compile.class.path">
         <fileset dir="${jwsdp-dir}" includes="*.jar"/>
         <fileset dir="${jfreechart-dir}" includes="*.jar"/>
     </path>
     
+    <path id="compile.jdsl.class.path">
+        <fileset dir="${jdsl-dir}" includes="*.jar"/>
+	<path refid="compile.class.path"/>
+    </path>
+
     <path id="class.path">
         <pathelement location="dist/${app.jar}"/>
     </path>
@@ -54,7 +65,7 @@
     
     <target name="compile.jdsl" depends="compile" description="Compiles JDSL only">
         <javac srcdir="src/com/sun/japex/jdsl" destdir="build/classes" debug="on" optimize="on" deprecation="on">
-            <classpath refid="compile.class.path"/>
+            <classpath refid="compile.jdsl.class.path"/>
         </javac>
     </target>
 
@@ -78,15 +89,11 @@
         <mkdir dir="dist"/>
         <mkdir dir="dist/bin"/>
         <mkdir dir="dist/lib"/>
+        <mkdir dir="dist/jdsl"/>
         
         <jar jarfile="dist/lib/${app.jar}" 
              basedir="build/classes/"
              excludes="com/sun/japex/jdsl/**"/>
-
-        <jar jarfile="dist/lib/jdsl.jar" 
-             basedir="build/classes/"
-             includes="com/sun/japex/jdsl/**"/>
-
         <copy todir="dist/lib/">
             <fileset dir="lib/jwsdp">
                 <include name="*.jar"/>
@@ -94,6 +101,15 @@
         </copy>
         <copy todir="dist/lib/">
             <fileset dir="lib/jfreechart">
+                <include name="*.jar"/>
+            </fileset>
+        </copy>
+
+        <jar jarfile="dist/jdsl/jdsl.jar" 
+             basedir="build/classes/"
+             includes="com/sun/japex/jdsl/**"/>
+        <copy todir="dist/jdsl/">
+            <fileset dir="lib/jdsl">
                 <include name="*.jar"/>
             </fileset>
         </copy>
@@ -110,5 +126,36 @@
             <property name="config" value="size-config-short.xml"/>
         </ant>
     </target>
+
+    <!-- 
+      - Hudson packages: build.id is passed by the Hudson script:
+      -->
+    <target name="clean-package">
+        <delete dir="${package.dir}"/>
+    </target>
+
+    <target name="prepare-package">
+	<mkdir dir="${package.dir}"/>
+    </target>
+    
+    <target name="dist-package" depends="dist, prepare-package">
+	<mkdir dir="${package.dir}/japex-${release.impl.version}-b${build.id}"/>
+	<copy todir="${package.dir}/japex-${release.impl.version}-b${build.id}">
+            <fileset dir="./dist">
+                <include name="**/*"/>
+            </fileset>
+            <fileset dir="${basedir}">
+                <include name="*.txt"/>
+            </fileset>
+	</copy>
+        <zip destfile="${package.dir}/japex-${release.impl.version}-b${build.id}.zip">
+            <fileset dir="${package.dir}">
+                <include name="japex-${release.impl.version}-b${build.id}/**/*"/>
+            </fileset>
+	</zip>
+	<delete dir="${package.dir}/japex-${release.impl.version}-b${build.id}"/>
+    </target>
+
+    <target name="package" depends="dist-package"/>
 
 </project>
