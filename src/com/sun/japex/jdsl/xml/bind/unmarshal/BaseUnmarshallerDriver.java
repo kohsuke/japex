@@ -40,13 +40,31 @@ import java.net.URLClassLoader;
 
 import com.sun.japex.TestCase;
 import com.sun.japex.jdsl.xml.BaseParserDriver;
+import com.sun.japex.jdsl.xml.TestCaseUtil;
+import com.sun.japex.jdsl.xml.DriverConstants;
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import static com.sun.japex.Util.*;
+import com.sun.japex.jdsl.xml.FastInfosetParserDriver;
+import com.sun.xml.fastinfoset.stax.StAXDocumentParser;
+import com.sun.xml.fastinfoset.stax.StAXDocumentSerializer;
+import org.jvnet.fastinfoset.FastInfosetParser;
+import org.jvnet.fastinfoset.FastInfosetSource;
+import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
+
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+
 
 public abstract class BaseUnmarshallerDriver extends BaseParserDriver {
+    protected JAXBContext _jc;
     protected Unmarshaller _unmarshaller;
+    protected Object _bean;
         
     protected static boolean printManifest = true;
     
@@ -61,14 +79,78 @@ public abstract class BaseUnmarshallerDriver extends BaseParserDriver {
     
     public void prepare(TestCase testCase) {
         super.prepare(testCase);
-        
-        try {
+
+        try {            
             // Get JAXB unmarshaller
-             JAXBContext jc = JAXBContext.newInstance(testCase.getParam("contextPath"));
-            _unmarshaller = jc.createUnmarshaller();
+            _jc = JAXBContext.newInstance(testCase.getParam("contextPath"));
+            _unmarshaller = _jc.createUnmarshaller();
+            
         } 
         catch (Exception e) {
             e.printStackTrace();
         }
     }    
+
+    public void JAXBRoundTrip_SJSXP(TestCase testCase) {
+        super.prepare(testCase);
+        try {            
+            _bean = null;
+            XMLInputFactory inputFactory = new com.sun.xml.stream.ZephyrParserFactory();
+            XMLStreamReader reader = inputFactory.createXMLStreamReader(_inputStream);
+            Unmarshaller unmarshaller = _jc.createUnmarshaller();
+            _bean = unmarshaller.unmarshal(reader);
+            reader.close();
+
+            //mashalling:            
+            Marshaller marshaller = _jc.createMarshaller();
+            
+            XMLOutputFactory outputFactory = new com.sun.xml.stream.ZephyrWriterFactory();
+            XMLStreamWriter writer = outputFactory.createXMLStreamWriter(_outputStream);
+            marshaller.marshal(_bean, writer);
+            writer.close();
+        } 
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //convert outputstream to input
+        _inputStream = new ByteArrayInputStream(_outputStream.toByteArray());
+        
+    }            
+    
+    // Perform JAXB roundtrip to eliminate BASE64 conversion for certain testcases
+    public void JAXBRoundTrip(TestCase testCase, boolean SAX, FastInfosetSource fis1) {
+        StAXDocumentSerializer staxSerializer = new StAXDocumentSerializer();
+        FastInfosetParser fps = ((FastInfosetParserDriver)this).getParser();
+        if (getBooleanParam(DriverConstants.EXTERNAL_VOCABULARY_PROPERTY)) {
+            fps.setExternalVocabularies(_externalVocabularyMap);
+            staxSerializer.setVocabulary(_initialVocabulary);
+        }
+        
+        try {            
+            JAXBContext jc = JAXBContext.newInstance(testCase.getParam("contextPath"));
+            FastInfosetSource fis = new FastInfosetSource(_inputStream);
+            _bean = null;
+            _bean = _unmarshaller.unmarshal(fis);
+            /*
+            if (SAX) {
+                _bean = _unmarshaller.unmarshal(fis);
+            } else {
+                _bean = _unmarshaller.unmarshal((StAXDocumentParser)fps);            
+            }
+             */
+            //mashalling:            
+            _outputStream.reset();
+            staxSerializer.setOutputStream(_outputStream);
+            Marshaller marshaller;
+            marshaller = jc.createMarshaller();
+            marshaller.marshal(_bean, (XMLStreamWriter)staxSerializer); 
+        } 
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //convert outputstream to input
+        _inputStream = new ByteArrayInputStream(_outputStream.toByteArray());
+    }
 }

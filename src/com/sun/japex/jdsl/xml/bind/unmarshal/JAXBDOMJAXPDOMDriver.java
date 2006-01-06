@@ -40,6 +40,9 @@ import com.sun.japex.jdsl.xml.DriverConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import java.io.ByteArrayInputStream;
 
 public class JAXBDOMJAXPDOMDriver extends BaseUnmarshallerDriver {
     DocumentBuilderFactory _builderFactory;
@@ -58,7 +61,7 @@ public class JAXBDOMJAXPDOMDriver extends BaseUnmarshallerDriver {
             e.printStackTrace();
         }        
     }
-    
+
     public void run(TestCase testCase) {
         try {
             _inputStream.reset();

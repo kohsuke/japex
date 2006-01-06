@@ -38,9 +38,19 @@ package com.sun.japex.jdsl.xml.bind.unmarshal;
 
 import javax.xml.bind.Unmarshaller;
 import com.sun.japex.TestCase;
-import com.sun.japex.jdsl.xml.bind.unmarshal.BaseUnmarshallerDriver;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import java.io.ByteArrayInputStream;
 
-public class JAXBInputStreamDriver extends BaseUnmarshallerDriver {                
+public class JAXBInputStreamDriver extends BaseUnmarshallerDriver {      
+    public void prepare(TestCase testCase) {
+        super.prepare(testCase);
+        if (getBooleanParam(TESTCASE_NORMALIZE)) {
+            JAXBRoundTrip_SJSXP(testCase);        
+        }
+    }            
+
+    
     public void run(TestCase testCase) {
         try {
             _inputStream.reset();

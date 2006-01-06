@@ -38,6 +38,9 @@ package com.sun.japex.jdsl.xml.bind.unmarshal;
 
 import com.sun.japex.TestCase;
 import org.w3c.dom.Document;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import java.io.ByteArrayInputStream;
 
 public class JAXBDOMDriver extends BaseUnmarshallerDriver {
     Document _d;
@@ -47,6 +50,17 @@ public class JAXBDOMDriver extends BaseUnmarshallerDriver {
         
         try {
             _d = createDocument();
+                        
+            //perform JAXB roundtip
+            if (getBooleanParam(TESTCASE_NORMALIZE)) {
+                _bean = null;
+                _bean = _unmarshaller.unmarshal(_d);
+                //mashalling:            
+                _d = _builder.newDocument();
+                Marshaller marshaller;
+                marshaller = _jc.createMarshaller();
+                marshaller.marshal(_bean, _d);
+            }       
         } 
         catch (Exception e) {
             e.printStackTrace();

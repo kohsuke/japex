@@ -43,6 +43,7 @@ import com.sun.xml.fastinfoset.sax.SAXDocumentSerializer;
 import com.sun.xml.fastinfoset.sax.VocabularyGenerator;
 import com.sun.xml.fastinfoset.vocab.ParserVocabulary;
 import com.sun.xml.fastinfoset.vocab.SerializerVocabulary;
+import com.sun.xml.fastinfoset.stax.StAXDocumentSerializer;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -54,18 +55,25 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import org.jvnet.fastinfoset.FastInfosetParser;
 import org.w3c.dom.Document;
 
 public abstract class BaseParserDriver extends JapexDriverBase {
-    protected ByteArrayInputStream _inputStream;    
+    public static final String TESTCASE_NORMALIZE = "normalizeTestCaseData";
     
+    protected SAXDocumentSerializer _saxSerializer = null;
+    protected ByteArrayInputStream _inputStream;    
+    protected ByteArrayOutputStream _outputStream;
+    protected SerializerVocabulary _initialVocabulary;
+    protected HashMap _externalVocabularyMap;
+    protected DocumentBuilder _builder;
+            
     public void prepare(TestCase testCase) {
         String xmlFile = TestCaseUtil.getXmlFile(testCase);
 
         try {
             FileInputStream fis = new FileInputStream(new File(xmlFile));
-         
+            _outputStream = new ByteArrayOutputStream();
+            
             if (this instanceof FastInfosetParserDriver) {
                 ByteArrayInputStream bais = new ByteArrayInputStream(com.sun.japex.Util.streamToByteArray(fis));
                 prepareFI(bais, xmlFile);
@@ -92,11 +100,10 @@ public abstract class BaseParserDriver extends JapexDriverBase {
         spf.setNamespaceAware(true);
         SAXParser parser = spf.newSAXParser();
         
-        SAXDocumentSerializer sds = new SAXDocumentSerializer();
-        FastInfosetParamSetter.setParams(sds, this);
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        sds.setOutputStream(baos);
+        _saxSerializer = new SAXDocumentSerializer();
+        FastInfosetParamSetter.setParams(_saxSerializer, this);
+        
+        _saxSerializer.setOutputStream(_outputStream);
         
         if (getBooleanParam(DriverConstants.EXTERNAL_VOCABULARY_PROPERTY)) {
             SerializerVocabulary externalSerializeVocabulary = new SerializerVocabulary();
@@ -108,27 +115,25 @@ public abstract class BaseParserDriver extends JapexDriverBase {
             in.reset();
             
             String externalVocabularyURI = "file:///" + name; 
-            SerializerVocabulary initialVocabulary = new SerializerVocabulary();
-            initialVocabulary.setExternalVocabulary(externalVocabularyURI,
+            _initialVocabulary = new SerializerVocabulary();
+            _initialVocabulary.setExternalVocabulary(externalVocabularyURI,
                     externalSerializeVocabulary, false);
-            sds.setVocabulary(initialVocabulary);
+            _saxSerializer.setVocabulary(_initialVocabulary);
             
-            FastInfosetParser fps = ((FastInfosetParserDriver)this).getParser();
-            HashMap map = new HashMap();
-            map.put(externalVocabularyURI, externalParserVocabulary);
-            fps.setExternalVocabularies(map);
+            _externalVocabularyMap = new HashMap();
+            _externalVocabularyMap.put(externalVocabularyURI, externalParserVocabulary);
         }
         
-        parser.setProperty("http://xml.org/sax/properties/lexical-handler", sds);
-        parser.parse(in, sds);
-        _inputStream = new ByteArrayInputStream(baos.toByteArray());
+        parser.setProperty("http://xml.org/sax/properties/lexical-handler", _saxSerializer);
+        parser.parse(in, _saxSerializer);
+        _inputStream = new ByteArrayInputStream(_outputStream.toByteArray());
     }
     
     public Document createDocument() throws Exception {
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         builderFactory.setNamespaceAware(true);
-        DocumentBuilder builder = builderFactory.newDocumentBuilder();
-        Document d = builder.parse(_inputStream);
+        _builder = builderFactory.newDocumentBuilder();
+        Document d = _builder.parse(_inputStream);
         _inputStream.reset();
         
         return d;
@@ -149,6 +154,7 @@ public abstract class BaseParserDriver extends JapexDriverBase {
             getTestSuite().setParam(Constants.RESULT_UNIT_X, "kbs");
         }
     }
+
     
 }
 

@@ -37,9 +37,13 @@
 package com.sun.japex.jdsl.xml.bind.unmarshal;
 
 import com.sun.japex.TestCase;
+import com.sun.japex.jdsl.xml.DriverConstants;
 import com.sun.japex.jdsl.xml.FastInfosetParserDriver;
 import org.jvnet.fastinfoset.FastInfosetParser;
 import org.jvnet.fastinfoset.FastInfosetSource;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import java.io.ByteArrayInputStream;
 
 public class JAXBFastInfosetSAXDriver extends BaseUnmarshallerDriver implements FastInfosetParserDriver {
     FastInfosetSource _fis;
@@ -53,6 +57,31 @@ public class JAXBFastInfosetSAXDriver extends BaseUnmarshallerDriver implements 
         catch (Exception e) {
             e.printStackTrace();
         }
+        
+        if (getBooleanParam(DriverConstants.EXTERNAL_VOCABULARY_PROPERTY)) {
+            ((FastInfosetParser)_fis.getXMLReader()).setExternalVocabularies(_externalVocabularyMap);
+            _saxSerializer.setVocabulary(_initialVocabulary);
+        }
+        
+        if (getBooleanParam(TESTCASE_NORMALIZE)) {
+            try {            
+                _bean = null;
+                _bean = _unmarshaller.unmarshal(_fis);
+                //mashalling:            
+                _outputStream.reset();
+                _saxSerializer.setOutputStream(_outputStream);
+                Marshaller marshaller;
+                marshaller = _jc.createMarshaller();
+                marshaller.marshal(_bean, _saxSerializer); 
+            } 
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            //convert outputstream to input
+            _inputStream = new ByteArrayInputStream(_outputStream.toByteArray());
+            _fis.setInputStream(_inputStream);
+        }        
     }
      
     public FastInfosetParser getParser() {
@@ -69,3 +98,4 @@ public class JAXBFastInfosetSAXDriver extends BaseUnmarshallerDriver implements 
         }
     }    
 }
+

@@ -37,9 +37,15 @@
 package com.sun.japex.jdsl.xml.bind.unmarshal;
 
 import com.sun.japex.TestCase;
+import com.sun.japex.jdsl.xml.DriverConstants;
 import com.sun.japex.jdsl.xml.FastInfosetParserDriver;
 import com.sun.xml.fastinfoset.stax.StAXDocumentParser;
+import com.sun.xml.fastinfoset.stax.StAXDocumentSerializer;
 import org.jvnet.fastinfoset.FastInfosetParser;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.ByteArrayInputStream;
 
 public class JAXBFastInfosetStAXDriver extends BaseUnmarshallerDriver implements FastInfosetParserDriver {
     StAXDocumentParser _staxParser = null;
@@ -53,6 +59,36 @@ public class JAXBFastInfosetStAXDriver extends BaseUnmarshallerDriver implements
         catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    public void prepare(TestCase testCase) {
+        super.prepare(testCase);
+        
+        _staxParser.setInputStream(_inputStream);        
+        StAXDocumentSerializer staxSerializer = new StAXDocumentSerializer();
+        if (getBooleanParam(DriverConstants.EXTERNAL_VOCABULARY_PROPERTY)) {
+            _staxParser.setExternalVocabularies(_externalVocabularyMap);
+            staxSerializer.setVocabulary(_initialVocabulary);
+        }
+
+        if (getBooleanParam(TESTCASE_NORMALIZE)) {        
+            try {            
+                _bean = null;
+                _bean = _unmarshaller.unmarshal(_staxParser);  
+
+                //mashalling:            
+                _outputStream.reset();
+                staxSerializer.setOutputStream(_outputStream);
+                Marshaller marshaller;
+                marshaller = _jc.createMarshaller();
+                marshaller.marshal(_bean, (XMLStreamWriter)staxSerializer); 
+            } 
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            //convert outputstream to input
+            _inputStream = new ByteArrayInputStream(_outputStream.toByteArray());
+        }        
     }
 
     public FastInfosetParser getParser() {
