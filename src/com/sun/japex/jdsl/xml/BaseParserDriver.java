@@ -69,7 +69,7 @@ public abstract class BaseParserDriver extends JapexDriverBase {
             
     public void prepare(TestCase testCase) {
         String xmlFile = TestCaseUtil.getXmlFile(testCase);
-
+testCase.get
         try {
             FileInputStream fis = new FileInputStream(new File(xmlFile));
             _outputStream = new ByteArrayOutputStream();
@@ -120,8 +120,10 @@ public abstract class BaseParserDriver extends JapexDriverBase {
                     externalSerializeVocabulary, false);
             _saxSerializer.setVocabulary(_initialVocabulary);
             
+            FastInfosetParser fps = ((FastInfosetParserDriver)this).getParser();
             _externalVocabularyMap = new HashMap();
             _externalVocabularyMap.put(externalVocabularyURI, externalParserVocabulary);
+            fps.setExternalVocabularies(map);
         }
         
         parser.setProperty("http://xml.org/sax/properties/lexical-handler", _saxSerializer);
