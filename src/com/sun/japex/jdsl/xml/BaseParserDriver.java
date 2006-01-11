@@ -44,6 +44,8 @@ import com.sun.xml.fastinfoset.sax.VocabularyGenerator;
 import com.sun.xml.fastinfoset.vocab.ParserVocabulary;
 import com.sun.xml.fastinfoset.vocab.SerializerVocabulary;
 import com.sun.xml.fastinfoset.stax.StAXDocumentSerializer;
+import org.jvnet.fastinfoset.FastInfosetParser;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -69,7 +71,7 @@ public abstract class BaseParserDriver extends JapexDriverBase {
             
     public void prepare(TestCase testCase) {
         String xmlFile = TestCaseUtil.getXmlFile(testCase);
-testCase.get
+
         try {
             FileInputStream fis = new FileInputStream(new File(xmlFile));
             _outputStream = new ByteArrayOutputStream();
@@ -123,7 +125,7 @@ testCase.get
             FastInfosetParser fps = ((FastInfosetParserDriver)this).getParser();
             _externalVocabularyMap = new HashMap();
             _externalVocabularyMap.put(externalVocabularyURI, externalParserVocabulary);
-            fps.setExternalVocabularies(map);
+            fps.setExternalVocabularies(_externalVocabularyMap);
         }
         
         parser.setProperty("http://xml.org/sax/properties/lexical-handler", _saxSerializer);
