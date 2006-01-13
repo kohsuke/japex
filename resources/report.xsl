@@ -57,9 +57,6 @@
                    <xsl:for-each select="rep:driver[1]/*[not(@name) and namespace-uri(.)!='']">
                       <th><b><xsl:value-of select="name()"/></b></th>
                    </xsl:for-each>
-                   <xsl:for-each select="rep:driver[1]/*[not(@name) and namespace-uri(.)='']">
-                      <th><b><xsl:value-of select="name()"/></b></th>
-                   </xsl:for-each>
                </tr>
         </thead>
         <tbody>
@@ -67,9 +64,6 @@
 	       <tr><td align="right"><xsl:value-of select="@name"/></td>
                    <xsl:for-each select="*[not(@name) and namespace-uri(.)!='']">
                        <td align="right"><nobr><xsl:value-of select="."/></nobr></td>
-                   </xsl:for-each>
-                   <xsl:for-each select="*[not(@name) and namespace-uri(.)='']">
-                       <td align="left"><nobr><xsl:value-of select="."/></nobr></td>
                    </xsl:for-each>
                </tr>
             </xsl:for-each>
@@ -80,6 +74,17 @@
 <xsl:template name="resultsPerDriver">
     <h2>Driver: <xsl:value-of select="@name"/></h2>
     
+    <p>
+      <ul>
+      <xsl:for-each select="*[not(@name) and namespace-uri(.)='']">
+          <xsl:sort select="name()"/>
+          <li><xsl:value-of select="name()"/>
+              <xsl:text>: </xsl:text>
+              <xsl:value-of select="."/></li>
+      </xsl:for-each>
+      </ul>
+    </p>
+      
     <table width="80%" border="1">
         <thead>
 	       <tr><th><b>testCase</b></th>
