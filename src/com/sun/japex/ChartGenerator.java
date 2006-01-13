@@ -378,7 +378,7 @@ public class ChartGenerator {
             for (int i = 0; jdi.hasNext(); i++) {
                 DriverImpl di = (DriverImpl) jdi.next();
 
-                XYSeries xySeries = new XYSeries(di.getName(), true, false);
+                XYSeries xySeries = new XYSeries(di.getName(), true, true);
                 for (int j = 0; j < nOfTests; j++) {
                     TestCaseImpl tc = (TestCaseImpl) di.getAggregateTestCases().get(j);
                     xySeries.add(tc.getDoubleParam(Constants.RESULT_VALUE_X),
