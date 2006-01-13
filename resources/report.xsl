@@ -7,8 +7,18 @@
 <xsl:template match="rep:testSuiteReport">
    <html xmlns="http://www.w3.org/1999/xhtml">
    <link href="report.css" type="text/css" rel="stylesheet"/>
-   <head><h1>Japex Report: <xsl:value-of select="@name"/></h1></head>
+
+   <head>
+   <table border="0" cellpadding="2">
+       <tr>
+           <td valign="middle" width="88"><p><img src="https://japex.dev.java.net/images/japex.gif" width="78" height="65" align="middle" border="0"/></p></td>
+           <td valign="middle"><h1>Japex Report: <xsl:value-of select="@name"/></h1></td>  
+       </tr>
+   </table>
+   </head>
+   
    <body>
+    <h2>Global Parameters</h2>
       <ul>
       <xsl:for-each select="*[not(@name)]">
           <xsl:sort select="name()"/>
@@ -38,10 +48,11 @@
       
       <br/>
       <small>
-        <hr/><i>
+        <hr/>
         <font size="-2">
-        Author: Santiago Pericas-Geertsen (Sun Microsystems)
-        </font></i>
+        Generated using <a href="https://japex.dev.java.net">Japex</a> version 
+        <xsl:value-of select="format-number(rep:version, '##.00')"/>
+        </font>
       </small>
   </body>   
   </html>
