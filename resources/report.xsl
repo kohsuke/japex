@@ -11,7 +11,7 @@
    <head>
    <table border="0" cellpadding="2">
        <tr>
-           <td valign="middle" width="88"><p><img src="https://japex.dev.java.net/images/japex.gif" width="78" height="65" align="middle" border="0"/></p></td>
+           <td valign="middle" width="90"><p><img src="small_japex.gif" align="middle" border="0"/></p></td>
            <td valign="middle"><h1>Japex Report: <xsl:value-of select="@name"/></h1></td>  
        </tr>
    </table>
