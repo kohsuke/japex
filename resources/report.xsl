@@ -39,9 +39,10 @@
       <xsl:for-each select="rep:driver">
         <xsl:call-template name="resultsPerDriver"/>
       </xsl:for-each>
-      
+
+      <h2>Results Per Test</h2>
+      <br/>
       <xsl:for-each select="/*/extrep:testCaseChart">
-          <br/><br/>
           <center><img src="{.}"/></center>
           <br/><br/>
       </xsl:for-each>
@@ -121,6 +122,7 @@
             </xsl:for-each>
         </tbody>
     </table>
+    <br/>
 </xsl:template>
 
 <xsl:template match="text()"/>
