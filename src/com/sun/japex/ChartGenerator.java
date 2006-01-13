@@ -50,6 +50,7 @@ import org.jfree.chart.*;
 import org.jfree.chart.plot.*;
 import org.jfree.data.xy.*;
 import org.jfree.chart.axis.LogarithmicAxis;
+import org.jfree.data.general.SeriesException;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
@@ -378,11 +379,16 @@ public class ChartGenerator {
             for (int i = 0; jdi.hasNext(); i++) {
                 DriverImpl di = (DriverImpl) jdi.next();
 
-                XYSeries xySeries = new XYSeries(di.getName(), true, true);
+                XYSeries xySeries = new XYSeries(di.getName(), true, false);
                 for (int j = 0; j < nOfTests; j++) {
                     TestCaseImpl tc = (TestCaseImpl) di.getAggregateTestCases().get(j);
-                    xySeries.add(tc.getDoubleParam(Constants.RESULT_VALUE_X),
-                                 tc.getDoubleParam(Constants.RESULT_VALUE));
+                    try {
+                        xySeries.add(tc.getDoubleParam(Constants.RESULT_VALUE_X),
+                                     tc.getDoubleParam(Constants.RESULT_VALUE));
+                    }
+                    catch (SeriesException e) {
+                        // Ignore duplicate x-valued points
+                    }
 
                 }                    
                 xyDataset.addSeries(xySeries);
