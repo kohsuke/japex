@@ -46,7 +46,7 @@ import java.text.*;
 public class TestSuiteImpl extends ParamsImpl implements TestSuite {
     
     String _name;
-    List _driverInfo = new ArrayList();
+    List<DriverImpl> _driverInfo = new ArrayList<DriverImpl>();
     
     /**
      * Creates a new instance of TestSuiteImpl from a JAXB-generated
@@ -173,7 +173,7 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
         setParam(Constants.VM_INFO,
             System.getProperty("java.vendor") + " " + 
             System.getProperty("java.vm.version"));
-        
+                
         // Create and populate list of drivers
         Iterator it = ts.getDriver().iterator();
         while (it.hasNext()) {
@@ -183,7 +183,7 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
             // Create new DriverImpl
             DriverImpl driverInfo = new DriverImpl(dt.getName(), 
                 dt.isNormal(), this);
-            
+                        
             // Copy params from JAXB object to Japex object
             Iterator driverParamsIt = dt.getParam().iterator();
             while (driverParamsIt.hasNext()) {
@@ -191,7 +191,7 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
                     (com.sun.japex.testsuite.ParamType) driverParamsIt.next();
                 driverInfo.setParam(pt.getName(), pt.getValue());
             }
-
+            
             // If japex.driverClass not specified, use the driver's name
             if (!driverInfo.hasParam(Constants.DRIVER_CLASS)) {
                 driverInfo.setParam(Constants.DRIVER_CLASS, dt.getName());
@@ -199,9 +199,10 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
 
             _driverInfo.add(driverInfo);
         }
-        
+
         // Create and populate list of test cases
         TestCaseArrayList testCases = new TestCaseArrayList();
+        
         it = ts.getTestCase().iterator();
         while (it.hasNext()) {
             com.sun.japex.testsuite.TestSuite.TestCase tc = 
@@ -209,18 +210,18 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
             
             // Create new TestCaseImpl
             TestCaseImpl testCase = new TestCaseImpl(tc.getName(), this);
-            
+                      
             // Copy params from JAXB object to Japex object
             Iterator itParams = tc.getParam().iterator();
             while (itParams.hasNext()) {
                 com.sun.japex.testsuite.ParamType pt = 
                     (com.sun.japex.testsuite.ParamType) itParams.next();
                 testCase.setParam(pt.getName(), pt.getValue());
-            }
+            }            
             
             testCases.add(testCase);
         }
-        
+
         // Set list of test cases and number of runs on each driver
         it = _driverInfo.iterator();
         while (it.hasNext()) {
@@ -268,11 +269,37 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
         return _driverInfo;
     }
     
+    /**
+     * Compute user-defined parameter closure before serializing each 
+     * driver. By doing so, it is guaranteed that all drivers will 
+     * define all parameters which makes it easy for the HTML report 
+     * to display them in table form.
+     */
     public void serialize(StringBuffer report) {
         report.append("<testSuiteReport name=\"" + _name 
             + "\" xmlns=\"http://www.sun.com/japex/testSuiteReport\">\n");      
 
         serialize(report, 2);
+        
+        // Collect all user defined parameters for all drivers
+        Set<String> userParams = new HashSet<String>();
+        for (DriverImpl di : _driverInfo) {
+            Set<String> driverParams = di.nameSet();
+            for (String name : driverParams) {
+                if (!name.startsWith("japex.")) {
+                    userParams.add(name);
+                }
+            }
+        }
+
+        // User param closure: all drivers define the same set
+        for (DriverImpl di : _driverInfo) {
+            for (String name : userParams) {
+                if (!di.hasParam(name)) {
+                    di.setParam(name, "n/a");
+                }
+            }
+        }        
         
         // Iterate through each class (aka driver)
         Iterator jdi = _driverInfo.iterator();

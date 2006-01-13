@@ -50,10 +50,10 @@ public class ParamsImpl implements Params {
     final static String DELIMITER = "\uFFFE";      // A Unicode nonchar
     
     /**
-     * Mapping between strings and values. Values could be of three 
-     * possible types: String, Long or Double.
+     * Mapping between strings and values. Values could be of types: 
+     * String, Long, Double, Boolean.
      */
-    Map _mapping = new HashMap();
+    Map<String, Object> _mapping = new HashMap<String, Object>();
     
     /**
      * Default mapping used when a parameter is not defined in this
@@ -115,6 +115,14 @@ public class ParamsImpl implements Params {
         }
     }
 
+    /** 
+     * Returns the set of parameter names defined in this class
+     * ignoring params defined in <code>_defaults</code>.
+     */
+    public Set<String> nameSet() {
+        return _mapping.keySet();
+    }
+    
     private Object getParamOrDefault(String name) {
         Object value = _mapping.get(name);
         if (value == null && _defaults != null) {

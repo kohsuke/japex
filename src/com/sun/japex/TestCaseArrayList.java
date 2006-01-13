@@ -41,16 +41,16 @@ package com.sun.japex;
 
 import java.util.*;
 
-public class TestCaseArrayList extends ArrayList {
+public class TestCaseArrayList extends ArrayList<TestCaseImpl> {
     
     public TestCaseArrayList() {
     }
     
     public Object clone() {
         TestCaseArrayList result = new TestCaseArrayList();
-        Iterator it = iterator();
+        Iterator<TestCaseImpl> it = iterator();
         while (it.hasNext()) {
-            result.add(((TestCaseImpl) it.next()).clone());
+            result.add((TestCaseImpl) it.next().clone());
         }
         return result;
     }

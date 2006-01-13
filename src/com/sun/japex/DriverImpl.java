@@ -245,20 +245,50 @@ public class DriverImpl extends ParamsImpl implements Driver {
         return _isNormal;
     }
     
+    /**
+     * Compute user-defined parameter closure before serializing each 
+     * test case. By doing so, it is guaranteed that all test cases will 
+     * define all parameters which makes it easy for the HTML report 
+     * to display them in table form.
+     *
+     * Calling getAggregateTestCases() forces call to computeMeans(). This
+     * is necessary before serializing driver params.
+     */
     public void serialize(StringBuffer report, int spaces) {
         report.append(Util.getSpaces(spaces) 
             + "<driver name=\"" + _name + "\">\n");
-        
-       /*
-         * Calling getAggregateTestCases() forces call to computeMeans(). This
-         * is necessary before serializing driver params.
-         */
-        Iterator tci = getAggregateTestCases().iterator();
+
+        // Called before serializing driver params
+        List aggregateTestCases = getAggregateTestCases();
        
         // Serialize driver params
         super.serialize(report, spaces + 2);
 
+        // Collect all user defined parameters for all test cases
+        Iterator tci = aggregateTestCases.iterator();
+        Set<String> userParams = new HashSet<String>();
+        while (tci.hasNext()) {
+            Set<String> testCaseParams = ((TestCaseImpl) tci.next()).nameSet();
+            for (String name : testCaseParams) {
+                if (!name.startsWith("japex.")) {
+                    userParams.add(name);
+                }
+            }
+        }
+        
+        // User param closure: all test cases define the same set
+        tci = aggregateTestCases.iterator();
+        while (tci.hasNext()) {
+            TestCaseImpl tc = (TestCaseImpl) tci.next();
+            for (String name : userParams) {
+                if (!tc.hasParam(name)) {
+                    tc.setParam(name, "n/a");
+                }
+            }
+        }
+        
         // Serialize each test case
+        tci = aggregateTestCases.iterator();
         while (tci.hasNext()) {
             TestCaseImpl tc = (TestCaseImpl) tci.next();
             tc.serialize(report, spaces + 2);
