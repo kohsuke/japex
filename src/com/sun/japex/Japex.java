@@ -172,20 +172,10 @@ public class Japex {
                 }
                 is.close();
                 os.close();                    
-                    
-                // Copy CSS into the same directory
-                URL css = getClass().getResource("/resources/report.css");
-                if (css != null) {
-                    is = css.openStream();
-                    os = new BufferedOutputStream(new FileOutputStream(
-                            new File(outputDir + fileSep + "report.css")));
-                    
-                    while ((c = is.read()) != -1) {
-                        os.write(c);
-                    }
-                    is.close();
-                    os.close();                    
-                }
+              
+                // Copy some resources to output directory
+                copyResource("report.css", outputDir, fileSep);
+                copyResource("small_japex.gif", outputDir, fileSep);
             }
         }
         catch (RuntimeException e) {
@@ -196,4 +186,30 @@ public class Japex {
         }
     }
     
+    private void copyResource(String basename, String outputDir, String fileSep) {
+        InputStream is;
+        OutputStream os;
+        
+        try {
+            int c;
+            URL css = getClass().getResource("/resources/" + basename);
+            if (css != null) {
+                is = css.openStream();
+                os = new BufferedOutputStream(new FileOutputStream(
+                        new File(outputDir + fileSep + basename)));
+
+                while ((c = is.read()) != -1) {
+                    os.write(c);
+                }
+                is.close();
+                os.close();                    
+            }    
+        }
+        catch (RuntimeException e) {
+            throw e;
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
