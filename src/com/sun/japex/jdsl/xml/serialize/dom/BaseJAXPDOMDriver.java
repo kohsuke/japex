@@ -36,9 +36,14 @@
 
 package com.sun.japex.jdsl.xml.serialize.dom;
 
+import com.sun.japex.Constants;
 import com.sun.japex.jdsl.xml.TestCaseUtil;
 import com.sun.japex.JapexDriverBase;
 import com.sun.japex.TestCase;
+import com.sun.japex.jdsl.xml.DriverConstants;
+
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import javax.xml.parsers.DocumentBuilder;
@@ -50,7 +55,7 @@ public abstract class BaseJAXPDOMDriver extends JapexDriverBase {
     protected ByteArrayOutputStream _outputStream; 
     protected DocumentBuilder _builder;
     protected Document _d;
-
+    protected String _xmlFile;
     public void initializeDriver() {
         try {
             DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
@@ -63,18 +68,39 @@ public abstract class BaseJAXPDOMDriver extends JapexDriverBase {
     }
     
     public void prepare(TestCase testCase) {
-        String xmlFile = TestCaseUtil.getXmlFile(testCase);
+        _xmlFile = TestCaseUtil.getXmlFile(testCase);
         
         // Load file into byte array to factor out IO
         try {
-            _d = _builder.parse(new FileInputStream(xmlFile));
+            FileInputStream inputStream = new FileInputStream(_xmlFile);
+            _d = _builder.parse(inputStream);
         } 
         catch (Exception e) {
-            System.err.println(xmlFile);
+            System.err.println(_xmlFile);
             e.printStackTrace();
             throw new RuntimeException(e);
         }
         
         _outputStream = new ByteArrayOutputStream();
     }    
+    public void finish(TestCase testCase) {
+        super.finish(testCase);
+        
+        /*
+         * Add the size of the encoded data as a point on the X axis.
+         * Such data will be used when constructing scatter charts.
+         */
+        try {
+            if (getBooleanParam(DriverConstants.DO_NOT_REPORT_SIZE) == false) {
+                BufferedInputStream bis = new BufferedInputStream(new FileInputStream(_xmlFile));
+                byte[] xmlFileByteArray = com.sun.japex.Util.streamToByteArray(bis);
+                testCase.setDoubleParam(Constants.RESULT_VALUE_X,
+                                        xmlFileByteArray.length / 1024.0);
+                getTestSuite().setParam(Constants.RESULT_UNIT_X, "kbs");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }    
+    
 }
