@@ -104,6 +104,7 @@
                 <include name="*.xsl"/>
                 <include name="*.xsd"/>
                 <include name="*.css"/>
+                <include name="*.gif"/>
             </fileset>
         </copy>
     </target>
