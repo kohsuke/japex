@@ -92,10 +92,8 @@ public abstract class BaseJAXPDOMDriver extends JapexDriverBase {
          */
         try {
             if (getBooleanParam(DriverConstants.DO_NOT_REPORT_SIZE) == false) {
-                BufferedInputStream bis = new BufferedInputStream(new FileInputStream(_xmlFile));
-                byte[] xmlFileByteArray = com.sun.japex.Util.streamToByteArray(bis);
                 testCase.setDoubleParam(Constants.RESULT_VALUE_X,
-                                        xmlFileByteArray.length / 1024.0);
+                                        _outputStream.size() / 1024.0);
                 getTestSuite().setParam(Constants.RESULT_UNIT_X, "kbs");
             }
         } catch (Exception e) {
