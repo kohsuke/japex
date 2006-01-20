@@ -64,7 +64,7 @@ public class Japex {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        if (args.length < 1 || args.length > 4) {
+        if (args.length < 1 || args.length > 3) {
             displayUsageAndExit();
         }
 
@@ -76,9 +76,6 @@ public class Japex {
             }
             else if (args[i].equals("-verbose")) {
                 verbose = true;
-            }
-            else if (args[i].equals("-cp") || args[i].equals("-classpath")) {
-                i++; // Skip, already processed
             }
             else {
                 configFile = args[i];
@@ -93,7 +90,7 @@ public class Japex {
     }
 
     private static void displayUsageAndExit() {
-        System.err.println("Usage: japex [-cp <classpath>] [-verbose] [-nohtml] config.xml");
+        System.err.println("Usage: japex [-verbose] [-nohtml] japex-config-file");
         System.exit(1);        
     }
     

@@ -152,11 +152,7 @@ public class TrendReport {
         }        
     }
     private static void displayUsageAndExit(String[] args) {
-        System.err.println("Usage: TrendReport Title reportPath outputPath [date] [offset] [driver] [test]");
-        System.err.println("Arguments passed in: \n");
-        for (int i=0; i<args.length; i++) {
-            System.err.println(i + " = " + args[i]);
-        }
+        System.err.println("Usage: japex-trend Title reportPath outputPath [date] [offset] [driver] [test]");
         System.exit(1);        
     }
      
