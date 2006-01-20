@@ -90,7 +90,7 @@
 <xsl:template name="resultsPerDriver">
     <h2>Driver: <xsl:value-of select="@name"/></h2>
     
-    <xsl:if test="*[not(@name) and namespace-uri(.)='']"/>
+    <xsl:if test="*[not(@name) and namespace-uri(.)='']">
         <p>
           <ul>
           <xsl:for-each select="*[not(@name) and namespace-uri(.)='']">
@@ -101,7 +101,7 @@
           </xsl:for-each>
           </ul>
         </p>
-    </xsl:fi>
+    </xsl:if>
       
     <table width="80%" border="1">
         <thead>
