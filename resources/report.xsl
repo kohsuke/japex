@@ -8,7 +8,7 @@
    <html xmlns="http://www.w3.org/1999/xhtml">
    <link href="report.css" type="text/css" rel="stylesheet"/>
 
-   <head>
+   <body>
    <table border="0" cellpadding="2">
        <tr>
            <td valign="middle" width="90"><p>
@@ -19,9 +19,7 @@
            <td valign="middle"><h1>Japex Report: <xsl:value-of select="@name"/></h1></td>  
        </tr>
    </table>
-   </head>
    
-   <body>
     <h2>Global Parameters</h2>
       <ul>
       <xsl:for-each select="*[not(@name)]">
