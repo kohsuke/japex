@@ -119,6 +119,19 @@
         
 	<createManifest file="${basedir}/build/manifest.rt"/>
 
+        <copy todir="dist/bin/">
+            <fileset dir="bin">
+                <include name="*.sh"/>
+                <include name="*.bat"/>
+            </fileset>
+        </copy>
+	<chmod perm="ugo+x">
+            <fileset dir="bin">
+                <include name="*.sh"/>
+                <include name="*.bat"/>
+            </fileset>
+	</chmod>
+
         <jar jarfile="dist/lib/${app.jar}" 
              basedir="build/classes/"
              excludes="com/sun/japex/jdsl/**"
