@@ -4,6 +4,8 @@
                 xmlns:extrep="http://www.sun.com/japex/extendedTestSuiteReport"
                 version='1.0'>
 
+<xsl:output method="xml" indent="true"/>
+     
 <xsl:template match="rep:testSuiteReport">
    <html xmlns="http://www.w3.org/1999/xhtml">
    <link href="report.css" type="text/css" rel="stylesheet"/>
@@ -88,16 +90,18 @@
 <xsl:template name="resultsPerDriver">
     <h2>Driver: <xsl:value-of select="@name"/></h2>
     
-    <p>
-      <ul>
-      <xsl:for-each select="*[not(@name) and namespace-uri(.)='']">
-          <xsl:sort select="name()"/>
-          <li><xsl:value-of select="name()"/>
-              <xsl:text>: </xsl:text>
-              <xsl:value-of select="."/></li>
-      </xsl:for-each>
-      </ul>
-    </p>
+    <xsl:if test="*[not(@name) and namespace-uri(.)='']"/>
+        <p>
+          <ul>
+          <xsl:for-each select="*[not(@name) and namespace-uri(.)='']">
+              <xsl:sort select="name()"/>
+              <li><xsl:value-of select="name()"/>
+                  <xsl:text>: </xsl:text>
+                  <xsl:value-of select="."/></li>
+          </xsl:for-each>
+          </ul>
+        </p>
+    </xsl:fi>
       
     <table width="80%" border="1">
         <thead>
