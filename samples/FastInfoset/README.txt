@@ -4,6 +4,9 @@ Japex Sample
 
 Running: 
 
+ Ensure that JAPEX_HOME is set to point to the Japex distribution 
+ directory. And,
+
  >> ant -Dconfig=... run
  
  where "..." stands for any of the configuration files '*-config.xml'.

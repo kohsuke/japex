@@ -4,7 +4,7 @@
     <property name="config" value="speed-config.xml"/>
     
     <path id="class.path">
-        <fileset dir="../../dist/lib/" includes="*.jar"/>
+        <fileset dir="${env.JAPEX_HOME}/lib/" includes="*.jar"/>
     </path>
     
     <target name="run">
