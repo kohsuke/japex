@@ -18,9 +18,24 @@ Introduction:
 
 Building:
 
- It is recommended to set the environment variable JAPEX_HOME to point
- to the installation directory. Japex depends on JFreeChart [2], see
- ./lib/jfreechart.
+ You MUST set the variable JAPEX_HOME to point to the Japex distribution
+ directory. For a CVS source tree, this means setting JAPEX_HOME to 
+ point to the 'dist' directory which is created as part of the build
+ process. For a binary distribution tree, this means setting JAPEX_HOME
+ to point to the root directory of the installation.
+
+ The binary distribution tree contains two directories with jar files
+ (some of which are duplicated). These are 'lib' and 'jdsl'. The former
+ is intended to be used to set the class path in an Ant script that is
+ necessary to start up the harness. The latter is typically used in 
+ a Japex config file, for example:
+
+ <param name="japex.classPath" value="${JAPEX_HOME}/jdsl/*.jar"/>
+
+ This is only needed if the benchmarks uses any of the drivers in the
+ JDSL (Japex Driver Standard Library). Note that if your benchmark
+ extends any of the drivers in JDSL, jar files from 'jdsl' will be
+ needed at compilation time as well.
  
 Type:
 
