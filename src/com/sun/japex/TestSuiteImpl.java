@@ -189,7 +189,14 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
             while (driverParamsIt.hasNext()) {
                 com.sun.japex.testsuite.ParamType pt = 
                     (com.sun.japex.testsuite.ParamType) driverParamsIt.next();
-                driverInfo.setParam(pt.getName(), pt.getValue());
+                String name = pt.getName();
+                String value = pt.getValue();
+                String oldValue = driverInfo.getParam(name);
+                
+                // If japex.classPath, append to existing value
+                driverInfo.setParam(name, 
+                    name.equals(Constants.CLASS_PATH) && oldValue != null ?
+                    (oldValue + pathSep + value) : value);
             }
             
             // If japex.driverClass not specified, use the driver's name
