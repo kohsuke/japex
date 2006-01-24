@@ -54,8 +54,6 @@ public class ReportFilter implements FileFilter {
     public ReportFilter(Date from, Date to) {
         _from = from;
         _to = to;
-//System.out.println("from:" + _from);        
-//System.out.println("to:" + _to);        
     }
     /*
     public ReportFilter(String from, String to) {
@@ -73,7 +71,6 @@ public class ReportFilter implements FileFilter {
         if (pathname.isDirectory()) {
             long date = pathname.lastModified();
             if (date >= _from.getTime() && date <= _to.getTime()) {
-//System.out.println("Filterd: "+new Date(pathname.lastModified()));
                 return true;
             }
         }
