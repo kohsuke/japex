@@ -4,7 +4,7 @@
                 xmlns:extrep="http://www.sun.com/japex/extendedTestSuiteReport"
                 version='1.0'>
 
-<xsl:output method="xml" indent="true"/>
+<xsl:output method="xml" indent="yes"/>
      
 <xsl:template match="rep:testSuiteReport">
    <html xmlns="http://www.w3.org/1999/xhtml">
