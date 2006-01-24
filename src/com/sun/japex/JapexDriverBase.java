@@ -48,15 +48,15 @@ import java.util.List;
 
 public class JapexDriverBase implements JapexDriver, Params {
     
-    private Driver _driver;    
-    private TestSuiteImpl _testSuite;    
-    private TestCaseImpl _testCase;
+    protected Driver _driver;    
+    protected TestSuiteImpl _testSuite;    
+    protected TestCaseImpl _testCase;
     
-    private boolean _needWarmup = true;
+    protected boolean _needWarmup = true;
     
-    private List<GarbageCollectorMXBean> _gCCollectors;
+    protected List<GarbageCollectorMXBean> _gCCollectors;
     
-    private long _gCTime;
+    protected long _gCTime;
     
     public JapexDriverBase() {
         _gCCollectors = ManagementFactory.getGarbageCollectorMXBeans();
@@ -210,7 +210,7 @@ public class JapexDriverBase implements JapexDriver, Params {
         }
     }
     
-    private List<Long> getGCAbsoluteTimes() {
+    protected List<Long> getGCAbsoluteTimes() {
         List<Long> gCTimes = new ArrayList();
         for (GarbageCollectorMXBean gcc : _gCCollectors) {
             gCTimes.add(gcc.getCollectionTime());
@@ -219,7 +219,7 @@ public class JapexDriverBase implements JapexDriver, Params {
         return gCTimes;
     }
     
-    private long getGCRelativeTotalTime(List<Long> start) {
+    protected long getGCRelativeTotalTime(List<Long> start) {
         List<Long> end = getGCAbsoluteTimes();
         
         long time = 0;
