@@ -90,11 +90,6 @@ class JapexClassLoader extends URLClassLoader {
         }
     }
     
-    /**
-     * Initializes the Japex class loader. A single class loader will be
-     * created for all drivers. Thus, if japex.classPath is defined as
-     * a driver's property, it will be ignored.
-     */ 
     private void initialize(String classPath) {
         if (classPath == null) {
             return;
