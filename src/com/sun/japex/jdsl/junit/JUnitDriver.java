@@ -1,5 +1,7 @@
 /*
  * Japex ver. 1.0 software ("Software")
+/*
+ * Japex ver. 1.0 software ("Software")
  * 
  * Copyright, 2004-2005 Sun Microsystems, Inc. All Rights Reserved.
  * 
@@ -88,8 +90,8 @@ public class JUnitDriver extends JapexDriverBase {
     
     public void prepare(TestCase testCase) {
         try {
-            _testName = testCase.getParam("testName").intern();
-            _methodName = testCase.getParam("methodName").intern();
+            _testName = testCase.getParam("testName");
+            _methodName = testCase.getParam("methodName");
         
             // Use class loader that loaded this class
             Class testClass = getClass().getClassLoader().loadClass(_testName);
