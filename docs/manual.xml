@@ -43,8 +43,9 @@
             different driver is required for each implementation under test. For example, if XML
             parsing is the algorithm under test and parsers X, Y and Z are being evaluated, a
             different driver must be provided for each implementation. </para>
-        <para> A driver is a Java class that extends <token>JapexDriverBase</token>, which in turn
-            implements the interface <token>JapexDriver</token> shown below. <example>
+        <para> A driver is a Java class that <emphasis>must</emphasis> extend
+            <token>JapexDriverBase</token>, which is a class that in turn implements the interface
+                <token>JapexDriver</token> shown below. <example>
                 <title>JapexDriver Interface</title>
                 <programlisting><![CDATA[    public interface JapexDriver extends Runnable {
       
@@ -60,38 +61,65 @@
         </programlisting>
             </example>
         </para>
-        <para> The method <token>initializeDriver()</token> is called when the driver is loaded into
-            memory; the method <token>terminateDriver()</token> is called when all the results for
-            the driver have been computed. The other methods define the four
-            <emphasis>phases</emphasis> carried out by Japex for the generation of the output
-            report. </para>
+        <para>The method <token>initializeDriver()</token> is called whenever a driver class is
+            instantiated; the method <token>terminateDriver()</token> is called when all the results
+            for a driver instance are computed and the instance is no longer needed. A driver class
+            may be instantiated multiple times, so even though these two methods are guaranteed to
+            be called once per instance, they are not guaranteed to be called once per driver class.
+            Multiple driver instances are created whenever the number of threads is greater than one
+            (c.f., parameter <token>japex.numberOfThreads</token>) or the number of runs per driver
+            is greater than one (c.f., <token>japex.runsPerDriver</token>), or both. The remainder
+            of the other methods define the four <emphasis>phases</emphasis> carried out by Japex
+            for the generation of the output report.</para>
         <para>The <token>prepare()</token> method defines a similarly named phase in which drivers
             set up their initial state. For example, a driver can load its input data into memory to
-            avoid I/O during the subsequent two phases.</para>
+            avoid I/O during the subsequent two phases. The prepare phase is always executed using a
+            single thread. </para>
         <para>The <token>warmup()</token> method is called during the warmup phase in which the
             inner loop of the computation is carried out a number of times in order to warm up the
-            VM. The duration of this phase is regulated by the global parameters
-            'japex.warmupIterations' and 'japex.warmupTime' (the latter taking precedence over the
-            former if both are specified). </para>
+            Virtual Machine (VM). The duration of this phase can be controlled by the global
+            parameters <token>japex.warmupIterations</token> and <token>japex.warmupTime</token>,
+            with the latter taking precedence over the former if both are specified. The number of
+            iterations or time set using these parameters is <emphasis>for each test
+            case</emphasis>. Thus, if for example <token>japex.warmupTime</token> is set to 10
+            seconds and there are N test cases in the test suite (see Section <link
+                linkend="TestSuites">[Test Suites]</link>), the overall duration of this phase will
+            be 10 * N seconds <emphasis>per driver</emphasis>. The default implementation of the
+                <token>warmup()</token> method is to call the <token>run()</token> method explained
+            next. The warmup phase is carried out in as many threads as defined by the
+                <token>japex.numberOfThreads</token> parameter. Executing the warmup phase using
+            multiple threads is particularly useful for client-server benchmarks in which
+            server-side threads need to be started and warmed.</para>
         <para>The <token>run()</token> method is intended to execute the inner loop under test. For
             some drivers, this method will be identical to <token>warmup()</token>, but there are
-            cases in which additional steps may be necessary during the run phase. The other
-            difference is that the <token>run()</token> method will be executed concurrently
-            whenever the value of the global param 'japex.numberOfThreads' is greater than one. In
-            fact, the <token>run()</token> method is the only method executed concurrently, all the
-            others will be called from Japex' main thread.</para>
+            cases in which additional steps may be necessary during the run phase. The duration of
+            this phase can be controlled by the parameters <token>japex.runIterations</token> and
+                <token>japex.runTime</token>, with the latter taking precedence over the former if
+            both are specified. As it was the case for the corresponding warmup parameters, these
+            two parameters refer to the number of iterations or the amount of time on a per test
+            case bases. Like the warmup phase, the run phase will be carried out using
+                <token>japex.numberOfThreads</token> threads.</para>
         <para>Finally, the <token>finish()</token> method defines the last execution phase. Japex
-            will set the value of the test case parameter 'japex.actualRunTime' after the run phase
-            is completed but before the finish phase is started. Therefore, the
-            <token>finish()</token> method can be used to override the default behavior which is to
-            compute a per test throughput in TPS, where a transaction is defined to be a single call
-            to <token>run()</token>. Whatever result is computed in this method must be of numeric
-            type and must be used to set the output parameter 'japex.resultValue'. If the default
-            result unit of TPS does not apply, the driver should also set the value of
-            'japex.resultUnit' (since this unit is the same for all drivers, this parameter can also
-            be set globally in Japex' input file).</para>
+            will set the value of the test case parameter <token>japex.actualRunTime</token> after
+            the run phase is completed but before the finish phase is started. Therefore, the
+                <token>finish()</token> method can be used to override the default behavior which is
+            to compute a per test throughput in Transactions Per Second (TPS), where a transaction
+            is defined to be a single call to <token>run()</token>. Whatever result is computed in
+            this method must be of numeric type and must be used to set the output parameter
+                <token>japex.resultValue</token>. If the default result unit of TPS does not apply,
+            the driver should also set the value of <token>japex.resultUnit</token> (since this unit
+            is the same for all drivers, this parameter can also be set globally in Japex input
+            file). </para>
+        <para>There are in fact two result values and two results units, one for the Y axis and one
+            for the X axis. The parameters <token>japex.resultValue</token> and
+                <token>japex.resultUnit</token> are synonyms for the Y axis parameters
+                <token>japex.resultValueY</token> and <token>japex.resultUnitY</token>; the
+            parameters <token>japex.resultValueX</token> and <token>japex.resultUnitX</token> can
+            also be set and will be used by Japex for displaying two-dimensional data in certain
+            types of charts. Note that unlike the Y axis parameters, neither of the X axis
+            parameters are automatically computed by Japex.</para>
     </sect1>
-    <sect1>
+    <sect1 id="TestSuites">
         <title>Test Suites</title>
         <para>Test suites are described using a single configuration file written in XML. This file
             includes information such as runtime class path, drivers and test cases. A driver
@@ -101,12 +129,12 @@
             must be provided for each implementation.</para>
         <para> A sample configuration file is shown below: <example>
                 <title>Sample Configuration File</title>
-                <programlisting><![CDATA[    <testSuite name="ParsingPerformance" xmlns="http://www.sun.com/japex/testSuite">
+                <programlisting><![CDATA[    <testSuite name="Sample Test Suite" xmlns="http://www.sun.com/japex/testSuite">
         <param name="libraryDir" value="lib"/>
         <param name="japex.classPath" value="${libraryDir}/../dist/classes"/>
                 
-        <param name="japex.warmupIterations" value="100"/>
-        <param name="japex.runIterations" value="200"/>
+        <param name="japex.warmupTime" value="10"/>
+        <param name="japex.runTime" value="10"/>
                 
         <driver name="XDriver">
             <param name="Description" value="Driver for X parser"/>
@@ -122,22 +150,30 @@
         </driver>
                 
         <testCase name="file1.xml">
-            <param name="xmlfile" value="data/file1.xml"/>
+            <param name="japex.inputFile" value="data/file1.xml"/>
         </testCase>
         <testCase name="file2.xml">
-             <param name="xmlfile" value="data/file2.xml"/>
+             <param name="japex.inputFile" value="data/file2.xml"/>
         </testCase>
     </testSuite>]]></programlisting>
             </example>
         </para>
-        <para> A test suite's configuration file is defined as a sequence of zero or more global
+        <para> A test suite configuration file is defined as a sequence of zero or more global
             parameters followed by a sequence of one or more drivers and then followed by a sequence
             of one or more test cases. Correspondingly, there are three kinds of parameters: global,
-            driver and test case paremeters. Parameters whose names start with the string "japex."
-            are reserved and assigned specific meanings by Japex. For example, setting
-            "japex.runIterations" to "200" will result in all test cases of the test suite to be
-            executed 200 times. A list of reserved global parameters is included in Section <link
-                linkend="Reference">[Reference]</link>.</para>
+            driver and test case paremeters. The location of a parameter definition in a config file
+            determines its kind and scope. Global parameters are defined as immediate children of
+                <token>&lt;testSuite&gt;</token>, driver parameters are defined as immediate
+            children of <token>&lt;driver&gt;</token> and test case parameters are defined
+            as immediate children of <token>&lt;testCase&gt;</token>. Moreover, a driver
+            parameter or a test case parameter can override a global parameter of the same name.
+            However, test case parameters cannot override driver parameters (or vice-versa) since,
+            being XML siblings, their scope is disjoint.</para>
+        <para>Parameters whose names start with the prefix <token>japex.</token> are reserved and
+            assigned specific meanings by Japex, regardless of their kind. The reader is referred to
+            Section <link linkend="Reference">[Reference]</link> for the list of reserved
+            parameters.</para>
+        <para/>
     </sect1>
     <sect1>
         <title>Normalizing Results</title>
@@ -362,8 +398,8 @@
                         unique directory in which the reports are stored. TYPE: output.</para>
                 </listitem>
                 <listitem>
-                    <para> japex.configFile: Name of the configuration file used for this run. 
-                           TYPE: output.</para>
+                    <para> japex.configFile: Name of the configuration file used for this run. TYPE:
+                        output.</para>
                 </listitem>
             </itemizedlist>
         </sect2>

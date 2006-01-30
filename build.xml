@@ -50,6 +50,11 @@
         <pathelement location="dist/${app.jar}"/>
     </path>
     
+    <path id="jni.class.path">
+        <path refid="compile.class.path"/>
+        <pathelement location="build/classes"/>
+    </path>
+    
     <target name="clean">
         <delete dir="dist"/>
         <delete dir="build"/>

@@ -5,8 +5,8 @@
     <param name="japex.classPath" value="${JAPEX_HOME}/jdsl/*.jar"/>
     
     <param name="japex.resultUnit" value="ms"/>
-    <param name="japex.warmupTime" value="10"/>
-    <param name="japex.runTime" value="10"/>
+    <param name="japex.warmupTime" value="0"/>
+    <param name="japex.runTime" value="1"/>
 
     <driver name="JUnitDriver">
         <param name="japex.driverClass" value="com.sun.japex.jdsl.junit.JUnitDriver"/>

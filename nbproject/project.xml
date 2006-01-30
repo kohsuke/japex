@@ -58,7 +58,7 @@
             </compilation-unit>
             <compilation-unit>
                 <package-root>src</package-root>
-                <classpath mode="compile">lib/jfreechart/jcommon-1.0.0-rc1.jar:lib/jfreechart/jfreechart-1.0.0-rc1.jar:lib/jwsdp/activation.jar:lib/jwsdp/ant.jar:lib/jwsdp/FastInfoset.jar:lib/jwsdp/jaxb-api.jar:lib/jwsdp/jaxb-impl.jar:lib/jwsdp/jaxb-xjc.jar:lib/jwsdp/jaxb1-impl.jar:lib/jwsdp/jsr173_api.jar:lib/jwsdp/resolver.jar:lib/jwsdp/sjsxp.jar:lib/jwsdp/xalan.jar:lib/jwsdp/xercesImpl.jar:lib/jwsdp/xml-apis.jar</classpath>
+                <classpath mode="compile">lib/jfreechart/jcommon-1.0.0-rc1.jar:lib/jfreechart/jfreechart-1.0.0-rc1.jar:lib/jwsdp/activation.jar:lib/jwsdp/ant.jar:lib/jwsdp/FastInfoset.jar:lib/jwsdp/jaxb-api.jar:lib/jwsdp/jaxb-impl.jar:lib/jwsdp/jaxb-xjc.jar:lib/jwsdp/jaxb1-impl.jar:lib/jwsdp/jsr173_api.jar:lib/jwsdp/resolver.jar:lib/jwsdp/sjsxp.jar:lib/jwsdp/xalan.jar:lib/jwsdp/xercesImpl.jar:lib/jwsdp/xml-apis.jar:lib/jdsl/junit.jar</classpath>
                 <source-level>1.5</source-level>
             </compilation-unit>
         </java-data>
