@@ -12,6 +12,10 @@ JNIEXPORT void JNICALL Java_com_sun_japex_jdsl_nativecode_JapexNativeDriver_init
   (JNIEnv *env, jobject this) 
 {
     printf("JapexNativeDriverOne: initializeDriver()\n");
+
+    /* THROWING AN EXCEPTION IN JNI ------
+    jclass exceptionClass = (*env)->FindClass(env, "java/lang/RuntimeException");
+    (*env)->ThrowNew(env, exceptionClass, "Error found!"); */
 }
 
 /*
