@@ -3,6 +3,9 @@
 #include <sys/time.h>
 #include <com_sun_japex_jdsl_nativecode_JapexNativeDriver.h>
 
+void setLongParam(JNIEnv *env, jobject this, const char *name, long value);
+long getLongParam(JNIEnv *env, jobject this, const char *name);
+
 /*
  * Class:     com_sun_japex_jdsl_nativecode_JapexNativeDriver
  * Method:    initializeDriver
@@ -13,7 +16,7 @@ JNIEXPORT void JNICALL Java_com_sun_japex_jdsl_nativecode_JapexNativeDriver_init
 {
     printf("JapexNativeDriverOne: initializeDriver()\n");
 
-    /* THROWING AN EXCEPTION IN JNI ------
+    /* --- THE FOLLOWING TWO LINES SHOW HOW TO THROW A RUNTIME EXCEPTION --- 
     jclass exceptionClass = (*env)->FindClass(env, "java/lang/RuntimeException");
     (*env)->ThrowNew(env, exceptionClass, "Error found!"); */
 }
@@ -73,7 +76,29 @@ JNIEXPORT void JNICALL Java_com_sun_japex_jdsl_nativecode_JapexNativeDriver_term
     printf("JapexNativeDriverOne: terminateDriver()\n");
 }
 
-/* ---------------------- DO NOT EDIT BELOW THIS LINE ---------------------------- */
+/* --- THE FOLLOWING TWO METHODS SHOW HOW TO ACCESS DRIVER PARAMS ----- */
+
+void setLongParam(JNIEnv *env, jobject this, const char *name, long value) 
+{
+    jclass cls;
+    jmethodID mid;
+
+    cls = (*env)->GetObjectClass(env, this);
+    mid = (*env)->GetMethodID(env, cls, "setLongParam", "(Ljava/lang/String;J)V");
+    (*env)->CallVoidMethod(env, this, mid, (*env)->NewStringUTF(env, name), value);
+}
+
+long getLongParam(JNIEnv *env, jobject this, const char *name) 
+{
+    jclass cls;
+    jmethodID mid;
+
+    cls = (*env)->GetObjectClass(env, this);
+    mid = (*env)->GetMethodID(env, cls, "getLongParam", "(Ljava/lang/String;)J");
+    return (*env)->CallLongMethod(env, this, mid, (*env)->NewStringUTF(env, name));
+}
+
+/* ---------------------- DO NOT EDIT BELOW THIS LINE ------------------ */
 
 jlong timeMillis() {
     struct timeval t;
