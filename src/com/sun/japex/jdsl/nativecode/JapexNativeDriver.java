@@ -96,12 +96,13 @@ public class JapexNativeDriver extends JapexDriverBase {
         int runIterations = 0;
         String runTime = tc.getParam(Constants.RUN_TIME);
         if (runTime != null) {
-            runIterations = runLoopDuration(Util.parseDuration(runTime));
+            runIterations = runLoopDuration(Util.parseDuration(runTime),
+                                            _userData);
         }
         else {
             // Adjust runIterations based on number of threads
             runIterations = tc.getIntParam(Constants.RUN_ITERATIONS) / nOfThreads;
-	    runLoopIterations(runIterations);
+	    runLoopIterations(runIterations, _userData);
         }
 
         // Get the total time take for GC over the measurement period
@@ -119,48 +120,74 @@ public class JapexNativeDriver extends JapexDriverBase {
 
     // JapexDriver Interface ---------------------------------------------
     
+    protected Object _userData = null;
+    
     /**
      * Called once when the class is loaded.
      */
-    native public void initializeDriver();
+    public void initializeDriver() {
+        _userData = initializeDriver(_userData);
+    }
+  
+    native public Object initializeDriver(Object userData);
     
     /**
      * Execute prepare phase. 
      */
-    native public void prepare(TestCase testCase);
+    public void prepare(TestCase testCase) {
+        prepare(testCase, _userData);
+    }
+    
+    native public void prepare(TestCase testCase, Object userData);
     
     /**
      * Called once or more for every test, before calling run. Default 
      * implementation is to call run().
      */
-    native public void warmup(TestCase testCase);
+    public void warmup(TestCase testCase) {
+        warmup(testCase, _userData);
+    }
+    
+    native public void warmup(TestCase testCase, Object userData);
     
     /**
      * Called once or more for every test to obtain perf data.
      *
      */
-    native public void run(TestCase testCase);
+    public void run(TestCase testCase) {
+        run(testCase, _userData);
+    }
+    
+    native public void run(TestCase testCase, Object userData);
     
     /**
      * Called exactly once after calling run. 
      */
-    native public void finish(TestCase testCase);
+    public void finish(TestCase testCase) {
+        finish(testCase, _userData);
+    }
+    
+    native public void finish(TestCase testCase, Object userData);
     
     /**
      * Called after all tests are completed.
      */
-    native public void terminateDriver();        
+    public void terminateDriver() {
+        terminateDriver(_userData);
+    }        
+    
+    native public void terminateDriver(Object userData);
     
     // Internal JNI Interface --------------------------------------------
     
     /**
      * Called for looping over a specified duration
      */
-    native public int runLoopDuration(long duration);
+    native public int runLoopDuration(long duration, Object userData);
 
     /**
      * Called for looping over a specified number iterations
      */
-    native public void runLoopIterations(int iterations);
+    native public void runLoopIterations(int iterations, Object userData);
     
 }
