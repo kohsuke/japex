@@ -1,20 +1,87 @@
 
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include <sys/time.h>
 #include <com_sun_japex_jdsl_nativecode_JapexNativeDriver.h>
 
+/*
+ * These functions are defined towards the bottom of this file
+ */
+jobject userDataToObject(JNIEnv *env, void *userData, int size);
+void* objectToUserData(JNIEnv *env, jobject object);
 void setLongParam(JNIEnv *env, jobject this, const char *name, long value);
 long getLongParam(JNIEnv *env, jobject this, const char *name);
 
 /*
+ * Sample UserData struct
+ */
+struct UserData {
+    char *s;
+    int n;
+};
+
+/*
  * Class:     com_sun_japex_jdsl_nativecode_JapexNativeDriver
  * Method:    initializeDriver
- * Signature: ()V
+ * Signature: (Ljava/lang/Object;)V
+ *
+ * Default value of userData is null when this function is called.
  */
-JNIEXPORT void JNICALL Java_com_sun_japex_jdsl_nativecode_JapexNativeDriver_initializeDriver
-  (JNIEnv *env, jobject this) 
+JNIEXPORT jobject JNICALL Java_com_sun_japex_jdsl_nativecode_JapexNativeDriver_initializeDriver
+  (JNIEnv *env, jobject this, jobject userData) 
 {
     printf("JapexNativeDriverOne: initializeDriver()\n");
+
+    /*
+     * Create and initialize an instance of UserData. Use 
+     * userDataToObject() to return it as a Java object.
+     */
+    struct UserData *ud = (struct UserData*) malloc(sizeof(struct UserData));
+    ud->n = 5;
+    ud->s = (char *) malloc(ud->n + 1);
+    strcpy(ud->s, "Hello");
+    return userDataToObject(env, ud, sizeof(struct UserData));
+}
+
+/*
+ * Class:     com_sun_japex_jdsl_nativecode_JapexNativeDriver
+ * Method:    prepare
+ * Signature: (Lcom/sun/japex/TestCase;Ljava/lang/Object;)V
+ */
+JNIEXPORT void JNICALL Java_com_sun_japex_jdsl_nativecode_JapexNativeDriver_prepare
+  (JNIEnv *env, jobject this, jobject testCase, jobject userData) 
+{
+    printf("JapexNativeDriverOne: prepare()\n");
+
+    /*
+     * Convert Java object to UserData instance and access
+     * members set in initializeDriver() function.
+     */
+    struct UserData *ud = objectToUserData(env, userData);
+    printf("userdata = (%s, %d)\n", ud->s, ud->n);
+}
+
+/*
+ * Class:     com_sun_japex_jdsl_nativecode_JapexNativeDriver
+ * Method:    warmup
+ * Signature: (Lcom/sun/japex/TestCase;Ljava/lang/Object;)V
+ */
+JNIEXPORT void JNICALL Java_com_sun_japex_jdsl_nativecode_JapexNativeDriver_warmup
+  (JNIEnv *env, jobject this, jobject testCase, jobject userData) 
+{
+    printf("JapexNativeDriverOne: warmup()\n");
+}
+
+/*
+ * Class:     com_sun_japex_jdsl_nativecode_JapexNativeDriver
+ * Method:    run
+ * Signature: (Lcom/sun/japex/TestCase;Ljava/lang/Object;)V
+ */
+JNIEXPORT void JNICALL Java_com_sun_japex_jdsl_nativecode_JapexNativeDriver_run
+  (JNIEnv *env, jobject this, jobject testCase, jobject userData) 
+{
+    printf("JapexNativeDriverOne: run()\n");
 
     /* --- THE FOLLOWING TWO LINES SHOW HOW TO THROW A RUNTIME EXCEPTION --- 
     jclass exceptionClass = (*env)->FindClass(env, "java/lang/RuntimeException");
@@ -23,44 +90,11 @@ JNIEXPORT void JNICALL Java_com_sun_japex_jdsl_nativecode_JapexNativeDriver_init
 
 /*
  * Class:     com_sun_japex_jdsl_nativecode_JapexNativeDriver
- * Method:    prepare
- * Signature: (Lcom/sun/japex/TestCase;)V
- */
-JNIEXPORT void JNICALL Java_com_sun_japex_jdsl_nativecode_JapexNativeDriver_prepare
-  (JNIEnv *env, jobject this, jobject testCase) 
-{
-    printf("JapexNativeDriverOne: prepare()\n");
-}
-
-/*
- * Class:     com_sun_japex_jdsl_nativecode_JapexNativeDriver
- * Method:    warmup
- * Signature: (Lcom/sun/japex/TestCase;)V
- */
-JNIEXPORT void JNICALL Java_com_sun_japex_jdsl_nativecode_JapexNativeDriver_warmup
-  (JNIEnv *env, jobject this, jobject testCase) 
-{
-    printf("JapexNativeDriverOne: warmup()\n");
-}
-
-/*
- * Class:     com_sun_japex_jdsl_nativecode_JapexNativeDriver
- * Method:    run
- * Signature: (Lcom/sun/japex/TestCase;)V
- */
-JNIEXPORT void JNICALL Java_com_sun_japex_jdsl_nativecode_JapexNativeDriver_run
-  (JNIEnv *env, jobject this, jobject testCase) 
-{
-    printf("JapexNativeDriverOne: run()\n");
-}
-
-/*
- * Class:     com_sun_japex_jdsl_nativecode_JapexNativeDriver
  * Method:    finish
- * Signature: (Lcom/sun/japex/TestCase;)V
+ * Signature: (Lcom/sun/japex/TestCase;Ljava/lang/Object;)V
  */
 JNIEXPORT void JNICALL Java_com_sun_japex_jdsl_nativecode_JapexNativeDriver_finish
-  (JNIEnv *env, jobject this, jobject testCase) 
+  (JNIEnv *env, jobject this, jobject testCase, jobject userData) 
 {
     printf("JapexNativeDriverOne: finish()\n");
 }
@@ -68,15 +102,21 @@ JNIEXPORT void JNICALL Java_com_sun_japex_jdsl_nativecode_JapexNativeDriver_fini
 /*
  * Class:     com_sun_japex_jdsl_nativecode_JapexNativeDriver
  * Method:    terminateDriver
- * Signature: ()V
+ * Signature: (Ljava/lang/Object;)V
  */
 JNIEXPORT void JNICALL Java_com_sun_japex_jdsl_nativecode_JapexNativeDriver_terminateDriver
-  (JNIEnv *env, jobject this) 
+  (JNIEnv *env, jobject this, jobject userData) 
 {
     printf("JapexNativeDriverOne: terminateDriver()\n");
+
+    /*
+     * Free memory allocated for the UserData instance.
+     */
+    struct UserData *ud = objectToUserData(env, userData);
+    free(ud);
 }
 
-/* --- THE FOLLOWING TWO METHODS SHOW HOW TO ACCESS DRIVER PARAMS ----- */
+/* ---- THE FOLLOWING TWO METHODS SHOW HOW TO ACCESS DRIVER PARAMS ----- */
 
 void setLongParam(JNIEnv *env, jobject this, const char *name, long value) 
 {
@@ -98,7 +138,17 @@ long getLongParam(JNIEnv *env, jobject this, const char *name)
     return (*env)->CallLongMethod(env, this, mid, (*env)->NewStringUTF(env, name));
 }
 
-/* ---------------------- DO NOT EDIT BELOW THIS LINE ------------------ */
+/* ------- UTILITY METHODS TO CONVERT DIRECT BUFFERS INTO OBJECTS ------ */
+
+jobject userDataToObject(JNIEnv *env, void *userData, int size) {
+    return (*env)->NewDirectByteBuffer(env, userData, size);
+}
+
+void* objectToUserData(JNIEnv *env, jobject object) {
+    return (*env)->GetDirectBufferAddress(env, object);
+}
+
+/* --------------------- DO NOT EDIT BELOW THIS LINE ------------------- */
 
 jlong timeMillis() {
     struct timeval t;
@@ -112,7 +162,7 @@ jlong timeMillis() {
  * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_com_sun_japex_jdsl_nativecode_JapexNativeDriver_runLoopDuration
-  (JNIEnv *env, jobject this, jlong duration) 
+  (JNIEnv *env, jobject this, jlong duration, jobject userData) 
 {
     jclass cls;
     jfieldID fid;
@@ -129,7 +179,7 @@ JNIEXPORT jint JNICALL Java_com_sun_japex_jdsl_nativecode_JapexNativeDriver_runL
     jlong currentTime = 0;
     jint iterations = 0;
     do {
-        Java_com_sun_japex_jdsl_nativecode_JapexNativeDriver_run(env, this, _testCase);
+        Java_com_sun_japex_jdsl_nativecode_JapexNativeDriver_run(env, this, _testCase, userData);
         iterations++;
         currentTime = timeMillis();
     } while (endTime >= currentTime);
@@ -143,7 +193,7 @@ JNIEXPORT jint JNICALL Java_com_sun_japex_jdsl_nativecode_JapexNativeDriver_runL
  * Signature: (I)V
  */
 JNIEXPORT void JNICALL Java_com_sun_japex_jdsl_nativecode_JapexNativeDriver_runLoopIterations
-  (JNIEnv *env, jobject this, jint iterations) 
+  (JNIEnv *env, jobject this, jint iterations, jobject userData) 
 {
     jclass cls;
     jfieldID fid;
@@ -156,7 +206,6 @@ JNIEXPORT void JNICALL Java_com_sun_japex_jdsl_nativecode_JapexNativeDriver_runL
 
     int i;
     for (i = 0; i < iterations; i++) {
-        Java_com_sun_japex_jdsl_nativecode_JapexNativeDriver_run(env, this, _testCase);
+        Java_com_sun_japex_jdsl_nativecode_JapexNativeDriver_run(env, this, _testCase, userData);
     }
 }
-
