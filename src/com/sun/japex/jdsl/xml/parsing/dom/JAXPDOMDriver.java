@@ -57,6 +57,7 @@ public class JAXPDOMDriver extends BaseParserDriver {
     public void initializeDriver() {
         try {
             _builderFactory = createDocumentBuilderFactory();
+            _builderFactory.setNamespaceAware(true);
             _traverseNodes = getBooleanParam(DriverConstants.TRAVERSE_NODES);
             _builderFactory.setAttribute("http://apache.org/xml/features/dom/defer-node-expansion", 
                     getBooleanParam(DriverConstants.DEFER_NODE_EXPANSION));
