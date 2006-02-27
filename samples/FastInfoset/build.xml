@@ -16,7 +16,9 @@
     </target>
     
     <target name="debug-nb">
+        <property name="src.folders" value="./src:./src/binding:../../src:../../src/binding"/>
         <path id="cp">
+            <pathelement location="../../build/classes"/>
             <path refid="class.path"/>
         </path>
         <nbjpdastart addressproperty="jpda.address" name="Japex" transport="dt_socket">
