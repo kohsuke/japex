@@ -163,18 +163,18 @@
         </copy>
     </target>
     
-    <target name="test" depends="dist" description="Test using simple config file">
+    <target name="run" depends="dist" description="Test using simple config file">
         <ant dir="${basedir}/samples/FastInfoset" target="run" inheritrefs="true">
             <property name="config" value="speed-config.xml"/>
         </ant>
     </target>
     
-    <target name="debug-nb" depends="compile" description="Debug using simple config file">
+    <target name="debug-nb" depends="dist" description="Debug using simple config file">
         <ant dir="${basedir}/samples/FastInfoset" target="debug-nb" inheritrefs="true">
-            <property name="config" value="size-config-short.xml"/>
+            <property name="config" value="speed-size-config.xml"/>
         </ant>
     </target>
-
+    
     <!-- 
       - Hudson packages: build.id is passed by the Hudson script:
       -->
