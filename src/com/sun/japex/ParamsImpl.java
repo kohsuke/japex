@@ -135,6 +135,14 @@ public class ParamsImpl implements Params {
         return getParamOrDefault(name) != null;
     }
 
+    /**
+     * Returns true if this param is defined locally, without checking if
+     * it is defined in the defaults mapping.
+     */
+    public synchronized boolean hasLocalParam(String name) {
+        return _mapping.get(name) != null;
+    }
+    
     // -- String params --------------------------------------------------
     
     public synchronized void setParam(String name, String value) {
@@ -236,12 +244,11 @@ public class ParamsImpl implements Params {
     // -- Other methods --------------------------------------------------
     
     public void serialize(StringBuffer buffer, int indent) {        
-        // Serialize built-in params first (TODO sort)
-        Iterator names = _mapping.keySet().iterator();
+        // Get a list of param names and sort it
+        ArrayList<String> names = new ArrayList(_mapping.keySet());
+        Collections.sort(names);
         
-        while (names.hasNext()) {
-            String name = (String) names.next();
-            
+        for (String name : names) {
             if (name.startsWith("japex.")) {
                 String xmlName = name.substring(name.indexOf('.') + 1);                
                 // Replace path.separator by a single space
@@ -261,12 +268,8 @@ public class ParamsImpl implements Params {
             }
         }
         
-        // Serialize driver-defined params (TODO sort)
-        names = _mapping.keySet().iterator();
-        
-        while (names.hasNext()) {
-            String name = (String) names.next();
-            
+        // Serialize user-defined params
+        for (String name : names) {
             if (!name.startsWith("japex.")) {
                 buffer.append(Util.getSpaces(indent) 
                     + "<" + name + " xmlns=\"\">" 
