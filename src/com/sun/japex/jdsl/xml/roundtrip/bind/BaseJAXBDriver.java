@@ -49,7 +49,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-public abstract class JAXBBaseDriver extends JapexDriverBase {
+public abstract class BaseJAXBDriver extends JapexDriverBase {
     protected Marshaller _marshaller;
     protected Unmarshaller _unmarshaller;
     protected Object _bean;
