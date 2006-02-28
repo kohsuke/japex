@@ -254,10 +254,10 @@ public class DriverImpl extends ParamsImpl implements Driver {
     }
     
     /**
-     * Compute user-defined parameter closure before serializing each 
-     * test case. By doing so, it is guaranteed that all test cases will 
-     * define all parameters which makes it easy for the HTML report 
-     * to display them in table form.
+     * Compute a parameter closure before serializing each test case. By 
+     * doing so, it is guaranteed that all test cases will define the 
+     * same set of test case parameters which make it easy to display them
+     * in table form in the HTML report.
      *
      * Calling getAggregateTestCases() forces call to computeMeans(). This
      * is necessary before serializing driver params.
@@ -272,24 +272,22 @@ public class DriverImpl extends ParamsImpl implements Driver {
         // Serialize driver params
         super.serialize(report, spaces + 2);
 
-        // Collect all user defined parameters for all test cases
+        // Compute a parameter closure for all test cases
         Iterator tci = aggregateTestCases.iterator();
-        Set<String> userParams = new HashSet<String>();
+        Set<String> paramsClosure = new HashSet<String>();
         while (tci.hasNext()) {
             Set<String> testCaseParams = ((TestCaseImpl) tci.next()).nameSet();
             for (String name : testCaseParams) {
-                if (!name.startsWith("japex.")) {
-                    userParams.add(name);
-                }
+                paramsClosure.add(name);
             }
         }
         
-        // User param closure: all test cases define the same set
+        // Close the set of test case parameters in all test cases
         tci = aggregateTestCases.iterator();
         while (tci.hasNext()) {
             TestCaseImpl tc = (TestCaseImpl) tci.next();
-            for (String name : userParams) {
-                if (!tc.hasParam(name)) {
+            for (String name : paramsClosure) {
+                if (!tc.hasLocalParam(name)) {
                     tc.setParam(name, "n/a");
                 }
             }
