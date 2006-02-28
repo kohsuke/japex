@@ -277,32 +277,30 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
     }
     
     /**
-     * Compute user-defined parameter closure before serializing each 
-     * driver. By doing so, it is guaranteed that all drivers will 
-     * define all parameters which makes it easy for the HTML report 
-     * to display them in table form.
+     * Compute a parameter closure before serializing each driver. By 
+     * doing so, it is guaranteed that all drivers will define the 
+     * same set of driver parameters which make it easy to display them
+     * in table form in the HTML report.
      */
     public void serialize(StringBuffer report) {
         report.append("<testSuiteReport name=\"" + _name 
             + "\" xmlns=\"http://www.sun.com/japex/testSuiteReport\">\n");      
 
+        // Serialize global parameters
         serialize(report, 2);
         
-        // Collect all user defined parameters for all drivers
-        Set<String> userParams = new HashSet<String>();
+        // Compute a parameter closure for all drivers
+        Set<String> paramsClosure = new HashSet<String>();
         for (DriverImpl di : _driverInfo) {
-            Set<String> driverParams = di.nameSet();
-            for (String name : driverParams) {
-                if (!name.startsWith("japex.")) {
-                    userParams.add(name);
-                }
+            for (String name : di.nameSet()) {
+                paramsClosure.add(name);
             }
         }
 
-        // User param closure: all drivers define the same set
+        // Close the set of driver params in all drivers
         for (DriverImpl di : _driverInfo) {
-            for (String name : userParams) {
-                if (!di.hasParam(name)) {
+            for (String name : paramsClosure) {
+                if (!di.hasLocalParam(name)) {
                     di.setParam(name, "n/a");
                 }
             }
