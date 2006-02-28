@@ -24,8 +24,8 @@
    
     <h2>Global Parameters</h2>
       <ul>
+      <!-- Use not(@name) to omit sibling drivers -->
       <xsl:for-each select="*[not(@name)]">
-          <xsl:sort select="name()"/>
           <li><xsl:value-of select="name()"/>
               <xsl:text>: </xsl:text>
               <xsl:value-of select="."/></li>
@@ -67,11 +67,18 @@
     <h2>Result Summary 
     (<xsl:value-of select="/*/rep:testSuiteReport/rep:resultUnit"/>)</h2>
     
+    <!-- 
+      - Use an HTML table to list all the Japex driver params except
+      - classPath and driverClass. User-defined params are also ignored here.
+      -->    
     <table width="80%" border="1">
         <thead>
 	       <tr><th width="15%"><b>driver</b></th>
                    <xsl:for-each select="rep:driver[1]/*[not(@name) and namespace-uri(.)!='']">
-                      <th><b><xsl:value-of select="name()"/></b></th>
+                       <!-- Ignore classPath and driverClass here to keep the table narrow -->
+                       <xsl:if test="name() != 'classPath' and name() != 'driverClass'">
+                           <th><b><xsl:value-of select="name()"/></b></th>
+                       </xsl:if>
                    </xsl:for-each>
                </tr>
         </thead>
@@ -79,7 +86,10 @@
             <xsl:for-each select="rep:driver">
 	       <tr><td align="right"><xsl:value-of select="@name"/></td>
                    <xsl:for-each select="*[not(@name) and namespace-uri(.)!='']">
-                       <td align="right"><nobr><xsl:value-of select="."/></nobr></td>
+                       <!-- Ignore classPath and driverClass here to keep the table narrow -->
+                       <xsl:if test="name() != 'classPath' and name() != 'driverClass'">
+                           <td align="right"><nobr><xsl:value-of select="."/></nobr></td>
+                       </xsl:if>
                    </xsl:for-each>
                </tr>
             </xsl:for-each>
@@ -90,19 +100,21 @@
 <xsl:template name="resultsPerDriver">
     <h2>Driver: <xsl:value-of select="@name"/></h2>
     
-    <xsl:if test="*[not(@name) and namespace-uri(.)='']">
-        <p>
-          <ul>
-          <xsl:for-each select="*[not(@name) and namespace-uri(.)='']">
-              <xsl:sort select="name()"/>
-              <li><xsl:value-of select="name()"/>
-                  <xsl:text>: </xsl:text>
-                  <xsl:value-of select="."/></li>
-          </xsl:for-each>
-          </ul>
-        </p>
-    </xsl:if>
+    <!-- List classPath, driverClass and any user-define parameter here -->
+    <p>
+      <ul>
+      <xsl:for-each select="rep:driverClass | rep:classPath | *[not(@name) and namespace-uri(.)='']">
+          <li><xsl:value-of select="name()"/>
+              <xsl:text>: </xsl:text>
+              <xsl:value-of select="."/></li>
+      </xsl:for-each>
+      </ul>
+    </p>
       
+    <!--
+      - Use an HTML table to list all test case params, regardless of whether they
+      - are user-defined or not. List all Japex params first, though.
+      -->
     <table width="80%" border="1">
         <thead>
 	       <tr><th><b>testCase</b></th>
