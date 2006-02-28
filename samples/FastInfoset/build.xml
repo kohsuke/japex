@@ -11,7 +11,7 @@
         <java dir="." fork="true" classname="com.sun.japex.Japex">
             <jvmarg value="-server"/>
             <classpath refid="class.path"/>
-            <arg line="${config}/"/>
+            <arg line="${config}"/>
         </java>
     </target>
     
