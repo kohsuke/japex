@@ -58,7 +58,8 @@ public abstract class BaseStAXDriver extends BaseParserDriver {
     protected XMLOutputFactory _xmlOutputFactory;
     
     protected XMLStreamBuffer _xmlStreamBuffer;
-    protected ByteArrayOutputStream _outputStream; 
+    protected ByteArrayOutputStream _outputStream;     
+    protected XMLStreamReaderToXMLStreamWriter _xmlReaderToWriter;
     
     public void initializeDriver() {
         try {
@@ -85,6 +86,8 @@ public abstract class BaseStAXDriver extends BaseParserDriver {
             _xmlStreamBuffer = new XMLStreamBuffer();
             _xmlStreamBuffer.createFromXMLStreamReader(
                     _xmlInputFactory.createXMLStreamReader(_inputStream));
+            
+            _xmlReaderToWriter = new XMLStreamReaderToXMLStreamWriter();
         }
         catch (RuntimeException e) {
             throw e;            
@@ -97,7 +100,8 @@ public abstract class BaseStAXDriver extends BaseParserDriver {
     public void run(TestCase testCase) {
         try {
             _outputStream.reset();            
-            _xmlStreamBuffer.processUsingXMLStreamWriter(
+            _xmlReaderToWriter.bridge(
+                _xmlStreamBuffer.processUsingXMLStreamReader(),
                 _xmlOutputFactory.createXMLStreamWriter(_outputStream));
         }
         catch (RuntimeException e) {
