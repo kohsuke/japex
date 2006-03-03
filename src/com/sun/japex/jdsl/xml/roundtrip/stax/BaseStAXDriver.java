@@ -36,6 +36,7 @@
 
 package com.sun.japex.jdsl.xml.roundtrip.stax;
 
+import com.sun.japex.jdsl.xml.XMLStreamReaderToXMLStreamWriter;
 import java.io.ByteArrayOutputStream;
 import javax.xml.stream.*;
 import com.sun.japex.jdsl.xml.BaseParserDriver;
@@ -51,7 +52,9 @@ public abstract class BaseStAXDriver extends BaseParserDriver {
     protected XMLInputFactory _xmlInputFactory;
     protected XMLOutputFactory _xmlOutputFactory;
     
-    XMLStreamReaderToXMLStreamWriter _xmlReaderToWriter;
+    protected XMLStreamReaderToXMLStreamWriter _xmlReaderToWriter;
+    
+    protected String _encoding;
     
     public void initializeDriver() {
         try {
@@ -59,6 +62,11 @@ public abstract class BaseStAXDriver extends BaseParserDriver {
             
             _xmlInputFactory = XMLInputFactory.newInstance();
             _xmlOutputFactory = XMLOutputFactory.newInstance();
+            
+            _encoding = getParam("encoding");
+            if (_encoding == null) {
+                _encoding = "UTF-8";    // Use UTF-8 as default encoding
+            }
         } 
         catch (Exception e) {
             e.printStackTrace();
@@ -75,9 +83,12 @@ public abstract class BaseStAXDriver extends BaseParserDriver {
     public void run(TestCase testCase) {
         try {
             _inputStream.reset();
-            XMLStreamReader reader = _xmlInputFactory.createXMLStreamReader(_inputStream);
+            XMLStreamReader reader = 
+                _xmlInputFactory.createXMLStreamReader(_inputStream);
+            
             _outputStream.reset();
-            XMLStreamWriter writer = _xmlOutputFactory.createXMLStreamWriter(_outputStream);
+            XMLStreamWriter writer = 
+                _xmlOutputFactory.createXMLStreamWriter(_outputStream, _encoding);
             
             _xmlReaderToWriter.bridge(reader, writer);
         }

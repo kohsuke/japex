@@ -61,12 +61,19 @@ public abstract class BaseStAXDriver extends BaseParserDriver {
     protected ByteArrayOutputStream _outputStream;     
     protected XMLStreamReaderToXMLStreamWriter _xmlReaderToWriter;
     
+    protected String _encoding;
+    
     public void initializeDriver() {
         try {
             super.initializeDriver();       
             
             _xmlInputFactory = XMLInputFactory.newInstance();
             _xmlOutputFactory = XMLOutputFactory.newInstance();
+            
+            _encoding = getParam("encoding");
+            if (_encoding == null) {
+                _encoding = "UTF-8";    // Use UTF-8 as default encoding
+            }        
         } 
         catch (RuntimeException e) {
             throw e;            
@@ -102,7 +109,7 @@ public abstract class BaseStAXDriver extends BaseParserDriver {
             _outputStream.reset();            
             _xmlReaderToWriter.bridge(
                 _xmlStreamBuffer.processUsingXMLStreamReader(),
-                _xmlOutputFactory.createXMLStreamWriter(_outputStream));
+                _xmlOutputFactory.createXMLStreamWriter(_outputStream, _encoding));
         }
         catch (RuntimeException e) {
             throw e;            
