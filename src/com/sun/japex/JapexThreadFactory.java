@@ -57,7 +57,6 @@ public class JapexThreadFactory implements ThreadFactory {
      */
     public Thread newThread(Runnable r) {
         Thread t = threadFactory.newThread(r);
-        t.setPriority(Thread.MAX_PRIORITY);
         t.setContextClassLoader(_classLoader);
         return t;
     }
