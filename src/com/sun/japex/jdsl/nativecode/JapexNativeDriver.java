@@ -40,7 +40,6 @@
 package com.sun.japex.jdsl.nativecode;
 
 import com.sun.japex.*;
-import java.util.List;
 import com.sun.japex.Constants;
 import com.sun.japex.Japex;
 import com.sun.japex.JapexDriverBase;
@@ -82,40 +81,62 @@ public class JapexNativeDriver extends JapexDriverBase {
                 Thread.currentThread().getName() + " run()"); 
         }
 
-        long millis;
         TestCaseImpl tc = _testCase;
         
         // Force GC
         System.gc();
-        // Get elapsed time for all GCs
-        List<Long> gCStartTimes = getGCAbsoluteTimes();
         
-        // Get number of threads to adjust iterations
-        int nOfThreads = tc.getIntParam(Constants.NUMBER_OF_THREADS);
-        
+        long millis, startTime;        
         int runIterations = 0;
-        String runTime = tc.getParam(Constants.RUN_TIME);
-        if (runTime != null) {
-            runIterations = runLoopDuration(Util.parseDuration(runTime),
-                                            _userData);
+        
+        if (tc.hasParam(Constants.RUN_TIME)) {
+            /*
+             * Compute duration by substracting current time from _endTime.
+             * This is needed to ensure that the Java and native drivers 
+             * run for the same period of time, i.e. until _endTime.
+             */ 
+            startTime = Util.currentTimeMillis();           
+            runIterations = runLoopDuration(_endTime - startTime, _userData);
+            millis = Util.currentTimeMillis();            
+            
+            // Accumulate actual number of iterations
+            synchronized (tc) {
+                long actualRunIterations =  
+                    tc.hasParam(Constants.ACTUAL_RUN_ITERATIONS_SUM) ? 
+                        tc.getLongParam(Constants.ACTUAL_RUN_ITERATIONS_SUM) : 0L;
+                tc.setLongParam(Constants.ACTUAL_RUN_ITERATIONS_SUM, 
+                               actualRunIterations + runIterations);
+            }        
         }
         else {
-            // Adjust runIterations based on number of threads
-            runIterations = tc.getIntParam(Constants.RUN_ITERATIONS) / nOfThreads;
+            runIterations = tc.getIntParam(Constants.RUN_ITERATIONS);
+            
+            startTime = Util.currentTimeMillis();
 	    runLoopIterations(runIterations, _userData);
-        }
-
-        // Get the total time take for GC over the measurement period
-        _gCTime = getGCRelativeTotalTime(gCStartTimes);
+            millis = Util.currentTimeMillis();
+            
+            // Accumulate actual run time (use millis for this sum)
+            synchronized (tc) {
+                double actualRunTime =
+                    tc.hasParam(Constants.ACTUAL_RUN_TIME_SUM) ?
+                        tc.getDoubleParam(Constants.ACTUAL_RUN_TIME_SUM) : 0.0;
+                tc.setDoubleParam(Constants.ACTUAL_RUN_TIME_SUM,
+                                  actualRunTime + (millis - startTime));
+            }                
+        }        
         
-        // Accumulate actual number of iterations
-        synchronized (tc) {
-            int actualRunIterations =  
-                tc.hasParam(Constants.ACTUAL_RUN_ITERATIONS) ? 
-                    tc.getIntParam(Constants.ACTUAL_RUN_ITERATIONS) : 0;
-            tc.setIntParam(Constants.ACTUAL_RUN_ITERATIONS, 
-                           actualRunIterations + runIterations);
-        }
+        // In multi-threaded mode, last thread that ends sets these
+        tc.setLongParam(Constants.ACTUAL_RUN_ITERATIONS, runIterations);
+        tc.setDoubleParam(Constants.ACTUAL_RUN_TIME, (millis - startTime) / 1000.0);
+        
+        if (Japex.verbose) {
+            System.out.println("               " + 
+                Thread.currentThread().getName() + 
+                " japex.actualRunIterations = " + runIterations);        
+            System.out.println("               " + 
+                Thread.currentThread().getName() + 
+                " japex.actualRunTime = " + (millis - startTime) / 1000.0);        
+        }                    
     }
 
     // JapexDriver Interface ---------------------------------------------
@@ -187,6 +208,7 @@ public class JapexNativeDriver extends JapexDriverBase {
 
     /**
      * Called for looping over a specified number iterations
+     * TODO: change iterations from int to long
      */
     native public void runLoopIterations(int iterations, Object userData);
     
