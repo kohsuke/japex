@@ -39,27 +39,39 @@
     
 package com.sun.japex;
 
-import java.io.File;
-import java.lang.management.GarbageCollectorMXBean;
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
-import java.util.ArrayList;
-import java.util.List;
-
 public class JapexDriverBase implements JapexDriver, Params {
     
+    /**
+     * Object containing information about this driver. Parameter
+     * getters and setters must be delegated to this object.
+     */
     protected Driver _driver;    
+    
+    /**
+     * Reference to test suite being processed.
+     */
     protected TestSuiteImpl _testSuite;    
+    
+    /**
+     * A reference to the the current test case being executed.
+     */
     protected TestCaseImpl _testCase;
     
+    /**
+     * Flag indicating if warmup phase is completed.
+     */
     protected boolean _needWarmup = true;
-    
-    protected List<GarbageCollectorMXBean> _gCCollectors;
-    
-    protected long _gCTime;
+
+    /**
+     * This time is set externally by the engine whenever 
+     * japex.warmupTime or japex.runTime are defined. The warmup and 
+     * run phases will be executed until this time is reached. Letting 
+     * the engine compute this value ensures that all threads will stop 
+     * at or about the same time.
+     */
+    protected long _endTime;
     
     public JapexDriverBase() {
-        _gCCollectors = ManagementFactory.getGarbageCollectorMXBeans();
     }
     
     public void setDriver(Driver driver) {
@@ -79,11 +91,15 @@ public class JapexDriverBase implements JapexDriver, Params {
         return _testSuite;
     }
     
+    public void setEndTime(long endTime) {
+        _endTime = endTime;
+    }
+    
     // -- Internal interface ---------------------------------------------
     
     /**
-     * Execute prepare phase. Even in multi-threaded test, this
-     * method will only be executed in single-threaded mode, so there's no
+     * Execute prepare phase. Even in multi-threaded tests, this method 
+     * will only be executed in single-threaded mode, so there's no
      * need for additional synchronization.
      */
     public void prepare() {
@@ -94,10 +110,10 @@ public class JapexDriverBase implements JapexDriver, Params {
       
         TestCaseImpl tc = _testCase;
         
-        long nanos = Util.currentTimeNanos();
+        long millis = Util.currentTimeMillis();
         prepare(tc);
-        nanos = Util.currentTimeNanos() - nanos;
-        tc.setDoubleParam(Constants.ACTUAL_PREPARE_TIME, Util.nanosToMillis(nanos));
+        tc.setDoubleParam(Constants.ACTUAL_PREPARE_TIME, 
+            Util.currentTimeMillis() - millis);
     }
     
     /**
@@ -112,42 +128,60 @@ public class JapexDriverBase implements JapexDriver, Params {
                 Thread.currentThread().getName() + " warmup()"); 
         }
 
-        long millis;
         TestCaseImpl tc = _testCase;
         
-        // Get number of threads to adjust iterations
-        int nOfThreads = tc.getIntParam(Constants.NUMBER_OF_THREADS);
+        long warmupIterations = 0;
+        long millis, startTime;         
         
-        int warmupIterations = 0;
-        String warmupTime = tc.getParam(Constants.WARMUP_TIME);
-        if (warmupTime != null) {
-            // Calculate end time
-            long startTime = millis = Util.currentTimeMillis();
-            long endTime = startTime + Util.parseDuration(warmupTime);
+        if (tc.hasParam(Constants.WARMUP_TIME)) {
+            startTime = millis = Util.currentTimeMillis();
 
-            while (endTime > millis) {
+            while (_endTime > millis) {
                 warmup(tc);      // Call warmup
                 warmupIterations++;
                 millis = Util.currentTimeMillis();
             } 
+            
+            // Accumulate actual warmup time
+            synchronized (tc) {
+                long actualWarmupIterations =  
+                    tc.hasParam(Constants.ACTUAL_WARMUP_ITERATIONS_SUM) ? 
+                        tc.getLongParam(Constants.ACTUAL_WARMUP_ITERATIONS_SUM) : 0L;
+                tc.setLongParam(Constants.ACTUAL_WARMUP_ITERATIONS_SUM, 
+                               actualWarmupIterations + warmupIterations);
+            }            
         }
         else {
-            // Adjust warmup iterations based on number of threads
-            warmupIterations = tc.getIntParam(Constants.WARMUP_ITERATIONS) / nOfThreads;
+            warmupIterations = tc.getLongParam(Constants.WARMUP_ITERATIONS);
             
-            for (int i = 0; i < warmupIterations; i++) {
+            startTime = Util.currentTimeMillis();
+            for (long i = 0; i < warmupIterations; i++) {
                 warmup(tc);      // Call warmup
             }
+            millis = Util.currentTimeMillis();
+            
+            // Accumulate actual warmup time (use millis for this sum)
+            synchronized (tc) {
+                double actualWarmupTime =
+                    tc.hasParam(Constants.ACTUAL_WARMUP_TIME_SUM) ?
+                        tc.getDoubleParam(Constants.ACTUAL_WARMUP_TIME_SUM) : 0.0;
+                tc.setDoubleParam(Constants.ACTUAL_WARMUP_TIME_SUM,
+                        actualWarmupTime + (millis - startTime));                
+            }        
         }
         
-        // Accumulate actual number of iterations
-        synchronized (tc) {
-            int actualWarmupIterations =  
-                tc.hasParam(Constants.ACTUAL_WARMUP_ITERATIONS) ? 
-                    tc.getIntParam(Constants.ACTUAL_WARMUP_ITERATIONS) : 0;
-            tc.setIntParam(Constants.ACTUAL_WARMUP_ITERATIONS, 
-                           actualWarmupIterations + warmupIterations);
-        }
+        // In multi-threaded mode, last thread that ends sets these
+        tc.setLongParam(Constants.ACTUAL_WARMUP_ITERATIONS, warmupIterations);
+        tc.setDoubleParam(Constants.ACTUAL_WARMUP_TIME, (millis - startTime) / 1000.0);            
+        
+        if (Japex.verbose) {
+            System.out.println("               " + 
+                Thread.currentThread().getName() + 
+                " japex.actualWarmupIterations = " + warmupIterations);        
+            System.out.println("               " + 
+                Thread.currentThread().getName() + 
+                " japex.actualWarmupTime = " + (millis - startTime) / 1000.0);        
+        }            
     }
     
     /**
@@ -162,140 +196,77 @@ public class JapexDriverBase implements JapexDriver, Params {
                 Thread.currentThread().getName() + " run()"); 
         }
 
-        long millis;
         TestCaseImpl tc = _testCase;
         
-        // Force GC
-        System.gc();
-        // Get elapsed time for all GCs
-        List<Long> gCStartTimes = getGCAbsoluteTimes();
+        System.gc();    // Force GC before entering loop
         
-        // Get number of threads to adjust iterations
-        int nOfThreads = tc.getIntParam(Constants.NUMBER_OF_THREADS);
+        long runIterations = 0;
+        long millis, startTime;
         
-        int runIterations = 0;
-        String runTime = tc.getParam(Constants.RUN_TIME);
-        if (runTime != null) {
-            // Calculate end time
-            long startTime = Util.currentTimeMillis();
-            long endTime = startTime + Util.parseDuration(runTime);
-
+        if (tc.hasParam(Constants.RUN_TIME)) {
+            startTime = Util.currentTimeMillis();
+            
             // Run phase
             do {
                 run(tc);      // Call run
                 runIterations++;
                 millis = Util.currentTimeMillis();
-            } while (endTime >= millis);
+            } while (_endTime >= millis);
+            
+            // Accumulate actual number of iterations
+            synchronized (tc) {
+                long actualRunIterations =  
+                    tc.hasParam(Constants.ACTUAL_RUN_ITERATIONS_SUM) ? 
+                        tc.getLongParam(Constants.ACTUAL_RUN_ITERATIONS_SUM) : 0L;
+                tc.setLongParam(Constants.ACTUAL_RUN_ITERATIONS_SUM, 
+                               actualRunIterations + runIterations);
+            }        
         }
         else {
-            // Adjust runIterations based on number of threads
-            runIterations = tc.getIntParam(Constants.RUN_ITERATIONS) / nOfThreads;
+            runIterations = tc.getLongParam(Constants.RUN_ITERATIONS);
 
             // Run phase
-            for (int i = 0; i < runIterations; i++) {
+            startTime = Util.currentTimeMillis();
+            for (long i = 0; i < runIterations; i++) {
                 run(tc);      // Call run
             }
+            millis = Util.currentTimeMillis();
+            
+            // Accumulate actual run time (use millis for this sum)
+            synchronized (tc) {
+                double actualRunTime =
+                    tc.hasParam(Constants.ACTUAL_RUN_TIME_SUM) ?
+                        tc.getDoubleParam(Constants.ACTUAL_RUN_TIME_SUM) : 0.0;
+                tc.setDoubleParam(Constants.ACTUAL_RUN_TIME_SUM,
+                                  actualRunTime + (millis - startTime));
+            }        
         }
-
-        // Get the total time take for GC over the measurement period
-        _gCTime = getGCRelativeTotalTime(gCStartTimes);
         
-        // Accumulate actual number of iterations
-        synchronized (tc) {
-            int actualRunIterations =  
-                tc.hasParam(Constants.ACTUAL_RUN_ITERATIONS) ? 
-                    tc.getIntParam(Constants.ACTUAL_RUN_ITERATIONS) : 0;
-            tc.setIntParam(Constants.ACTUAL_RUN_ITERATIONS, 
-                           actualRunIterations + runIterations);
-        }
+        // In multi-threaded mode, last thread that ends sets these
+        tc.setLongParam(Constants.ACTUAL_RUN_ITERATIONS, runIterations);
+        tc.setDoubleParam(Constants.ACTUAL_RUN_TIME, (millis - startTime) / 1000.0);
+        
+        if (Japex.verbose) {
+            System.out.println("               " + 
+                Thread.currentThread().getName() + 
+                " japex.actualRunIterations = " + runIterations);        
+            System.out.println("               " + 
+                Thread.currentThread().getName() + 
+                " japex.actualRunTime = " + (millis - startTime) / 1000.0);        
+        }            
     }
-    
-    protected List<Long> getGCAbsoluteTimes() {
-        List<Long> gCTimes = new ArrayList();
-        for (GarbageCollectorMXBean gcc : _gCCollectors) {
-            gCTimes.add(gcc.getCollectionTime());
-        }
         
-        return gCTimes;
-    }
-    
-    protected long getGCRelativeTotalTime(List<Long> start) {
-        List<Long> end = getGCAbsoluteTimes();
-        
-        long time = 0;
-        for (int i = 0; i < start.size(); i++) {
-            time += end.get(i) - start.get(i);
-        }
-        
-        return time;
-    }
-    
     /**
-     * Called exactly once after calling run. Computes japex.resultValue
-     * based on global param japex.resultUnit. Only three possible values
-     * are recognized: "tps" (default), "ms" (latency in millis) and 
-     * "mbps" (which requires setting japex.inputFile). If no errors are
-     * found calls finish(testCase) on the driver.
+     * Called exactly once after calling run. 
      */
     public void finish() {        
+        if (Japex.verbose) {
+            System.out.println("             " + 
+                Thread.currentThread().getName() + " finish()"); 
+        }
+        
         // Call finish(testCase) in user's driver
         finish(_testCase);
-
-        // If result value has been computed then we're done
-        if (_testCase.hasParam(Constants.RESULT_VALUE)) {
-            return;
-        }
-        
-        String resultUnit = getTestSuite().getParam(Constants.RESULT_UNIT);
-        
-        // Check to see if a different result unit was set
-        if (resultUnit == null || resultUnit.equalsIgnoreCase("tps")) {
-            // Default - computed elsewhere
-        }
-        else if (resultUnit.equalsIgnoreCase("ms")) {
-            _testCase.setParam(Constants.RESULT_UNIT, "ms");
-
-            _testCase.setDoubleParam(Constants.RESULT_VALUE, 
-                _testCase.getDoubleParam(Constants.ACTUAL_RUN_TIME) /
-                _testCase.getDoubleParam(Constants.ACTUAL_RUN_ITERATIONS));                            
-        }
-        else if (resultUnit.equalsIgnoreCase("mbps")) {
-            // Check if japex.inputFile was defined
-            String inputFile = _testCase.getParam(Constants.INPUT_FILE);            
-            if (inputFile == null) {
-                throw new RuntimeException("Unable to compute japex.resultValue " + 
-                    " because japex.inputFile is not defined or refers to an illegal path.");
-            }
-
-            // Length of input file
-            long fileSize = new File(inputFile).length();
-            
-            // Calculate Mbps
-            _testCase.setParam(Constants.RESULT_UNIT, "Mbps");
-            _testCase.setDoubleParam(Constants.RESULT_VALUE,
-                (fileSize * 0.000008d 
-                    * _testCase.getLongParam(Constants.ACTUAL_RUN_ITERATIONS)) /    // Mbits
-                (_testCase.getLongParam(Constants.ACTUAL_RUN_TIME) / 1000.0));      // Seconds
-        }
-        else if (resultUnit.equalsIgnoreCase("%GCTIME")) {      // EXPERIMENTAL
-            _testCase.setParam(Constants.RESULT_UNIT, "%GCTime");
-            // Calculate % of GC relative to the actual run time
-            _testCase.setDoubleParam(Constants.RESULT_VALUE,
-                    (_gCTime / _testCase.getDoubleParam(Constants.ACTUAL_RUN_TIME)) * 100.0);
-            
-            // Add the actual runtime to the X axis
-            // Scatter plots can be used to present %GCTIME and actual time
-            _testCase.setParam(Constants.RESULT_UNIT_X, "ms");
-            getTestSuite().setParam(Constants.RESULT_UNIT_X, "ms");
-            _testCase.setDoubleParam(Constants.RESULT_VALUE_X, 
-                _testCase.getDoubleParam(Constants.ACTUAL_RUN_TIME) /
-                _testCase.getDoubleParam(Constants.ACTUAL_RUN_ITERATIONS));                            
-        }
-        else {
-            throw new RuntimeException("Unknown value '" + 
-                resultUnit + "' for global param japex.resultUnit.");
-        }
-        
     }
     
     // -- Callable interface ------------------------------------------
