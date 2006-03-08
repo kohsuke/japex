@@ -28,7 +28,18 @@
                 <action name="clean">
                     <target>clean</target>
                 </action>
+                <action name="run">
+                    <target>run</target>
+                </action>
+                <action name="debug">
+                    <target>debug-nb</target>
+                </action>
             </ide-actions>
+            <export>
+                <type>folder</type>
+                <location>build/classes</location>
+                <build-target>dist</build-target>
+            </export>
             <view>
                 <items>
                     <source-folder style="packages">
@@ -47,6 +58,9 @@
                     <ide-action name="build"/>
                     <ide-action name="rebuild"/>
                     <ide-action name="clean"/>
+                    <ide-action name="debug"/>
+                    <ide-action name="run"/>
+                    <ide-action name="debug"/>
                 </context-menu>
             </view>
             <subprojects/>
@@ -54,11 +68,9 @@
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/1">
             <compilation-unit>
                 <package-root>src/binding</package-root>
-                <source-level>1.5</source-level>
-            </compilation-unit>
-            <compilation-unit>
                 <package-root>src</package-root>
-                <classpath mode="compile">lib/jfreechart/jcommon-1.0.0-rc1.jar:lib/jfreechart/jfreechart-1.0.0-rc1.jar:lib/jwsdp/activation.jar:lib/jwsdp/ant.jar:lib/jwsdp/FastInfoset.jar:lib/jwsdp/jaxb-api.jar:lib/jwsdp/jaxb-impl.jar:lib/jwsdp/jaxb-xjc.jar:lib/jwsdp/jaxb1-impl.jar:lib/jwsdp/jsr173_api.jar:lib/jwsdp/resolver.jar:lib/jwsdp/sjsxp.jar:lib/jwsdp/xalan.jar:lib/jwsdp/xercesImpl.jar:lib/jwsdp/xml-apis.jar:lib/jdsl/junit.jar</classpath>
+                <classpath mode="compile">lib/jfreechart/jcommon-1.0.0-rc1.jar:lib/jfreechart/jfreechart-1.0.0-rc1.jar:lib/jwsdp/activation.jar:lib/jwsdp/ant.jar:lib/jwsdp/FastInfoset.jar:lib/jwsdp/jaxb-api.jar:lib/jwsdp/jaxb-impl.jar:lib/jwsdp/jaxb-xjc.jar:lib/jwsdp/jaxb1-impl.jar:lib/jwsdp/jsr173_api.jar:lib/jwsdp/resolver.jar:lib/jwsdp/sjsxp.jar:lib/jwsdp/xalan.jar:lib/jwsdp/xercesImpl.jar:lib/jwsdp/xml-apis.jar:lib/jdsl/junit.jar:lib/jdsl/streambuffer.jar</classpath>
+                <built-to>build/classes</built-to>
                 <source-level>1.5</source-level>
             </compilation-unit>
         </java-data>
