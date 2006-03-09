@@ -104,7 +104,7 @@ public abstract class BaseStAXDriver extends BaseParserDriver {
     public void run(TestCase testCase) {
         try {
             _outputStream.reset();          
-            _xmlStreamBuffer.processUsingXMLStreamWriter(
+            _xmlStreamBuffer.writeToXMLStreamWriter(
                 _xmlOutputFactory.createXMLStreamWriter(_outputStream, _encoding));
         }
         catch (RuntimeException e) {
