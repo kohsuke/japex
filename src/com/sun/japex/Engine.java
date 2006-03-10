@@ -464,20 +464,24 @@ public class Engine {
             }
         }
 
-        // Compute average run time across all threads
-        double avgT = tc.getDoubleParam(Constants.RUN_TIME_SUM) / nOfThreads;
+        double tps, avgT;
         
         // Compute throughput in TPS based on config params
-        double tps;
         if (isTimeFixed) {
+            // Just get average time from test case
+            avgT = Util.parseDuration(tc.getParam(Constants.RUN_TIME));
+                    
             // Tx = sum(I_k) / T for k in 1..N
             tps = tc.getLongParam(Constants.RUN_ITERATIONS_SUM) /
                   (Util.parseDuration(tc.getParam(Constants.RUN_TIME)) / 1000.0);
         } 
         else {
+            // Compute average run time across all threads
+            avgT = tc.getDoubleParam(Constants.RUN_TIME_SUM) / nOfThreads;
+            
             // Tx = N * I / avg(T_k) for k in 1..N
             tps = (nOfThreads * tc.getLongParam(Constants.RUN_ITERATIONS)) /
-                  (avgT / 1000.0);  
+                  (avgT / 1000.0);          
         }
         
         // Compute latency as L = (min(C, N) / Tx) * 1000
