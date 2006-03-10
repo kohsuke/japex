@@ -1,51 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="http://www.sun.com/japex/testSuite"
-            xmlns:tns="http://www.sun.com/japex/testSuite"
-            elementFormDefault="qualified">
+    targetNamespace="http://www.sun.com/japex/testSuite"
+    xmlns:tns="http://www.sun.com/japex/testSuite"
+    elementFormDefault="qualified"        
+    xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+    jxb:version="2.0">
             
-  <xsd:complexType name="ParamType">
-    <xsd:complexContent>
-      <xsd:restriction base="xsd:anyType">
-        <xsd:attribute name="name"  type="xsd:string" use="required"/>
-        <xsd:attribute name="value" type="xsd:string" use="required"/>
-      </xsd:restriction>
-    </xsd:complexContent>
-  </xsd:complexType>
+    <!-- Adds the suffix Element to avoid name clashes -->
+    <xsd:annotation>
+        <xsd:appinfo>
+            <jxb:schemaBindings>
+                <jxb:nameXmlTransform>
+                    <jxb:elementName suffix="Element"/>
+                </jxb:nameXmlTransform> 
+            </jxb:schemaBindings>
+        </xsd:appinfo>
+    </xsd:annotation>    
 
-  <xsd:element name="testSuite">
-    <xsd:complexType>
-      <xsd:sequence>
-        <!-- Zero or more global params -->
-        <xsd:element name="param" type="tns:ParamType" minOccurs="0"
-                     maxOccurs="unbounded"/>
-
-        <!-- One or more drivers -->
-        <xsd:element name="driver" minOccurs="1" maxOccurs="unbounded">
-          <xsd:complexType>
-            <xsd:sequence>
-              <xsd:element name="param" type="tns:ParamType" minOccurs="0"
-                     maxOccurs="unbounded"/>
-            </xsd:sequence>
-            <xsd:attribute name="name" type="xsd:string" use="required"/>
-            <xsd:attribute name="normal" type="xsd:boolean" default="false"/>
-          </xsd:complexType>
-        </xsd:element>       
-        
-        <!-- One or more test cases -->
-        <xsd:element name="testCase" minOccurs="1" maxOccurs="unbounded">
-          <xsd:complexType>
-            <xsd:sequence>
-              <xsd:element name="param" type="tns:ParamType" minOccurs="0"
-                     maxOccurs="unbounded"/>
-            </xsd:sequence>
-            <xsd:attribute name="name" type="xsd:string" use="required"/>
-          </xsd:complexType>
-        </xsd:element> 
-      </xsd:sequence>
-      <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:complexType name="ParamType">
+        <xsd:complexContent>
+            <xsd:restriction base="xsd:anyType">
+                <xsd:attribute name="name"  type="xsd:string" use="required"/>
+                <xsd:attribute name="value" type="xsd:string" use="required"/>
+            </xsd:restriction>
+        </xsd:complexContent>
     </xsd:complexType>
-  </xsd:element>
+
+    <xsd:complexType name="TestCaseType">
+        <xsd:sequence>
+            <xsd:element name="param" type="tns:ParamType" 
+            minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+    </xsd:complexType>
+  
+    <xsd:element name="testSuite">
+        <xsd:complexType>
+            <xsd:sequence>
+                <!-- Zero or more global params -->
+                <xsd:element name="param" type="tns:ParamType" minOccurs="0"
+                maxOccurs="unbounded"/>
+
+                <!-- One or more drivers -->
+                <xsd:element name="driver" minOccurs="1" maxOccurs="unbounded">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="param" type="tns:ParamType" minOccurs="0"
+                            maxOccurs="unbounded"/>
+                        </xsd:sequence>
+                        <xsd:attribute name="name" type="xsd:string" use="required"/>
+                        <xsd:attribute name="normal" type="xsd:boolean" default="false"/>
+                    </xsd:complexType>
+                </xsd:element>       
+        
+                <!-- Choice of One or more groups or test cases -->        
+                <xsd:choice minOccurs="1" maxOccurs="unbounded">
+                    <xsd:element name="testCaseGroup">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="param" type="tns:ParamType" 
+                                minOccurs="0" maxOccurs="unbounded"/>
+                                <xsd:element name="testCase" type="tns:TestCaseType" 
+                                minOccurs="1" maxOccurs="unbounded"/>
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="optional"/>
+                        </xsd:complexType>
+                    </xsd:element>                
+                    <xsd:element name="testCase" type="tns:TestCaseType"/>
+                </xsd:choice>         
+            </xsd:sequence>
+      
+            <xsd:attribute name="name" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
 
 </xsd:schema>
