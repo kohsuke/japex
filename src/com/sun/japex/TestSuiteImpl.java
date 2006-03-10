@@ -42,6 +42,7 @@ package com.sun.japex;
 import java.util.*;
 import java.text.*;
 
+import com.sun.japex.testsuite.*;
 
 public class TestSuiteImpl extends ParamsImpl implements TestSuite {
     
@@ -54,7 +55,7 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
      * between the JAXB object model and the internal object model
      * used in Japex.
      */
-    public TestSuiteImpl(com.sun.japex.testsuite.TestSuite ts) {
+    public TestSuiteImpl(TestSuiteElement ts) {
         _name = ts.getName();
         
         // Set global properties by traversing JAXB's model
@@ -65,8 +66,7 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
         if (params != null) {
             Iterator it = params.iterator();
             while (it.hasNext()) {
-                com.sun.japex.testsuite.ParamType pt = 
-                    (com.sun.japex.testsuite.ParamType) it.next();
+                ParamType pt = (ParamType) it.next();
                 String name = pt.getName();
                 String value = pt.getValue();
                 String oldValue = getParam(name);
@@ -177,20 +177,13 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
             Runtime.getRuntime().availableProcessors());
                 
         // Create and populate list of drivers
-        Iterator it = ts.getDriver().iterator();
-        while (it.hasNext()) {
-            com.sun.japex.testsuite.TestSuite.Driver dt = 
-                (com.sun.japex.testsuite.TestSuite.Driver) it.next();
-            
+        for (TestSuiteElement.DriverType dt : ts.getDriver()) {
             // Create new DriverImpl
             DriverImpl driverInfo = new DriverImpl(dt.getName(), 
                 dt.isNormal(), this);
                         
             // Copy params from JAXB object to Japex object
-            Iterator driverParamsIt = dt.getParam().iterator();
-            while (driverParamsIt.hasNext()) {
-                com.sun.japex.testsuite.ParamType pt = 
-                    (com.sun.japex.testsuite.ParamType) driverParamsIt.next();
+            for (ParamType pt : dt.getParam()) {
                 String name = pt.getName();
                 String value = pt.getValue();
                 String oldValue = driverInfo.getParam(name);
@@ -212,29 +205,52 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
         // Create and populate list of test cases
         TestCaseArrayList testCases = new TestCaseArrayList();
         
-        it = ts.getTestCase().iterator();
-        while (it.hasNext()) {
-            com.sun.japex.testsuite.TestSuite.TestCase tc = 
-                (com.sun.japex.testsuite.TestSuite.TestCase) it.next();
-            
-            // Create new TestCaseImpl
-            TestCaseImpl testCase = new TestCaseImpl(tc.getName(), this);
-                      
-            // Copy params from JAXB object to Japex object
-            Iterator itParams = tc.getParam().iterator();
-            while (itParams.hasNext()) {
-                com.sun.japex.testsuite.ParamType pt = 
-                    (com.sun.japex.testsuite.ParamType) itParams.next();
-                testCase.setParam(pt.getName(), pt.getValue());
-            }            
-            
-            testCases.add(testCase);
-        }
+        for (Object testCaseOrTestGroup : ts.getTestCaseGroupOrTestCase()) {
+            // Is this a test group?
+            if (testCaseOrTestGroup instanceof TestSuiteElement.TestCaseGroupType) {
+                TestSuiteElement.TestCaseGroupType testCaseGroup = 
+                    (TestSuiteElement.TestCaseGroupType) testCaseOrTestGroup;
+                
+                for (TestCaseType tc : testCaseGroup.getTestCase()) {                    
+                    // Create new TestCaseImpl
+                    TestCaseImpl testCase = new TestCaseImpl(tc.getName(), this);
 
+                    // Copy params from JAXB object to Japex object
+                    for (ParamType pt : tc.getParam()) {
+                        testCase.setParam(pt.getName(), pt.getValue());
+                    }            
+                    
+                    // Now copy params from group object - ignore if defined
+                    for (ParamType pt : testCaseGroup.getParam()) {
+                        String name = pt.getName();
+                        if (!testCase.hasParam(name)) {
+                            testCase.setParam(name, pt.getValue());
+                        }
+                    }            
+                    
+                    // Add to the list of test cases
+                    testCases.add(testCase);
+                }                
+            }
+            else {
+                // Must be an instance of TestCase
+                TestCaseType tc = (TestCaseType) testCaseOrTestGroup;
+
+                // Create new TestCaseImpl
+                TestCaseImpl testCase = new TestCaseImpl(tc.getName(), this);
+
+                // Copy params from JAXB object to Japex object
+                for (ParamType pt : tc.getParam()) {
+                    testCase.setParam(pt.getName(), pt.getValue());
+                }            
+                
+                // Add to the list of test cases
+                testCases.add(testCase);
+            }
+        }
+                
         // Set list of test cases and number of runs on each driver
-        it = _driverInfo.iterator();
-        while (it.hasNext()) {
-            DriverImpl di = (DriverImpl) it.next();
+        for (DriverImpl di: _driverInfo) {
             di.setTestCases(testCases);
         }
     }

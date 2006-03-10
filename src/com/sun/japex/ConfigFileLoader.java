@@ -42,6 +42,7 @@ package com.sun.japex;
 import java.io.*;
 import java.util.ArrayList;
 import javax.xml.bind.*;
+import com.sun.japex.testsuite.*;
 
 public class ConfigFileLoader {
     
@@ -53,8 +54,7 @@ public class ConfigFileLoader {
             Unmarshaller u = ctx.createUnmarshaller();
             
             // Unmarshall config file into JAXB object
-            com.sun.japex.testsuite.TestSuite testsuite = 
-                (com.sun.japex.testsuite.TestSuite) u.unmarshal(new File(fileName));
+            TestSuiteElement testsuite = (TestSuiteElement) u.unmarshal(new File(fileName));
             
             // Map JAXB object model to internal object model
             _testSuite = new TestSuiteImpl(testsuite);         
