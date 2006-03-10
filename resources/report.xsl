@@ -56,7 +56,7 @@
         <hr/>
         <font size="-2">
         Generated using <a href="https://japex.dev.java.net">Japex</a> version 
-        <xsl:value-of select="format-number(rep:version, '##.00')"/>
+        <xsl:value-of select="rep:version"/>
         </font>
       </small>
   </body>   
