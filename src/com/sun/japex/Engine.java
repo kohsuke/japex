@@ -142,6 +142,7 @@ public class Engine {
             while (jdi.hasNext()) {                               
                 _driverImpl = (DriverImpl) jdi.next();
 
+                int nOfCpus = _driverImpl.getIntParam(Constants.NUMBER_OF_CPUS);
                 int nOfThreads = _driverImpl.getIntParam(Constants.NUMBER_OF_THREADS);
                 int runsPerDriver = _driverImpl.getIntParam(Constants.RUNS_PER_DRIVER);
                 boolean includeWarmupRun = _driverImpl.getBooleanParam(Constants.INCLUDE_WARMUP_RUN);
@@ -151,7 +152,8 @@ public class Engine {
                     new JapexClassLoader(_driverImpl.getParam(Constants.CLASS_PATH));
 		Thread.currentThread().setContextClassLoader(jcLoader);
  
-                System.out.print("  " + _driverImpl.getName() + " using " + nOfThreads + " thread(s)");
+                System.out.print("  " + _driverImpl.getName() + " using " 
+                    + nOfThreads + " thread(s) on " + nOfCpus + " cpu(s)");
                 
                 // Allocate a matrix of nOfThreads * runPerDriver size and initialize each instance
                 _drivers = new JapexDriverBase[nOfThreads][runsPerDriver];
@@ -280,6 +282,7 @@ public class Engine {
     private void forEachTestCase() {
         try {
             long endTime;
+            int nOfCpus = _driverImpl.getIntParam(Constants.NUMBER_OF_CPUS);
             int nOfThreads = _driverImpl.getIntParam(Constants.NUMBER_OF_THREADS);
             
             // Get list of tests
@@ -389,7 +392,7 @@ public class Engine {
                     result = tc.getDoubleParam(Constants.RESULT_VALUE);
                 }
                 else {
-                     result = computeResultValue(tc, nOfThreads);
+                     result = computeResultValue(tc, nOfThreads, nOfCpus);
                      tc.setDoubleParam(Constants.RESULT_VALUE, result);
                 }        
 
@@ -434,7 +437,15 @@ public class Engine {
         return time;
     }
 
-    private double computeResultValue(TestCase tc, int nOfThreads) {
+    /**
+     * Compute Tx, L and Mbps
+     * 
+     * T = test duration in seconds
+     * N = number of threads 
+     * C = number of CPUs available on the system
+     * I = number of iterations
+     */        
+    private double computeResultValue(TestCase tc, int nOfThreads, int nOfCpus) {
         String resultUnit = _testSuite.getParam(Constants.RESULT_UNIT);
         boolean isTimeFixed = tc.hasParam(Constants.RUN_TIME);
         
@@ -442,59 +453,59 @@ public class Engine {
             if (isTimeFixed) {
                 System.out.println("             " + 
                     Thread.currentThread().getName() + 
-                        " japex.actualRunIterationsSum = " +
-                            tc.getLongParam(Constants.ACTUAL_RUN_ITERATIONS_SUM)); 
+                        " japex.runIterationsSum = " +
+                            tc.getLongParam(Constants.RUN_ITERATIONS_SUM)); 
             }
             else {
                 System.out.println("             " + 
                     Thread.currentThread().getName() + 
-                        " japex.actualRunTimeSum (millis) = " +
-                            tc.getLongParam(Constants.ACTUAL_RUN_TIME_SUM));
+                        " japex.runTimeSum (ms) = " +
+                            tc.getDoubleParam(Constants.RUN_TIME_SUM));
             }
         }
 
-        // Compute TPS depending on case
+        // Compute average run time across all threads
+        double avgT = tc.getDoubleParam(Constants.RUN_TIME_SUM) / nOfThreads;
+        
+        // Compute throughput in TPS based on config params
         double tps;
         if (isTimeFixed) {
-            // TPS = sum(I_k) / T
-            tps = tc.getLongParam(Constants.ACTUAL_RUN_ITERATIONS_SUM) /
-                  tc.getDoubleParam(Constants.RUN_TIME);    // in secs
+            // Tx = sum(I_k) / T for k in 1..N
+            tps = tc.getLongParam(Constants.RUN_ITERATIONS_SUM) /
+                  (Util.parseDuration(tc.getParam(Constants.RUN_TIME)) / 1000.0);
         } 
         else {
-            // TPS = N * I / avg(T_k) -- actualRunTimeSum in millis 
+            // Tx = N * I / avg(T_k) for k in 1..N
             tps = (nOfThreads * tc.getLongParam(Constants.RUN_ITERATIONS)) /
-                  (tc.getDoubleParam(Constants.ACTUAL_RUN_TIME_SUM) / 1000.0 / nOfThreads);  
+                  (avgT / 1000.0);  
         }
+        
+        // Compute latency as L = (min(C, N) / Tx) * 1000
+        double l = Math.min(nOfCpus, nOfThreads) / tps * 1000.0;
         
         if (resultUnit == null || resultUnit.equalsIgnoreCase("tps")) {
             return tps;
         }
-        // MS = (N / TPS) * 1000
         else if (resultUnit.equalsIgnoreCase("ms")) {
-            return (nOfThreads / tps) * 1000.0;
+            return l;
         }
-        // MBPS = size-in-mbits * TPS 
+        // Mbps = size-in-mbits * Tx 
         else if (resultUnit.equalsIgnoreCase("mbps")) {
             // Check if japex.inputFile was defined
             String inputFile = tc.getParam(Constants.INPUT_FILE);            
             if (inputFile == null) {
                 throw new RuntimeException("Unable to compute japex.resultValue " + 
                     " because japex.inputFile is not defined or refers to an illegal path.");
-            }
-
-            // Calculate Mbps
+            }            
             return new File(inputFile).length() * 0.000008d * tps;
         }     
         else if (resultUnit.equalsIgnoreCase("%GCTIME")) {      // EXPERIMENTAL
             // Calculate % of GC relative to the run time
-            double gctime = 
-                (_gCTime / tc.getDoubleParam(Constants.ACTUAL_RUN_TIME)) * 100.0;
+            double gctime = (_gCTime / avgT) * 100.0;
             
-            // Add the actual runtime to the X axis
-            // Scatter plots can be used to present %GCTIME and actual time
+            // Report latency on the X axis
             _testSuite.setParam(Constants.RESULT_UNIT_X, "ms");
-            tc.setDoubleParam(Constants.RESULT_VALUE_X, (nOfThreads / tps) * 1000.0);
-            
+            tc.setDoubleParam(Constants.RESULT_VALUE_X, l);
             return gctime;
         }
         else {

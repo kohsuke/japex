@@ -173,6 +173,8 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
         setParam(Constants.VM_INFO,
             System.getProperty("java.vendor") + " " + 
             System.getProperty("java.vm.version"));
+        setIntParam(Constants.NUMBER_OF_CPUS, 
+            Runtime.getRuntime().availableProcessors());
                 
         // Create and populate list of drivers
         Iterator it = ts.getDriver().iterator();

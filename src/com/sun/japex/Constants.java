@@ -59,12 +59,13 @@ public class Constants {
     
     // Global output parameters
     public static final String VERSION         = "japex.version";
-    public static final String VERSION_VALUE   = "1.0.1";
+    public static final String VERSION_VALUE   = "1.0.2";
     public static final String OS_NAME         = "japex.osName";
     public static final String OS_ARCHITECTURE = "japex.osArchitecture";
     public static final String DATE_TIME       = "japex.dateTime";
     public static final String VM_INFO         = "japex.vmInfo";
     public static final String CONFIG_FILE     = "japex.configFile";
+    public static final String NUMBER_OF_CPUS  = "japex.numberOfCpus";
     
     // Driver input parameters        
     public static final String DRIVER_CLASS = "japex.driverClass";
@@ -94,26 +95,24 @@ public class Constants {
     // Testcase output parameters
     public static final String ACTUAL_RUN_ITERATIONS = "japex.actualRunIterations";
     public static final String ACTUAL_WARMUP_ITERATIONS = "japex.actualWarmupIterations";    
-    public static final String ACTUAL_RUN_TIME     = "japex.actualRunTime";
-    public static final String ACTUAL_WARMUP_TIME  = "japex.actualWarmupTime";
-    public static final String ACTUAL_RUN_ITERATIONS_SUM    = "japex.actualRunIterationsSum";
-    public static final String ACTUAL_WARMUP_ITERATIONS_SUM = "japex.actualWarmupIterationsSum";    
-    public static final String ACTUAL_RUN_TIME_SUM    = "japex.actualRunTime";
-    public static final String ACTUAL_WARMUP_TIME_SUM = "japex.actualWarmupTime";
+    public static final String ACTUAL_RUN_TIME      = "japex.actualRunTime";
+    public static final String ACTUAL_WARMUP_TIME   = "japex.actualWarmupTime";
     public static final String ACTUAL_PREPARE_TIME  = "japex.actualPrepareTime";        
     public static final String RESULT_VALUE         = "japex.resultValue";
     public static final String RESULT_VALUE_STDDEV  = "japex.resultValueStddev";
     public static final String RESULT_VALUE_X       = "japex.resultValueX";
     public static final String RESULT_VALUE_X_STDDEV  = "japex.resultValueXStddev";
+    public static final String RUN_ITERATIONS_SUM   = "japex.runIterationsSum";
+    public static final String RUN_TIME_SUM         = "japex.runTimeSum";
     
     // Default values
-    public static final String DEFAULT_WARMUP_ITERATIONS = "300";
-    public static final String DEFAULT_RUN_ITERATIONS    = "300";
-    public static final String DEFAULT_NUMBER_OF_THREADS = "1";
-    public static final String DEFAULT_RUNS_PER_DRIVER   = "1";
-    public static final String DEFAULT_REPORTS_DIRECTORY = "reports";
+    public static final String DEFAULT_WARMUP_ITERATIONS  = "300";
+    public static final String DEFAULT_RUN_ITERATIONS     = "300";
+    public static final String DEFAULT_NUMBER_OF_THREADS  = "1";
+    public static final String DEFAULT_RUNS_PER_DRIVER    = "1";
+    public static final String DEFAULT_REPORTS_DIRECTORY  = "reports";
     public static final String DEFAULT_INCLUDE_WARMUP_RUN = "false";
-    public static final String DEFAULT_CHART_TYPE        = "barchart";
-    public static final String DEFAULT_RESULT_AXIS       = "normal";
+    public static final String DEFAULT_CHART_TYPE         = "barchart";
+    public static final String DEFAULT_RESULT_AXIS        = "normal";
     
 }

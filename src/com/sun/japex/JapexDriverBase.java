@@ -140,16 +140,7 @@ public class JapexDriverBase implements JapexDriver, Params {
                 warmup(tc);      // Call warmup
                 warmupIterations++;
                 millis = Util.currentTimeMillis();
-            } 
-            
-            // Accumulate actual warmup time
-            synchronized (tc) {
-                long actualWarmupIterations =  
-                    tc.hasParam(Constants.ACTUAL_WARMUP_ITERATIONS_SUM) ? 
-                        tc.getLongParam(Constants.ACTUAL_WARMUP_ITERATIONS_SUM) : 0L;
-                tc.setLongParam(Constants.ACTUAL_WARMUP_ITERATIONS_SUM, 
-                               actualWarmupIterations + warmupIterations);
-            }            
+            }             
         }
         else {
             warmupIterations = tc.getLongParam(Constants.WARMUP_ITERATIONS);
@@ -158,21 +149,12 @@ public class JapexDriverBase implements JapexDriver, Params {
             for (long i = 0; i < warmupIterations; i++) {
                 warmup(tc);      // Call warmup
             }
-            millis = Util.currentTimeMillis();
-            
-            // Accumulate actual warmup time (use millis for this sum)
-            synchronized (tc) {
-                double actualWarmupTime =
-                    tc.hasParam(Constants.ACTUAL_WARMUP_TIME_SUM) ?
-                        tc.getDoubleParam(Constants.ACTUAL_WARMUP_TIME_SUM) : 0.0;
-                tc.setDoubleParam(Constants.ACTUAL_WARMUP_TIME_SUM,
-                        actualWarmupTime + (millis - startTime));                
-            }        
+            millis = Util.currentTimeMillis();            
         }
         
         // In multi-threaded mode, last thread that ends sets these
         tc.setLongParam(Constants.ACTUAL_WARMUP_ITERATIONS, warmupIterations);
-        tc.setDoubleParam(Constants.ACTUAL_WARMUP_TIME, (millis - startTime) / 1000.0);            
+        tc.setDoubleParam(Constants.ACTUAL_WARMUP_TIME, millis - startTime);            
         
         if (Japex.verbose) {
             System.out.println("               " + 
@@ -180,7 +162,7 @@ public class JapexDriverBase implements JapexDriver, Params {
                 " japex.actualWarmupIterations = " + warmupIterations);        
             System.out.println("               " + 
                 Thread.currentThread().getName() + 
-                " japex.actualWarmupTime = " + (millis - startTime) / 1000.0);        
+                " japex.actualWarmupTime (ms) = " + (millis - startTime));        
         }            
     }
     
@@ -201,7 +183,7 @@ public class JapexDriverBase implements JapexDriver, Params {
         System.gc();    // Force GC before entering loop
         
         long runIterations = 0;
-        long millis, startTime;
+        long millis, startTime, duration;
         
         if (tc.hasParam(Constants.RUN_TIME)) {
             startTime = Util.currentTimeMillis();
@@ -213,13 +195,15 @@ public class JapexDriverBase implements JapexDriver, Params {
                 millis = Util.currentTimeMillis();
             } while (_endTime >= millis);
             
-            // Accumulate actual number of iterations
+            duration = millis - startTime;
+            
+            // Accumulate number of iterations
             synchronized (tc) {
-                long actualRunIterations =  
-                    tc.hasParam(Constants.ACTUAL_RUN_ITERATIONS_SUM) ? 
-                        tc.getLongParam(Constants.ACTUAL_RUN_ITERATIONS_SUM) : 0L;
-                tc.setLongParam(Constants.ACTUAL_RUN_ITERATIONS_SUM, 
-                               actualRunIterations + runIterations);
+                long runIterationsSum =  
+                    tc.hasParam(Constants.RUN_ITERATIONS_SUM) ? 
+                        tc.getLongParam(Constants.RUN_ITERATIONS_SUM) : 0L;
+                tc.setLongParam(Constants.RUN_ITERATIONS_SUM, 
+                               runIterationsSum + runIterations);
             }        
         }
         else {
@@ -230,21 +214,21 @@ public class JapexDriverBase implements JapexDriver, Params {
             for (long i = 0; i < runIterations; i++) {
                 run(tc);      // Call run
             }
-            millis = Util.currentTimeMillis();
+            duration = Util.currentTimeMillis() - startTime;
             
-            // Accumulate actual run time (use millis for this sum)
+            // Accumulate run time (use millis for this sum)
             synchronized (tc) {
-                double actualRunTime =
-                    tc.hasParam(Constants.ACTUAL_RUN_TIME_SUM) ?
-                        tc.getDoubleParam(Constants.ACTUAL_RUN_TIME_SUM) : 0.0;
-                tc.setDoubleParam(Constants.ACTUAL_RUN_TIME_SUM,
-                                  actualRunTime + (millis - startTime));
+                double runTimeSum =
+                    tc.hasParam(Constants.RUN_TIME_SUM) ?
+                        tc.getDoubleParam(Constants.RUN_TIME_SUM) : 0.0;
+                tc.setDoubleParam(Constants.RUN_TIME_SUM,
+                                  runTimeSum + duration);
             }        
         }
         
         // In multi-threaded mode, last thread that ends sets these
         tc.setLongParam(Constants.ACTUAL_RUN_ITERATIONS, runIterations);
-        tc.setDoubleParam(Constants.ACTUAL_RUN_TIME, (millis - startTime) / 1000.0);
+        tc.setDoubleParam(Constants.ACTUAL_RUN_TIME, duration);
         
         if (Japex.verbose) {
             System.out.println("               " + 
@@ -252,7 +236,7 @@ public class JapexDriverBase implements JapexDriver, Params {
                 " japex.actualRunIterations = " + runIterations);        
             System.out.println("               " + 
                 Thread.currentThread().getName() + 
-                " japex.actualRunTime = " + (millis - startTime) / 1000.0);        
+                " japex.actualRunTime (ms) = " + duration);        
         }            
     }
         
