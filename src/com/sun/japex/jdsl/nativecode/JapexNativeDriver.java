@@ -86,7 +86,7 @@ public class JapexNativeDriver extends JapexDriverBase {
         // Force GC
         System.gc();
         
-        long millis, startTime;        
+        long millis, startTime, duration;        
         int runIterations = 0;
         
         if (tc.hasParam(Constants.RUN_TIME)) {
@@ -94,17 +94,16 @@ public class JapexNativeDriver extends JapexDriverBase {
              * Compute duration by substracting current time from _endTime.
              * This is needed to ensure that the Java and native drivers 
              * run for the same period of time, i.e. until _endTime.
-             */ 
-            startTime = Util.currentTimeMillis();           
-            runIterations = runLoopDuration(_endTime - startTime, _userData);
-            millis = Util.currentTimeMillis();            
+             */             
+            duration = _endTime - Util.currentTimeMillis();
+            runIterations = runLoopDuration(duration, _userData);
             
             // Accumulate actual number of iterations
             synchronized (tc) {
                 long actualRunIterations =  
-                    tc.hasParam(Constants.ACTUAL_RUN_ITERATIONS_SUM) ? 
-                        tc.getLongParam(Constants.ACTUAL_RUN_ITERATIONS_SUM) : 0L;
-                tc.setLongParam(Constants.ACTUAL_RUN_ITERATIONS_SUM, 
+                    tc.hasParam(Constants.RUN_ITERATIONS_SUM) ? 
+                        tc.getLongParam(Constants.RUN_ITERATIONS_SUM) : 0L;
+                tc.setLongParam(Constants.RUN_ITERATIONS_SUM, 
                                actualRunIterations + runIterations);
             }        
         }
@@ -113,21 +112,21 @@ public class JapexNativeDriver extends JapexDriverBase {
             
             startTime = Util.currentTimeMillis();
 	    runLoopIterations(runIterations, _userData);
-            millis = Util.currentTimeMillis();
+            duration = Util.currentTimeMillis() - startTime;
             
             // Accumulate actual run time (use millis for this sum)
             synchronized (tc) {
                 double actualRunTime =
-                    tc.hasParam(Constants.ACTUAL_RUN_TIME_SUM) ?
-                        tc.getDoubleParam(Constants.ACTUAL_RUN_TIME_SUM) : 0.0;
-                tc.setDoubleParam(Constants.ACTUAL_RUN_TIME_SUM,
-                                  actualRunTime + (millis - startTime));
+                    tc.hasParam(Constants.RUN_TIME_SUM) ?
+                        tc.getDoubleParam(Constants.RUN_TIME_SUM) : 0.0;
+                tc.setDoubleParam(Constants.RUN_TIME_SUM,
+                                  actualRunTime + duration);
             }                
         }        
         
         // In multi-threaded mode, last thread that ends sets these
         tc.setLongParam(Constants.ACTUAL_RUN_ITERATIONS, runIterations);
-        tc.setDoubleParam(Constants.ACTUAL_RUN_TIME, (millis - startTime) / 1000.0);
+        tc.setDoubleParam(Constants.ACTUAL_RUN_TIME, duration);
         
         if (Japex.verbose) {
             System.out.println("               " + 
@@ -135,7 +134,7 @@ public class JapexNativeDriver extends JapexDriverBase {
                 " japex.actualRunIterations = " + runIterations);        
             System.out.println("               " + 
                 Thread.currentThread().getName() + 
-                " japex.actualRunTime = " + (millis - startTime) / 1000.0);        
+                " japex.actualRunTime (ms) = " + duration);        
         }                    
     }
 
