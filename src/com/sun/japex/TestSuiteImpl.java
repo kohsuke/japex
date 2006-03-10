@@ -127,6 +127,11 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
                     "must be set to either 'normal' or 'logarithmic'");            
         }
         
+        // Check result unit and set default if necessary 
+        if (!hasParam(Constants.RESULT_UNIT)) {
+            setParam(Constants.RESULT_UNIT, "TPS");
+        }
+        
         // Check number of threads 
         if (!hasParam(Constants.NUMBER_OF_THREADS)) {
             setParam(Constants.NUMBER_OF_THREADS, 
