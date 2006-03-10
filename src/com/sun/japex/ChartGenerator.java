@@ -57,10 +57,24 @@ import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 
 public class ChartGenerator {
     
+    /**
+     * Test suite for which chart will be generated.
+     */
     TestSuiteImpl _testSuite;
+    
+    /**
+     * Chart width and height as a function of the number of
+     * drivers in the test suite.
+     */
+    final int _chartWidth, _chartHeight;
     
     public ChartGenerator(TestSuiteImpl testSuite) {
         _testSuite = testSuite;        
+        
+        // Calculate charts width and height (min = 750, max = 1500)
+        int nOfDrivers = _testSuite.getDriverInfoList().size();
+        _chartWidth = Math.min(Math.max(nOfDrivers * 80, 750), 1500);
+        _chartHeight = (int) Math.round(_chartWidth * 0.6);    
     }
     
     public void generateDriverChart(String fileName) {
@@ -80,8 +94,10 @@ public class ChartGenerator {
             else {
                 assert false;
             }
+            
             chart.setAntiAlias(true);            
-            ChartUtilities.saveChartAsJPEG(new File(fileName), chart, 600, 450);       
+            ChartUtilities.saveChartAsJPEG(new File(fileName), chart, 
+                _chartWidth, _chartHeight);       
         }
         catch (RuntimeException e) {
             throw e;
@@ -344,7 +360,7 @@ public class ChartGenerator {
                     chart.setAntiAlias(true);
                     ChartUtilities.saveChartAsJPEG(
                         new File(baseName + Integer.toString(nOfFiles) + extension),
-                        chart, 600, 450);
+                        chart, _chartWidth, _chartHeight);
                     
                     nOfFiles++;
                     groupSizesIndex++;
@@ -418,7 +434,7 @@ public class ChartGenerator {
             chart.setAntiAlias(true);
             ChartUtilities.saveChartAsJPEG(
                 new File(baseName + Integer.toString(nOfFiles) + extension),
-                chart, 600, 450);
+                chart, _chartWidth, _chartHeight);
             nOfFiles++;
         }
         catch (RuntimeException e) {
@@ -470,7 +486,7 @@ public class ChartGenerator {
                 chart.setAntiAlias(true);
                 ChartUtilities.saveChartAsJPEG(
                     new File(baseName + Integer.toString(i) + extension),
-                    chart, 600, 450);
+                    chart, _chartWidth, _chartHeight);
             }            
         }
         catch (RuntimeException e) {
