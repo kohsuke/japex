@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html
   PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Japex</title><link rel="stylesheet" href="/Users/sp106478/Projects/japex/docs/manual.css" type="text/css"/><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"/></head><body><div class="article" lang="en"><div class="titlepage"><div><div><h1 class="title"><a id="d0e3"/>Japex</h1></div><div><h3 class="subtitle"><i>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Japex</title><link rel="stylesheet" href="manual.css" type="text/css"/><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"/></head><body><div class="article" lang="en"><div class="titlepage"><div><div><h1 class="title"><a id="d0e3"/>Japex</h1></div><div><h3 class="subtitle"><i>
             <sub>Updated March 14, 2006</sub>
         </i></h3></div><div><div class="author"><h3 class="author"><span class="firstname">Santiago</span> <span class="surname">Pericas-Geertsen</span></h3><code class="email">&lt;<a href="mailto:Santiago.PericasGeertsen@sun.com">Santiago.PericasGeertsen@sun.com</a>&gt;</code></div></div></div><hr/></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="#d0e18">Introduction</a></span></dt><dt><span class="sect1"><a href="#d0e45">Writing Drivers</a></span></dt><dt><span class="sect1"><a href="#TestSuites">Test Suites</a></span></dt><dt><span class="sect1"><a href="#d0e211">Normalizing Results</a></span></dt><dt><span class="sect1"><a href="#d0e244">Customizing Japex</a></span></dt><dt><span class="sect1"><a href="#d0e345">Class Paths and Class Loaders</a></span></dt><dt><span class="sect1"><a href="#d0e368">Parameter Values</a></span></dt><dt><span class="sect1"><a href="#d0e382">Setting Parameters Using System Properties</a></span></dt><dt><span class="sect1"><a href="#Reference">Parameter Reference</a></span></dt><dt><span class="sect1"><a href="#d0e618">References</a></span></dt></dl></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="d0e18"/>Introduction</h2></div></div></div><p> Japex is a simple yet powerful tool to write Java-based micro-benchmarks. It is
             similar in spirit to <a href="#JUnit">[JUnit]</a> in that if factors out most of
@@ -171,7 +171,7 @@
             value for <span class="token">japex.resultValue</span>. These calculations should take place during
             the finish phase, i.e., during the call to the <span class="token">finish()</span> method. A number
             of output parameters are made available to the drivers for this purpose, see Section
-                <a href="#">[Testcase Reference]</a> for more information.</p><p>The following is an example of a driver that outputs the size of an XML file (defined
+                <a href="#Reference" title="Parameter Reference">[Testcase Reference]</a> for more information.</p><p>The following is an example of a driver that outputs the size of an XML file (defined
             by the testcase parameter "xmlfile") in kilobytes:</p><div class="example"><a id="d0e324"/><p class="title"><b>Example 4. Setting the japex.resultUnit and japex.resultValue parameters</b></p><pre class="programlisting">    public void finish(TestCase testCase) {
         String xmlFile = testCase.getParam("xmlfile");
         if (xmlFile == null) {
