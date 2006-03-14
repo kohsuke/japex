@@ -132,7 +132,7 @@ public class Util {
             // Falls through
         }
         throw new RuntimeException("Duration '" + duration 
-            + "' does not conform to pattern '((HH:)?MM:)?SS'");
+            + "' does not conform to pattern '((HH:)?MM:)?S?S'");
     }        
     
     public static long currentTimeNanos() {
