@@ -44,6 +44,8 @@ import java.text.*;
 
 import com.sun.japex.testsuite.*;
 
+import static com.sun.japex.testsuite.TestSuiteElement.ParamGroupType;
+
 public class TestSuiteImpl extends ParamsImpl implements TestSuite {
     
     String _name;
@@ -59,7 +61,7 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
         _name = ts.getName();
         
         // Set global properties by traversing JAXB's model
-        List params = ts.getParam();
+        List params = flattenParamGroups(ts.getParamGroupOrParam());
         final String pathSep = System.getProperty("path.separator");
         List classPathURLs = new ArrayList();
         
@@ -188,7 +190,7 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
                 dt.isNormal(), this);
                         
             // Copy params from JAXB object to Japex object
-            for (ParamType pt : dt.getParam()) {
+            for (ParamType pt : flattenParamGroups(dt.getParamGroupOrParam())) {
                 String name = pt.getName();
                 String value = pt.getValue();
                 String oldValue = driverInfo.getParam(name);
@@ -226,7 +228,8 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
                     }            
                     
                     // Now copy params from group object - ignore if defined
-                    for (ParamType pt : testCaseGroup.getParam()) {
+                    for (ParamType pt : 
+                            flattenParamGroups(testCaseGroup.getParamGroupOrParam())) {
                         String name = pt.getName();
                         if (!testCase.hasParam(name)) {
                             testCase.setParam(name, pt.getValue());
@@ -338,5 +341,29 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
                     
         report.append("</testSuiteReport>\n");
     }
+    
+    /**
+     * A list of params may contain one or more <paramGroup>. This method 
+     * flattens this list and returns a list of <param>. The element 
+     * <paramGroup> is only used for grouping (it has no associated
+     * semantics) and cannot be nested.
+     */
+    static private List<ParamType> flattenParamGroups(
+        List<Object> paramGroupOrParams) 
+    {
+        List<ParamType> result = new ArrayList<ParamType>();
+        for (Object o : paramGroupOrParams) {
+            if (o instanceof ParamType) {
+                result.add((ParamType) o);
+            }
+            else {
+                ParamGroupType paramGroupType = (ParamGroupType) o;
+                for (ParamType p : paramGroupType.getParam()) {
+                    result.add(p);
+                }
+            }
+        }
+        return result;
+    }    
     
 }

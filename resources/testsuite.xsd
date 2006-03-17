@@ -35,19 +35,31 @@
         <xsd:attribute name="name" type="xsd:string" use="required"/>
     </xsd:complexType>
   
+    <xsd:group id="ParamGroupOrParam" name="ParamGroupOrParam">
+        <xsd:choice>
+            <xsd:element name="paramGroup">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="param" type="tns:ParamType" 
+                        minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                    <xsd:attribute name="name" type="xsd:string" use="optional"/>
+                </xsd:complexType>
+            </xsd:element>                
+            <xsd:element name="param" type="tns:ParamType"/>
+        </xsd:choice>         
+    </xsd:group>
+    
     <xsd:element name="testSuite">
         <xsd:complexType>
             <xsd:sequence>
-                <!-- Zero or more global params -->
-                <xsd:element name="param" type="tns:ParamType" minOccurs="0"
-                maxOccurs="unbounded"/>
+                <xsd:group ref="tns:ParamGroupOrParam" minOccurs="0" maxOccurs="unbounded"/>
 
                 <!-- One or more drivers -->
                 <xsd:element name="driver" minOccurs="1" maxOccurs="unbounded">
                     <xsd:complexType>
                         <xsd:sequence>
-                            <xsd:element name="param" type="tns:ParamType" minOccurs="0"
-                            maxOccurs="unbounded"/>
+                            <xsd:group ref="tns:ParamGroupOrParam" minOccurs="0" maxOccurs="unbounded"/>
                         </xsd:sequence>
                         <xsd:attribute name="name" type="xsd:string" use="required"/>
                         <xsd:attribute name="normal" type="xsd:boolean" default="false"/>
@@ -59,8 +71,7 @@
                     <xsd:element name="testCaseGroup">
                         <xsd:complexType>
                             <xsd:sequence>
-                                <xsd:element name="param" type="tns:ParamType" 
-                                minOccurs="0" maxOccurs="unbounded"/>
+                                <xsd:group ref="tns:ParamGroupOrParam" minOccurs="0" maxOccurs="unbounded"/>
                                 <xsd:element name="testCase" type="tns:TestCaseType" 
                                 minOccurs="1" maxOccurs="unbounded"/>
                             </xsd:sequence>

@@ -43,6 +43,9 @@ import java.io.*;
 import java.util.ArrayList;
 import javax.xml.bind.*;
 import com.sun.japex.testsuite.*;
+import javax.xml.parsers.*;
+import javax.xml.transform.sax.SAXSource;
+import org.xml.sax.InputSource;
 
 public class ConfigFileLoader {
     
@@ -50,11 +53,25 @@ public class ConfigFileLoader {
     
     public ConfigFileLoader(String fileName) throws ConfigFileException {
         try {
+            // Create an XInclude aware SAX parser
+            SAXParserFactory spf = SAXParserFactory.newInstance();
+            spf.setNamespaceAware(true);
+            try {
+                spf.setXIncludeAware(true);
+            }
+            catch (UnsupportedOperationException e) {
+                System.err.print("Warning: Available SAX parser factory does not support XInclude");
+            }
+            SAXParser parser = spf.newSAXParser();
+                        
+            // Create a JAXB unmarshaller
             JAXBContext ctx = JAXBContext.newInstance("com.sun.japex.testsuite");
             Unmarshaller u = ctx.createUnmarshaller();
-            
-            // Unmarshall config file into JAXB object
-            TestSuiteElement testsuite = (TestSuiteElement) u.unmarshal(new File(fileName));
+
+            // Unmarshall using SAXSource to pass XInclude SAX parser
+            SAXSource saxSource = new SAXSource(parser.getXMLReader(),
+                new InputSource(new File(fileName).toURL().toString()));
+            TestSuiteElement testsuite = (TestSuiteElement) u.unmarshal(saxSource);
             
             // Map JAXB object model to internal object model
             _testSuite = new TestSuiteImpl(testsuite);         
