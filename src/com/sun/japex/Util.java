@@ -43,6 +43,7 @@ import java.io.*;
 import java.util.*;
 import java.lang.reflect.*;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.net.URL;
 import java.net.URLClassLoader;
 
@@ -196,8 +197,19 @@ public class Util {
         // Return standard deviation
         return Math.sqrt(variance);
     }
-    
-    static DecimalFormat _decimalFormat = new DecimalFormat("0.000");
+
+    /**
+     * Create an instance of <code>DecimalFormat</code> to format numbers
+     * as xsd:decimal. That is, using '.' as decimal separator and without
+     * using ',' for grouping. 
+     */
+    static DecimalFormat _decimalFormat;    
+    static {
+        DecimalFormatSymbols dfs = new DecimalFormatSymbols(Locale.US);
+        dfs.setDecimalSeparator('.');   // should be redundant
+        _decimalFormat = new DecimalFormat("0.000", dfs);
+        _decimalFormat.setGroupingSize(Byte.MAX_VALUE);        
+    }
     
     public static String formatDouble(double value) {
         return _decimalFormat.format(value);   
