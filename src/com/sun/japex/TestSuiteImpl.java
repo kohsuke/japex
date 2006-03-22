@@ -184,10 +184,45 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
             Runtime.getRuntime().availableProcessors());
                 
         // Create and populate list of drivers
+        List<DriverImpl> baseDriversUsed = new ArrayList<DriverImpl>();
+        
         for (TestSuiteElement.DriverType dt : ts.getDriver()) {
-            // Create new DriverImpl
-            DriverImpl driverInfo = new DriverImpl(dt.getName(), 
-                dt.isNormal(), this);
+            DriverImpl driverInfo = null;
+            
+            // Check if this driver extends another
+            String baseDriver = dt.getExtends();
+            if (baseDriver != null) {
+                boolean baseDriverFound = false;
+                for (DriverImpl base : _driverInfo) {
+                    if (base.getName().equals(baseDriver)) {
+                        // Cloning works in depth for parameters
+                        driverInfo = (DriverImpl) base.clone();  
+                        
+                        // Set name and normal attribute
+                        driverInfo.setNormal(dt.isNormal());
+                        driverInfo.setBaseName(driverInfo.getName());
+                        driverInfo.setName(dt.getName());
+                        
+                        // Add base driver so that it is removed 
+                        if (!baseDriversUsed.contains(base)) {
+                            baseDriversUsed.add(base);
+                        }
+                        
+                        baseDriverFound = true;
+                        break;
+                    }
+                }
+                
+                // Report an error if base driver has not been defined yet
+                if (!baseDriverFound) {
+                    throw new RuntimeException("Base driver '" + baseDriver + 
+                        "' used to extend '" + dt.getName() + "' not found");
+                }
+            }
+            else {
+                // Create new DriverImpl
+                driverInfo = new DriverImpl(dt.getName(), dt.isNormal(), this);
+            }
                         
             // Copy params from JAXB object to Japex object
             for (ParamType pt : flattenParamGroups(dt.getParamGroupOrParam())) {
@@ -195,7 +230,11 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
                 String value = pt.getValue();
                 String oldValue = driverInfo.getParam(name);
                 
-                // If japex.classPath, append to existing value
+                /*
+                 * If japex.classPath, append to existing value. Note that 
+                 * this prevents fully redefining a class path when extending
+                 * another driver. May need to revise this later.
+                 */
                 driverInfo.setParam(name, 
                     name.equals(Constants.CLASS_PATH) && oldValue != null ?
                     (oldValue + pathSep + value) : value);
@@ -207,6 +246,11 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
             }          
 
             _driverInfo.add(driverInfo);
+        }
+        
+        // Remove base drivers in used so that they are ignored
+        for (DriverImpl driverInfo : baseDriversUsed) {
+            _driverInfo.remove(driverInfo);
         }
 
         // Create and populate list of test cases

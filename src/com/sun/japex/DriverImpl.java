@@ -41,12 +41,17 @@ package com.sun.japex;
 
 import java.util.*;
 
-public class DriverImpl extends ParamsImpl implements Driver {
+public class DriverImpl extends ParamsImpl implements Driver, Cloneable {
     
     /**
      * This driver's name.
      */
     String _name;
+    
+    /**
+     * Name of the driver that this driver extends.
+     */
+    String _baseName = null;
     
     /**
      * True if all other results should be normalized based
@@ -79,6 +84,10 @@ public class DriverImpl extends ParamsImpl implements Driver {
         super(params);
         _name = name;
         _isNormal = isNormal;
+    }
+    
+    public Object clone() {
+        return super.clone();
     }
     
     public void setTestCases(TestCaseArrayList testCases) {
@@ -246,11 +255,27 @@ public class DriverImpl extends ParamsImpl implements Driver {
     }
     
     public String getName() {
-        return _name;
+        return _name;    
     }    
+    
+    public void setName(String name) {
+        _name = name;
+    }
+    
+    public String getBaseName() {
+        return _baseName;    
+    }    
+    
+    public void setBaseName(String name) {
+        _baseName = name;
+    }
     
     public boolean isNormal() {
         return _isNormal;
+    }
+    
+    public void setNormal(boolean b) {
+        _isNormal = b;
     }
     
     /**
