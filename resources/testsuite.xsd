@@ -30,7 +30,7 @@
     <xsd:complexType name="TestCaseType">
         <xsd:sequence>
             <xsd:element name="param" type="tns:ParamType" 
-            minOccurs="0" maxOccurs="unbounded"/>
+                         minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="name" type="xsd:string" use="required"/>
     </xsd:complexType>
@@ -41,7 +41,7 @@
                 <xsd:complexType>
                     <xsd:sequence>
                         <xsd:element name="param" type="tns:ParamType" 
-                        minOccurs="0" maxOccurs="unbounded"/>
+                                     minOccurs="0" maxOccurs="unbounded"/>
                     </xsd:sequence>
                     <xsd:attribute name="name" type="xsd:string" use="optional"/>
                 </xsd:complexType>
@@ -50,23 +50,35 @@
         </xsd:choice>         
     </xsd:group>
     
+    <xsd:complexType name="DriverType">
+        <xsd:sequence>
+            <xsd:group ref="tns:ParamGroupOrParam" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="normal" type="xsd:boolean" default="false"/>
+        <xsd:attribute name="extends" type="xsd:string" use="optional"/>
+    </xsd:complexType>
+        
     <xsd:element name="testSuite">
         <xsd:complexType>
             <xsd:sequence>
                 <xsd:group ref="tns:ParamGroupOrParam" minOccurs="0" maxOccurs="unbounded"/>
 
                 <!-- One or more drivers -->
-                <xsd:element name="driver" minOccurs="1" maxOccurs="unbounded">
-                    <xsd:complexType>
-                        <xsd:sequence>
-                            <xsd:group ref="tns:ParamGroupOrParam" minOccurs="0" maxOccurs="unbounded"/>
-                        </xsd:sequence>
-                        <xsd:attribute name="name" type="xsd:string" use="required"/>
-                        <xsd:attribute name="normal" type="xsd:boolean" default="false"/>
-                        <xsd:attribute name="extends" type="xsd:string" use="optional"/>
-                    </xsd:complexType>
-                </xsd:element>       
-        
+                <xsd:choice minOccurs="1" maxOccurs="unbounded">
+                    <xsd:element name="driverGroup">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:group ref="tns:ParamGroupOrParam" minOccurs="0" maxOccurs="unbounded"/>
+                                <xsd:element name="driver" type="tns:DriverType" 
+                                             minOccurs="1" maxOccurs="unbounded"/>
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="optional"/>
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="driver" type="tns:DriverType"/>
+                </xsd:choice>
+                
                 <!-- Choice of One or more groups or test cases -->        
                 <xsd:choice minOccurs="1" maxOccurs="unbounded">
                     <xsd:element name="testCaseGroup">
@@ -74,7 +86,7 @@
                             <xsd:sequence>
                                 <xsd:group ref="tns:ParamGroupOrParam" minOccurs="0" maxOccurs="unbounded"/>
                                 <xsd:element name="testCase" type="tns:TestCaseType" 
-                                minOccurs="1" maxOccurs="unbounded"/>
+                                             minOccurs="1" maxOccurs="unbounded"/>
                             </xsd:sequence>
                             <xsd:attribute name="name" type="xsd:string" use="optional"/>
                         </xsd:complexType>

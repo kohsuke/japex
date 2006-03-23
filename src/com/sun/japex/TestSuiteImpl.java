@@ -44,13 +44,33 @@ import java.text.*;
 
 import com.sun.japex.testsuite.*;
 
-import static com.sun.japex.testsuite.TestSuiteElement.ParamGroupType;
+import static com.sun.japex.testsuite.DriverType.ParamGroupType;
+import static com.sun.japex.testsuite.TestSuiteElement.DriverGroupType;
+import static com.sun.japex.testsuite.TestSuiteElement.TestCaseGroupType;
 
 public class TestSuiteImpl extends ParamsImpl implements TestSuite {
     
+    final static String PATH_SEPARATOR = System.getProperty("path.separator");
+    
+    /**
+     * This test suite's name.
+     */
     String _name;
+    
+    /**
+     * Final list of drivers that resulted from parsing the 
+     * configuration file. Note that base drivers that are used
+     * for extension are omitted from the final list.
+     */
     List<DriverImpl> _driverInfo = new ArrayList<DriverImpl>();
     
+    /*
+     * This is a temporary list of base drivers that are used
+     * to extend others. Drivers in this list will eventually
+     * be removed from <code>_driverInfo</code>.
+     */
+    List<DriverImpl> _baseDriversUsed = new ArrayList<DriverImpl>();
+        
     /**
      * Creates a new instance of TestSuiteImpl from a JAXB-generated
      * object. In essence, this constructor implements a mapping
@@ -62,7 +82,6 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
         
         // Set global properties by traversing JAXB's model
         List params = flattenParamGroups(ts.getParamGroupOrParam());
-        final String pathSep = System.getProperty("path.separator");
         List classPathURLs = new ArrayList();
         
         if (params != null) {
@@ -76,7 +95,7 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
                 // If japex.classPath, append to existing value
                 setParam(name, 
                     name.equals(Constants.CLASS_PATH) && oldValue != null ?
-                    (oldValue + pathSep + value) : value);
+                    (oldValue + PATH_SEPARATOR + value) : value);
             }
         }
         
@@ -184,72 +203,37 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
             Runtime.getRuntime().availableProcessors());
                 
         // Create and populate list of drivers
-        List<DriverImpl> baseDriversUsed = new ArrayList<DriverImpl>();
-        
-        for (TestSuiteElement.DriverType dt : ts.getDriver()) {
+        for (Object driverGroupOrDriver : ts.getDriverGroupOrDriver()) {
             DriverImpl driverInfo = null;
             
-            // Check if this driver extends another
-            String baseDriver = dt.getExtends();
-            if (baseDriver != null) {
-                boolean baseDriverFound = false;
-                for (DriverImpl base : _driverInfo) {
-                    if (base.getName().equals(baseDriver)) {
-                        // Cloning works in depth for parameters
-                        driverInfo = (DriverImpl) base.clone();  
-                        
-                        // Set name and normal attribute
-                        driverInfo.setNormal(dt.isNormal());
-                        driverInfo.setBaseName(driverInfo.getName());
-                        driverInfo.setName(dt.getName());
-                        
-                        // Add base driver so that it is removed 
-                        if (!baseDriversUsed.contains(base)) {
-                            baseDriversUsed.add(base);
-                        }
-                        
-                        baseDriverFound = true;
-                        break;
-                    }
-                }
-                
-                // Report an error if base driver has not been defined yet
-                if (!baseDriverFound) {
-                    throw new RuntimeException("Base driver '" + baseDriver + 
-                        "' used to extend '" + dt.getName() + "' not found");
-                }
+            // Single driver or driver group?
+            if (driverGroupOrDriver instanceof DriverType) {
+                driverInfo = createDriverImpl((DriverType) driverGroupOrDriver);
+                _driverInfo.add(driverInfo);
             }
             else {
-                // Create new DriverImpl
-                driverInfo = new DriverImpl(dt.getName(), dt.isNormal(), this);
-            }
-                        
-            // Copy params from JAXB object to Japex object
-            for (ParamType pt : flattenParamGroups(dt.getParamGroupOrParam())) {
-                String name = pt.getName();
-                String value = pt.getValue();
-                String oldValue = driverInfo.getParam(name);
+                DriverGroupType driverGroup = (DriverGroupType) driverGroupOrDriver;
                 
-                /*
-                 * If japex.classPath, append to existing value. Note that 
-                 * this prevents fully redefining a class path when extending
-                 * another driver. May need to revise this later.
-                 */
-                driverInfo.setParam(name, 
-                    name.equals(Constants.CLASS_PATH) && oldValue != null ?
-                    (oldValue + pathSep + value) : value);
-            }
-            
-            // If japex.driverClass not specified, use the driver's name
-            if (!driverInfo.hasParam(Constants.DRIVER_CLASS)) {
-                driverInfo.setParam(Constants.DRIVER_CLASS, dt.getName());
-            }          
-
-            _driverInfo.add(driverInfo);
+                // Create each driver and then override using group params
+                for (DriverType d : driverGroup.getDriver()) {
+                    driverInfo = createDriverImpl(d);
+                    
+                    // Now copy params from group object - ignore if defined
+                    for (ParamType pt : 
+                            flattenParamGroups(driverGroup.getParamGroupOrParam())) {
+                        String name = pt.getName();
+                        if (!driverInfo.hasParam(name)) {
+                            driverInfo.setParam(name, pt.getValue());
+                        }
+                    }            
+                            
+                    _driverInfo.add(driverInfo);
+                }                
+            }            
         }
         
-        // Remove base drivers in used so that they are ignored
-        for (DriverImpl driverInfo : baseDriversUsed) {
+        // Remove base drivers in use so that they are ignored
+        for (DriverImpl driverInfo : _baseDriversUsed) {
             _driverInfo.remove(driverInfo);
         }
 
@@ -258,9 +242,9 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
         
         for (Object testCaseOrTestGroup : ts.getTestCaseGroupOrTestCase()) {
             // Is this a test group?
-            if (testCaseOrTestGroup instanceof TestSuiteElement.TestCaseGroupType) {
-                TestSuiteElement.TestCaseGroupType testCaseGroup = 
-                    (TestSuiteElement.TestCaseGroupType) testCaseOrTestGroup;
+            if (testCaseOrTestGroup instanceof TestCaseGroupType) {
+                TestCaseGroupType testCaseGroup = 
+                    (TestCaseGroupType) testCaseOrTestGroup;
                 
                 for (TestCaseType tc : testCaseGroup.getTestCase()) {                    
                     // Create new TestCaseImpl
@@ -305,6 +289,69 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
         for (DriverImpl di: _driverInfo) {
             di.setTestCases(testCases);
         }
+    }
+    
+    private DriverImpl createDriverImpl(DriverType dt) {
+        DriverImpl driverInfo = null;
+        
+        // Check if this driver extends another
+        String baseDriver = dt.getExtends();
+        
+        if (baseDriver != null) {
+            boolean baseDriverFound = false;
+            for (DriverImpl base : _driverInfo) {
+                if (base.getName().equals(baseDriver)) {
+                    // Cloning works in depth for parameters
+                    driverInfo = (DriverImpl) base.clone();  
+
+                    // Set name and normal attribute
+                    driverInfo.setNormal(dt.isNormal());
+                    driverInfo.setBaseName(driverInfo.getName());
+                    driverInfo.setName(dt.getName());
+
+                    // Add base driver so that it is removed 
+                    if (!_baseDriversUsed.contains(base)) {
+                        _baseDriversUsed.add(base);
+                    }
+
+                    baseDriverFound = true;
+                    break;
+                }
+            }
+
+            // Report an error if base driver has not been defined yet
+            if (!baseDriverFound) {
+                throw new RuntimeException("Base driver '" + baseDriver + 
+                    "' used to extend '" + dt.getName() + "' not found");
+            }
+        }
+        else {
+            // Create new DriverImpl
+            driverInfo = new DriverImpl(dt.getName(), dt.isNormal(), this);
+        }
+
+        // Copy params from JAXB object to Japex object
+        for (ParamType pt : flattenParamGroups(dt.getParamGroupOrParam())) {
+            String name = pt.getName();
+            String value = pt.getValue();
+            String oldValue = driverInfo.getParam(name);
+
+            /*
+             * If japex.classPath, append to existing value. Note that 
+             * this prevents fully redefining a class path when extending
+             * another driver. May need to revise this later.
+             */
+            driverInfo.setParam(name, 
+                name.equals(Constants.CLASS_PATH) && oldValue != null ?
+                (oldValue + PATH_SEPARATOR + value) : value);
+        }
+
+        // If japex.driverClass not specified, use the driver's name
+        if (!driverInfo.hasParam(Constants.DRIVER_CLASS)) {
+            driverInfo.setParam(Constants.DRIVER_CLASS, dt.getName());
+        }          
+        
+        return driverInfo;
     }
     
     private boolean checkResultAxis(String paramName) {
