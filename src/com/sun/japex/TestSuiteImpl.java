@@ -215,8 +215,8 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
                 DriverGroupType driverGroup = (DriverGroupType) driverGroupOrDriver;
                 
                 // Create each driver and then override using group params
-                for (DriverType d : driverGroup.getDriver()) {
-                    driverInfo = createDriverImpl(d);
+                for (DriverType dt : driverGroup.getDriver()) {
+                    driverInfo = createDriverImpl(dt);
                     
                     // Now copy params from group object - ignore if defined
                     for (ParamType pt : 
@@ -227,6 +227,11 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
                         }
                     }            
                             
+                    // If japex.driverClass not specified, use the driver's name
+                    if (!driverInfo.hasParam(Constants.DRIVER_CLASS)) {
+                        driverInfo.setParam(Constants.DRIVER_CLASS, dt.getName());
+                    }          
+        
                     _driverInfo.add(driverInfo);
                 }                
             }            
@@ -346,11 +351,6 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
                 (oldValue + PATH_SEPARATOR + value) : value);
         }
 
-        // If japex.driverClass not specified, use the driver's name
-        if (!driverInfo.hasParam(Constants.DRIVER_CLASS)) {
-            driverInfo.setParam(Constants.DRIVER_CLASS, dt.getName());
-        }          
-        
         return driverInfo;
     }
     
