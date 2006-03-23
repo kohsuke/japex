@@ -63,6 +63,7 @@ public class FastInfosetSizeDriver extends BaseSizeDriver {
             _ds.setOutputStream(baos);
             
             SAXParser parser = createSAXParser();
+            parser.setProperty("http://xml.org/sax/properties/lexical-handler", _ds);
             parser.parse(in, _ds);
             
             _content = baos.toByteArray();
