@@ -208,25 +208,23 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
             
             // Single driver or driver group?
             if (driverGroupOrDriver instanceof DriverType) {
-                driverInfo = createDriverImpl((DriverType) driverGroupOrDriver);
+                driverInfo = createDriverImpl((DriverType) driverGroupOrDriver, this);
                 _driverInfo.add(driverInfo);
             }
             else {
                 DriverGroupType driverGroup = (DriverGroupType) driverGroupOrDriver;
                 
+                // Create group's scope using testsuite params as default
+                ParamsImpl groupScope = new ParamsImpl(this);
+                for (ParamType pt : 
+                    flattenParamGroups(driverGroup.getParamGroupOrParam())) {
+                    groupScope.setParam(pt.getName(), pt.getValue());
+                }            
+                    
                 // Create each driver and then override using group params
                 for (DriverType dt : driverGroup.getDriver()) {
-                    driverInfo = createDriverImpl(dt);
+                    driverInfo = createDriverImpl(dt, groupScope);
                     
-                    // Now copy params from group object - ignore if defined
-                    for (ParamType pt : 
-                            flattenParamGroups(driverGroup.getParamGroupOrParam())) {
-                        String name = pt.getName();
-                        if (!driverInfo.hasParam(name)) {
-                            driverInfo.setParam(name, pt.getValue());
-                        }
-                    }            
-                            
                     // If japex.driverClass not specified, use the driver's name
                     if (!driverInfo.hasParam(Constants.DRIVER_CLASS)) {
                         driverInfo.setParam(Constants.DRIVER_CLASS, dt.getName());
@@ -250,24 +248,22 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
             if (testCaseOrTestGroup instanceof TestCaseGroupType) {
                 TestCaseGroupType testCaseGroup = 
                     (TestCaseGroupType) testCaseOrTestGroup;
-                
+
+                // Create group's scope using testsuite params as default
+                ParamsImpl groupScope = new ParamsImpl(this);
+                for (ParamType pt : 
+                    flattenParamGroups(testCaseGroup.getParamGroupOrParam())) {
+                    groupScope.setParam(pt.getName(), pt.getValue());
+                }            
+                            
                 for (TestCaseType tc : testCaseGroup.getTestCase()) {                    
-                    // Create new TestCaseImpl
-                    TestCaseImpl testCase = new TestCaseImpl(tc.getName(), this);
+                    // Create new TestCaseImpl using group parameters
+                    TestCaseImpl testCase = new TestCaseImpl(tc.getName(), groupScope);
 
                     // Copy params from JAXB object to Japex object
                     for (ParamType pt : tc.getParam()) {
                         testCase.setParam(pt.getName(), pt.getValue());
-                    }            
-                    
-                    // Now copy params from group object - ignore if defined
-                    for (ParamType pt : 
-                            flattenParamGroups(testCaseGroup.getParamGroupOrParam())) {
-                        String name = pt.getName();
-                        if (!testCase.hasParam(name)) {
-                            testCase.setParam(name, pt.getValue());
-                        }
-                    }            
+                    }                                
                     
                     // Add to the list of test cases
                     testCases.add(testCase);
@@ -296,7 +292,7 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
         }
     }
     
-    private DriverImpl createDriverImpl(DriverType dt) {
+    private DriverImpl createDriverImpl(DriverType dt, ParamsImpl inScope) {
         DriverImpl driverInfo = null;
         
         // Check if this driver extends another
@@ -319,6 +315,13 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
                         _baseDriversUsed.add(base);
                     }
 
+                    // Copy in-scope params not defined in original driver
+                    for (String name : inScope.nameSet()) {
+                        if (!driverInfo.hasParam(name)) {
+                            driverInfo.setParam(name, inScope.getParam(name));
+                        }
+                    }
+                    
                     baseDriverFound = true;
                     break;
                 }
@@ -332,7 +335,7 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
         }
         else {
             // Create new DriverImpl
-            driverInfo = new DriverImpl(dt.getName(), dt.isNormal(), this);
+            driverInfo = new DriverImpl(dt.getName(), dt.isNormal(), inScope);
         }
 
         // Copy params from JAXB object to Japex object
