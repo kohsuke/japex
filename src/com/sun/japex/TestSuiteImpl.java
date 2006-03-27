@@ -44,9 +44,9 @@ import java.text.*;
 
 import com.sun.japex.testsuite.*;
 
-import static com.sun.japex.testsuite.DriverType.ParamGroupType;
-import static com.sun.japex.testsuite.TestSuiteElement.DriverGroupType;
-import static com.sun.japex.testsuite.TestSuiteElement.TestCaseGroupType;
+import static com.sun.japex.testsuite.DriverType.ParamGroup;
+import static com.sun.japex.testsuite.TestSuiteElement.DriverGroup;
+import static com.sun.japex.testsuite.TestSuiteElement.TestCaseGroup;
 
 public class TestSuiteImpl extends ParamsImpl implements TestSuite {
     
@@ -212,7 +212,7 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
                 _driverInfo.add(driverInfo);
             }
             else {
-                DriverGroupType driverGroup = (DriverGroupType) driverGroupOrDriver;
+                DriverGroup driverGroup = (DriverGroup) driverGroupOrDriver;
                 
                 // Create group's scope using testsuite params as default
                 ParamsImpl groupScope = new ParamsImpl(this);
@@ -253,9 +253,9 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
         
         for (Object testCaseOrTestGroup : ts.getTestCaseGroupOrTestCase()) {
             // Is this a test group?
-            if (testCaseOrTestGroup instanceof TestCaseGroupType) {
-                TestCaseGroupType testCaseGroup = 
-                    (TestCaseGroupType) testCaseOrTestGroup;
+            if (testCaseOrTestGroup instanceof TestCaseGroup) {
+                TestCaseGroup testCaseGroup = 
+                    (TestCaseGroup) testCaseOrTestGroup;
 
                 // Create group's scope using testsuite params as default
                 ParamsImpl groupScope = new ParamsImpl(this);
@@ -459,8 +459,8 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
                 result.add((ParamType) o);
             }
             else {
-                ParamGroupType paramGroupType = (ParamGroupType) o;
-                for (ParamType p : paramGroupType.getParam()) {
+                ParamGroup paramGroup = (ParamGroup) o;
+                for (ParamType p : paramGroup.getParam()) {
                     result.add(p);
                 }
             }
