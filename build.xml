@@ -187,12 +187,14 @@
     </target>
     
     <target name="dist-package" depends="dist, prepare-package">
-	<mkdir dir="${package.dir}/japex-${release.impl.version}-b${build.id}"/>
-	<mkdir dir="${package.dir}/japex-${release.impl.version}-b${build.id}/docs"/>
-	<mkdir dir="${package.dir}/japex-${release.impl.version}-b${build.id}/samples"/>
-	<mkdir dir="${package.dir}/japex-${release.impl.version}-b${build.id}/src"/>
+	<mkdir dir="${package.dir}/japex"/>
+	<mkdir dir="${package.dir}/japex/docs"/>
+	<mkdir dir="${package.dir}/japex/samples"/>
+	<mkdir dir="${package.dir}/japex/src"/>
 
-	<copy todir="${package.dir}/japex-${release.impl.version}-b${build.id}">
+        <touch file="${package.dir}/japex/JAPEX_${release.impl.version}-b${build.id}"/>
+        
+	<copy todir="${package.dir}/japex">
             <fileset dir="${basedir}/dist">
                 <include name="**/*"/>
             </fileset>
@@ -201,32 +203,32 @@
             </fileset>
 	</copy>
 
-	<copy todir="${package.dir}/japex-${release.impl.version}-b${build.id}/docs">
+	<copy todir="${package.dir}/japex/docs">
             <fileset dir="${basedir}/docs">
                 <include name="**/*"/>
             </fileset>
 	</copy>
-	<copy todir="${package.dir}/japex-${release.impl.version}-b${build.id}/samples">
+	<copy todir="${package.dir}/japex/samples">
             <fileset dir="${basedir}/samples">
                 <include name="**/*"/>
             </fileset>
 	</copy>
 
         <!-- Include sources but not build file or resources -->
-        <zip destfile="${package.dir}/japex-${release.impl.version}-b${build.id}/src.zip">
+        <zip destfile="${package.dir}/japex/src.zip">
             <fileset dir="${basedir}/src">
                 <exclude name="**/CVS"/>
             </fileset>
         </zip>
-	<move file="${package.dir}/japex-${release.impl.version}-b${build.id}/src.zip"
-              todir="${package.dir}/japex-${release.impl.version}-b${build.id}/src"/>
+	<move file="${package.dir}/japex/src.zip"
+              todir="${package.dir}/japex/src"/>
 
         <zip destfile="${package.dir}/japex.zip">
             <fileset dir="${package.dir}">
-                <include name="japex-${release.impl.version}-b${build.id}/**/*"/>
+                <include name="japex/**/*"/>
             </fileset>
 	</zip>
-	<delete dir="${package.dir}/japex-${release.impl.version}-b${build.id}"/>
+	<delete dir="${package.dir}/japex"/>
     </target>
 
     <target name="package" depends="dist-package" 
