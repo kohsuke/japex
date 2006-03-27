@@ -217,8 +217,16 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
                 // Create group's scope using testsuite params as default
                 ParamsImpl groupScope = new ParamsImpl(this);
                 for (ParamType pt : 
-                    flattenParamGroups(driverGroup.getParamGroupOrParam())) {
-                    groupScope.setParam(pt.getName(), pt.getValue());
+                     flattenParamGroups(driverGroup.getParamGroupOrParam())) 
+                {
+                    String name = pt.getName();
+                    String value = pt.getValue();
+                    String oldValue = groupScope.getParam(name);
+                    
+                    // If japex.classPath, append to existing value
+                    groupScope.setParam(name, 
+                        name.equals(Constants.CLASS_PATH) && oldValue != null ?
+                        (oldValue + PATH_SEPARATOR + value) : value);
                 }            
                     
                 // Create each driver and then override using group params
