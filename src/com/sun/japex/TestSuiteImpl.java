@@ -44,10 +44,6 @@ import java.text.*;
 
 import com.sun.japex.testsuite.*;
 
-import static com.sun.japex.testsuite.DriverType.ParamGroup;
-import static com.sun.japex.testsuite.TestSuiteElement.DriverGroup;
-import static com.sun.japex.testsuite.TestSuiteElement.TestCaseGroup;
-
 public class TestSuiteImpl extends ParamsImpl implements TestSuite {
     
     final static String PATH_SEPARATOR = System.getProperty("path.separator");
@@ -81,13 +77,10 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
         _name = ts.getName();
         
         // Set global properties by traversing JAXB's model
-        List params = flattenParamGroups(ts.getParamGroupOrParam());
-        List classPathURLs = new ArrayList();
+        List<ParamType> params = createParamList(ts.getParamOrParamGroup());
         
         if (params != null) {
-            Iterator it = params.iterator();
-            while (it.hasNext()) {
-                ParamType pt = (ParamType) it.next();
+            for (ParamType pt : params) {
                 String name = pt.getName();
                 String value = pt.getValue();
                 String oldValue = getParam(name);
@@ -202,22 +195,101 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
         setIntParam(Constants.NUMBER_OF_CPUS, 
             Runtime.getRuntime().availableProcessors());
                 
-        // Create and populate list of drivers
-        for (Object driverGroupOrDriver : ts.getDriverGroupOrDriver()) {
+        // Create and populate list of drivers and base drivers used
+        _driverInfo = createDriverList(ts.getDriverOrDriverGroup(), this);
+                
+        // Remove base drivers in use so that they are ignored
+        for (DriverImpl driverInfo : _baseDriversUsed) {
+            _driverInfo.remove(driverInfo);
+        }
+
+        // Create and populate list of test cases
+        TestCaseArrayList testCases = createTestCaseList(
+            ts.getTestCaseOrTestCaseGroup(), this);
+                        
+        // Set list of test cases on each driver
+        for (DriverImpl di: _driverInfo) {
+            di.setTestCases(testCases);
+        }
+    }
+        
+    /**
+     * Returns a flat list of test cases by recursively traversing test
+     * case groups, if necessary. The initial value for <code>defaults</code>
+     * should be the list of globally defined params.
+     */
+    private TestCaseArrayList createTestCaseList(List<Object> testCaseOrTestGroup, 
+        ParamsImpl defaults) 
+    {
+        TestCaseArrayList result = new TestCaseArrayList();
+        
+        for (Object o : testCaseOrTestGroup) {
+            if (o instanceof TestCaseType) {
+                TestCaseType tc = (TestCaseType) o;
+
+                // Create new TestCaseImpl
+                TestCaseImpl testCase = new TestCaseImpl(tc.getName(), defaults);
+
+                // Copy params from JAXB object to Japex object
+                for (ParamType pt : createParamList(tc.getParamOrParamGroup())) {
+                    testCase.setParam(pt.getName(), pt.getValue());
+                }            
+                
+                // Append to result list
+                result.add(testCase);
+            }
+            else {
+                TestCaseGroupType testCaseGroup = (TestCaseGroupType) o;
+
+                // Create a new scope for this group
+                ParamsImpl groupScope = new ParamsImpl(defaults);
+                for (ParamType pt : createParamList(testCaseGroup.getParamOrParamGroup())) {
+                    groupScope.setParam(pt.getName(), pt.getValue());
+                }            
+
+                // Recurse and append to result list
+                result.addAll(
+                    createTestCaseList(testCaseGroup.getTestCaseOrTestCaseGroup(), 
+                                       groupScope));
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Returns a flat list of drivers by recursively traversing driver
+     * groups, if necessary. The initial value for <code>defaults</code>
+     * should be the list of globally defined params.
+     */
+    private List<DriverImpl> createDriverList(List<Object> driverOrDriverGroup, 
+        ParamsImpl defaults) 
+    {
+        List<DriverImpl> result = new ArrayList<DriverImpl>();
+        
+        for (Object o : driverOrDriverGroup) {
             DriverImpl driverInfo = null;
             
             // Single driver or driver group?
-            if (driverGroupOrDriver instanceof DriverType) {
-                driverInfo = createDriverImpl((DriverType) driverGroupOrDriver, this);
-                _driverInfo.add(driverInfo);
+            if (o instanceof DriverType) {
+                DriverType dt = (DriverType) o;
+                driverInfo = createDriverImpl(dt, defaults);
+                
+                // If japex.driverClass not specified, use the driver's name
+                if (!driverInfo.hasParam(Constants.DRIVER_CLASS)) {
+                    driverInfo.setParam(Constants.DRIVER_CLASS, dt.getName());
+                }          
+                
+                // Append driver to result list
+                result.add(driverInfo);
             }
             else {
-                DriverGroup driverGroup = (DriverGroup) driverGroupOrDriver;
+                DriverGroupType driverGroup = (DriverGroupType) o;
                 
                 // Create group's scope using testsuite params as default
-                ParamsImpl groupScope = new ParamsImpl(this);
+                ParamsImpl groupScope = new ParamsImpl(defaults);
                 for (ParamType pt : 
-                     flattenParamGroups(driverGroup.getParamGroupOrParam())) 
+                     createParamList(driverGroup.getParamOrParamGroup()))
                 {
                     String name = pt.getName();
                     String value = pt.getValue();
@@ -228,78 +300,21 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
                         name.equals(Constants.CLASS_PATH) && oldValue != null ?
                         (oldValue + PATH_SEPARATOR + value) : value);
                 }            
-                    
-                // Create each driver and then override using group params
-                for (DriverType dt : driverGroup.getDriver()) {
-                    driverInfo = createDriverImpl(dt, groupScope);
-                    
-                    // If japex.driverClass not specified, use the driver's name
-                    if (!driverInfo.hasParam(Constants.DRIVER_CLASS)) {
-                        driverInfo.setParam(Constants.DRIVER_CLASS, dt.getName());
-                    }          
-        
-                    _driverInfo.add(driverInfo);
-                }                
+
+                // Recurse and append result to list
+                result.addAll(
+                    createDriverList(driverGroup.getDriverOrDriverGroup(), groupScope));
             }            
-        }
+        }        
         
-        // Remove base drivers in use so that they are ignored
-        for (DriverImpl driverInfo : _baseDriversUsed) {
-            _driverInfo.remove(driverInfo);
-        }
-
-        // Create and populate list of test cases
-        TestCaseArrayList testCases = new TestCaseArrayList();
-        
-        for (Object testCaseOrTestGroup : ts.getTestCaseGroupOrTestCase()) {
-            // Is this a test group?
-            if (testCaseOrTestGroup instanceof TestCaseGroup) {
-                TestCaseGroup testCaseGroup = 
-                    (TestCaseGroup) testCaseOrTestGroup;
-
-                // Create group's scope using testsuite params as default
-                ParamsImpl groupScope = new ParamsImpl(this);
-                for (ParamType pt : 
-                    flattenParamGroups(testCaseGroup.getParamGroupOrParam())) {
-                    groupScope.setParam(pt.getName(), pt.getValue());
-                }            
-                            
-                for (TestCaseType tc : testCaseGroup.getTestCase()) {                    
-                    // Create new TestCaseImpl using group parameters
-                    TestCaseImpl testCase = new TestCaseImpl(tc.getName(), groupScope);
-
-                    // Copy params from JAXB object to Japex object
-                    for (ParamType pt : tc.getParam()) {
-                        testCase.setParam(pt.getName(), pt.getValue());
-                    }                                
-                    
-                    // Add to the list of test cases
-                    testCases.add(testCase);
-                }                
-            }
-            else {
-                // Must be an instance of TestCase
-                TestCaseType tc = (TestCaseType) testCaseOrTestGroup;
-
-                // Create new TestCaseImpl
-                TestCaseImpl testCase = new TestCaseImpl(tc.getName(), this);
-
-                // Copy params from JAXB object to Japex object
-                for (ParamType pt : tc.getParam()) {
-                    testCase.setParam(pt.getName(), pt.getValue());
-                }            
-                
-                // Add to the list of test cases
-                testCases.add(testCase);
-            }
-        }
-                
-        // Set list of test cases and number of runs on each driver
-        for (DriverImpl di: _driverInfo) {
-            di.setTestCases(testCases);
-        }
+        return result;
     }
     
+    /**
+     * Create a driver implementation either by cloning a base driver (when
+     * the extends attribute is specified) or by directly allocating a new
+     * instance.
+     */
     private DriverImpl createDriverImpl(DriverType dt, ParamsImpl inScope) {
         DriverImpl driverInfo = null;
         
@@ -347,7 +362,7 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
         }
 
         // Copy params from JAXB object to Japex object
-        for (ParamType pt : flattenParamGroups(dt.getParamGroupOrParam())) {
+        for (ParamType pt : createParamList(dt.getParamOrParamGroup())) {
             String name = pt.getName();
             String value = pt.getValue();
             String oldValue = driverInfo.getParam(name);
@@ -364,6 +379,26 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
 
         return driverInfo;
     }
+    
+    /**
+     * Returns a flat list of params by recursively traversing param
+     * groups, if necessary. 
+     */
+    private List<ParamType> createParamList(List<Object> paramOrParamGroup) {
+        List<ParamType> result = new ArrayList<ParamType>();
+        
+        for (Object o : paramOrParamGroup) {
+            if (o instanceof ParamType) {
+                result.add((ParamType) o);
+            }
+            else {
+                ParamOrParamGroupType p = (ParamOrParamGroupType) o;
+                result.addAll(createParamList(p.getParamOrParamGroup()));
+            }
+        }
+        
+        return result;
+    }    
     
     private boolean checkResultAxis(String paramName) {
         if (hasParam(paramName)) {
@@ -443,29 +478,5 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
                     
         report.append("</testSuiteReport>\n");
     }
-    
-    /**
-     * A list of params may contain one or more <paramGroup>. This method 
-     * flattens this list and returns a list of <param>. The element 
-     * <paramGroup> is only used for grouping (it has no associated
-     * semantics) and cannot be nested.
-     */
-    static private List<ParamType> flattenParamGroups(
-        List<Object> paramGroupOrParams) 
-    {
-        List<ParamType> result = new ArrayList<ParamType>();
-        for (Object o : paramGroupOrParams) {
-            if (o instanceof ParamType) {
-                result.add((ParamType) o);
-            }
-            else {
-                ParamGroup paramGroup = (ParamGroup) o;
-                for (ParamType p : paramGroup.getParam()) {
-                    result.add(p);
-                }
-            }
-        }
-        return result;
-    }    
     
 }
