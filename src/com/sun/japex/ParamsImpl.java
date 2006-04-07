@@ -74,6 +74,15 @@ public class ParamsImpl implements Params {
     public ParamsImpl(ParamsImpl defaults) {
         _defaults = defaults;
     }
+    
+    /**
+     * Indicates if this is a set of global parameters. All instances of
+     * this class will have a set of default parameters, expect the set
+     * for <code>TestSuiteImpl</code> which contains global params.
+     */
+    public boolean isGlobal() {
+        return _defaults == null;
+    }
 
     private void convertAndPut(String key, String value) {
         if (value.equals("true") || value.equals("false")) {
@@ -136,11 +145,22 @@ public class ParamsImpl implements Params {
     }
 
     /**
-     * Returns true if this param is defined locally, without checking if
-     * it is defined in the defaults mapping.
+     * Returns true if this param is defined locally. A param is local
+     * if it is defined in this set or in any enclosing set that is 
+     * not global. In particular, for <code>TestCaseImpl</code> and
+     * <code>DriverTestImpl</code> any group params will be local.
      */
     public synchronized boolean hasLocalParam(String name) {
-        return _mapping.get(name) != null;
+        ParamsImpl params = this;
+        
+        do {
+            if (params._mapping.get(name) != null) {
+                return true;
+            }
+            params = params._defaults;
+        } while (!params.isGlobal()); 
+            
+        return false;
     }
     
     // -- String params --------------------------------------------------
@@ -243,12 +263,51 @@ public class ParamsImpl implements Params {
 
     // -- Other methods --------------------------------------------------
     
-    public void serialize(StringBuffer buffer, int indent) {        
-        // Get a list of param names and sort it
-        ArrayList<String> names = new ArrayList(_mapping.keySet());
-        Collections.sort(names);
+    /**
+     * This method returns a list of all the parameters that are visible 
+     * in this scope, except the global parameters. This is needed to
+     * include <testGroup> and <driverGroup> parameters when serializing
+     * a <code>TestCaseImpl</code> or <code>DriverImpl</code>.
+     *
+     * This method works bottom up and ensures that shadowed params are
+     * not included in the resulting set.
+     *
+     * @param groupParams  The list where the collection takes place
+     * @param params       The current set of parameters to add
+     */
+    private static void collectGroupParams(ArrayList<String> groupParams, 
+        ParamsImpl params) 
+    {
+        if (params.isGlobal()) {
+            return;
+        }
+        else {
+            ArrayList<String> names = new ArrayList(params._mapping.keySet());
+            for (String s : names) {
+                if (!groupParams.contains(s)) {
+                    groupParams.add(s);
+                }
+            }
+            // Proceed recursively using outer scope
+            collectGroupParams(groupParams, params._defaults);
+        }                
+    }
+    
+    public void serialize(StringBuffer buffer, int indent) {              
+        // Collect a list of all params and group params in scope
+        ArrayList<String> paramNames;        
+        if (isGlobal()) {
+            paramNames = new ArrayList(_mapping.keySet());            
+        }
+        else {
+            paramNames = new ArrayList();
+            collectGroupParams(paramNames, this);
+        }
         
-        for (String name : names) {
+        // Sort list of parameters before serialization
+        Collections.sort(paramNames);
+        
+        for (String name : paramNames) {
             if (name.startsWith("japex.")) {
                 String xmlName = name.substring(name.indexOf('.') + 1);                
                 // Replace path.separator by a single space
@@ -269,7 +328,7 @@ public class ParamsImpl implements Params {
         }
         
         // Serialize user-defined params
-        for (String name : names) {
+        for (String name : paramNames) {
             if (!name.startsWith("japex.")) {
                 buffer.append(Util.getSpaces(indent) 
                     + "<" + name + " xmlns=\"\">" 
