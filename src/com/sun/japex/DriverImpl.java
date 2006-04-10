@@ -92,9 +92,11 @@ public class DriverImpl extends ParamsImpl implements Driver, Cloneable {
     
     public void setTestCases(TestCaseArrayList testCases) {
         int runsPerDriver = getIntParam(Constants.RUNS_PER_DRIVER);
+        int warmupsPerDriver = getIntParam(Constants.WARMUPS_PER_DRIVER);
         
-        _testCases = new TestCaseArrayList[runsPerDriver];
-        for (int i = 0; i < runsPerDriver; i++) {
+        int actualRuns = runsPerDriver + warmupsPerDriver;
+        _testCases = new TestCaseArrayList[actualRuns];
+        for (int i = 0; i < actualRuns; i++) {
             _testCases[i] = (TestCaseArrayList) testCases.clone();
         }        
         _aggregateTestCases = (TestCaseArrayList) testCases.clone();
@@ -115,8 +117,8 @@ public class DriverImpl extends ParamsImpl implements Driver, Cloneable {
             for (int n = 0; n < nOfTests; n++) {
                 double avgRunsResult = 0.0;
 
-                double[] results = new double[runsPerDriver];
-                double[] resultsX = new double[runsPerDriver];
+                double[] results = new double[actualRuns];
+                double[] resultsX = new double[actualRuns];
                 
                 // Set hasResultValueX - should be the same for all runs
                 TestCaseImpl startRunTc = (TestCaseImpl) _testCases[startRun].get(n);

@@ -209,7 +209,7 @@ public class Engine {
             int actualRuns = warmupsPerDriver + runsPerDriver;
             for (_driverRun = 0; _driverRun < actualRuns; _driverRun++) {
                 if (_driverRun < warmupsPerDriver) {
-                    System.out.print("\n    Warmup run " + (_driverRun + 1) + ": ");
+                    System.out.print("\n    Warmup " + (_driverRun + 1) + ": ");
                 }
                 else {
                     System.out.print("\n    Run " + (_driverRun - warmupsPerDriver + 1) + ": ");                        
