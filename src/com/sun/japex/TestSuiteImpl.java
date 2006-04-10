@@ -170,17 +170,15 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
                 "Parameter 'japex.runsPerDriver' must be at least 1");
         }
         
-        // Check include warmup run - default true if runsPerDriver > 1
-        boolean includeWarmupRun = (runsPerDriver > 1);
-        if (!hasParam(Constants.INCLUDE_WARMUP_RUN)) {
-            setBooleanParam(Constants.INCLUDE_WARMUP_RUN, includeWarmupRun); 
+        // Report error for deprecated parameter but continue
+        if (hasParam("japex.includeWarmupRun")) {
+            System.err.print("Warning: Parameter 'japex.includeWarmupRun' is deprecated, " +
+                "use 'japex.warmupsPerDriver' instead.");
         }
-        else {
-            includeWarmupRun = getBooleanParam(Constants.INCLUDE_WARMUP_RUN);
-        }
-        // Increment runsPerDriver to accomodate warmup run
-        if (includeWarmupRun) {
-            setIntParam(Constants.RUNS_PER_DRIVER, runsPerDriver + 1);
+        
+        // Set default japex.warmupsPerDriver based on japex.runsPerDriver
+        if (!hasParam(Constants.WARMUPS_PER_DRIVER)) {
+            setIntParam(Constants.WARMUPS_PER_DRIVER, (runsPerDriver > 1) ? 1 : 0);
         }
         
         // Set other global params

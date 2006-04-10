@@ -145,7 +145,7 @@ public class Engine {
                 int nOfCpus = _driverImpl.getIntParam(Constants.NUMBER_OF_CPUS);
                 int nOfThreads = _driverImpl.getIntParam(Constants.NUMBER_OF_THREADS);
                 int runsPerDriver = _driverImpl.getIntParam(Constants.RUNS_PER_DRIVER);
-                boolean includeWarmupRun = _driverImpl.getBooleanParam(Constants.INCLUDE_WARMUP_RUN);
+                int warmupsPerDriver = _driverImpl.getIntParam(Constants.WARMUPS_PER_DRIVER);
                 
                 // Create a Japex class loader for this driver
                 JapexClassLoader jcLoader = 
@@ -155,10 +155,11 @@ public class Engine {
                 System.out.print("  " + _driverImpl.getName() + " using " 
                     + nOfThreads + " thread(s) on " + nOfCpus + " cpu(s)");
                 
-                // Allocate a matrix of nOfThreads * runPerDriver size and initialize each instance
-                _drivers = new JapexDriverBase[nOfThreads][runsPerDriver];
+                // Allocate a matrix of nOfThreads * actualRuns size and initialize each instance
+                int actualRuns = warmupsPerDriver + runsPerDriver;
+                _drivers = new JapexDriverBase[nOfThreads][actualRuns];
                 for (int i = 0; i < nOfThreads; i++) {
-                    for (int j = 0; j < runsPerDriver; j++) {
+                    for (int j = 0; j < actualRuns; j++) {
                         _drivers[i][j] = 
                             jcLoader.getJapexDriver(
                                 _driverImpl.getParam(Constants.DRIVER_CLASS));   // returns fresh copy
@@ -181,7 +182,7 @@ public class Engine {
                 
                 // Call terminate on all driver instances
                 for (int i = 0; i < nOfThreads; i++) {
-                    for (int j = 0; j < runsPerDriver; j++) {
+                    for (int j = 0; j < actualRuns; j++) {
                         _drivers[i][j].terminateDriver();
                     }
                 }                
@@ -203,15 +204,15 @@ public class Engine {
     private void forEachRun() {
         try {
             int runsPerDriver = _driverImpl.getIntParam(Constants.RUNS_PER_DRIVER);
-            boolean includeWarmupRun = _driverImpl.getBooleanParam(Constants.INCLUDE_WARMUP_RUN);
-            
-            for (_driverRun = 0; _driverRun < runsPerDriver; _driverRun++) {
-                if (includeWarmupRun) {
-                    System.out.print(_driverRun == 0 ? "\n    Warmup run: "
-                        : "\n    Run " + _driverRun + ": ");
+            int warmupsPerDriver = _driverImpl.getIntParam(Constants.WARMUPS_PER_DRIVER);
+
+            int actualRuns = warmupsPerDriver + runsPerDriver;
+            for (_driverRun = 0; _driverRun < actualRuns; _driverRun++) {
+                if (_driverRun < warmupsPerDriver) {
+                    System.out.print("\n    Warmup run " + (_driverRun + 1) + ": ");
                 }
                 else {
-                    System.out.print("\n    Run " + (_driverRun + 1) + ": ");                        
+                    System.out.print("\n    Run " + (_driverRun - warmupsPerDriver + 1) + ": ");                        
                 }
 
                 // geometric mean = (sum{i,n} x_i) / n
@@ -229,8 +230,8 @@ public class Engine {
                     ",harmmean," + Util.formatDouble(1.0 / _harmMeanresultInverse));
             }
 
-            int startRun = _driverImpl.getBooleanParam(Constants.INCLUDE_WARMUP_RUN) ? 1 : 0;
-            if (runsPerDriver - startRun > 1) {
+            int startRun = warmupsPerDriver;
+            if (actualRuns - startRun > 1) {
                 // Print average for all runs
                 System.out.print("\n     Avgs: ");
                 Iterator tci = _driverImpl.getAggregateTestCases().iterator();
@@ -529,11 +530,13 @@ public class Engine {
     
         String runTime = testSuite.getParam(Constants.RUN_TIME);
         String warmupTime = testSuite.getParam(Constants.WARMUP_TIME);
-
+        int actualRuns = testSuite.getIntParam(Constants.RUNS_PER_DRIVER) +
+            testSuite.getIntParam(Constants.WARMUPS_PER_DRIVER);
+        
         long seconds = (long)
             (nOfDrivers * nOfTests * (Util.parseDuration(warmupTime) / 1000.0) +
             nOfDrivers * nOfTests * (Util.parseDuration(runTime) / 1000.0)) *
-            testSuite.getIntParam(Constants.RUNS_PER_DRIVER);     
+            actualRuns;     
         
         int[] hms = new int[3];
         hms[0] = (int) (seconds / 60 / 60);

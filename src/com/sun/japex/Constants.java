@@ -51,7 +51,7 @@ public class Constants {
     
     // Global output parameters
     public static final String VERSION         = "japex.version";
-    public static final String VERSION_VALUE   = "1.0.7";
+    public static final String VERSION_VALUE   = "1.0.8";
     public static final String OS_NAME         = "japex.osName";
     public static final String OS_ARCHITECTURE = "japex.osArchitecture";
     public static final String DATE_TIME       = "japex.dateTime";
@@ -64,7 +64,7 @@ public class Constants {
     public static final String CLASS_PATH        = "japex.classPath";
     public static final String NUMBER_OF_THREADS = "japex.numberOfThreads";
     public static final String RUNS_PER_DRIVER   = "japex.runsPerDriver";
-    public static final String INCLUDE_WARMUP_RUN = "japex.includeWarmupRun";
+    public static final String WARMUPS_PER_DRIVER   = "japex.warmupsPerDriver";
     
     // Driver output parameters
     public static final String RESULT_ARIT_MEAN = "japex.resultAritMean";

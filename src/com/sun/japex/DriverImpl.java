@@ -101,9 +101,13 @@ public class DriverImpl extends ParamsImpl implements Driver, Cloneable {
     }
         
     private void computeMeans() {
-        final int runsPerDriver = getIntParam(Constants.RUNS_PER_DRIVER);
-        final int startRun = getBooleanParam(Constants.INCLUDE_WARMUP_RUN) ? 1 : 0;
+        int runsPerDriver = getIntParam(Constants.RUNS_PER_DRIVER);        
+        int warmupsPerDriver = getIntParam(Constants.WARMUPS_PER_DRIVER);        
                 
+        // Define start run and actual runs 
+        int startRun = warmupsPerDriver;    // skip warmups
+        int actualRuns = runsPerDriver + warmupsPerDriver;
+        
         // Avoid re-computing the driver's aggregates
         if (_computeMeans) {
             final int nOfTests = _testCases[0].size();
@@ -119,7 +123,7 @@ public class DriverImpl extends ParamsImpl implements Driver, Cloneable {
                 boolean hasResultValueX = startRunTc.hasParam(Constants.RESULT_VALUE_X);
                 
                 //Collect vertical results for this test. Note that
-                for (int i = startRun; i < runsPerDriver; i++) {            
+                for (int i = startRun; i < actualRuns; i++) {            
                     TestCaseImpl tc = (TestCaseImpl) _testCases[i].get(n);
                     results[i] = tc.getDoubleParam(Constants.RESULT_VALUE);
                     if (hasResultValueX) {
@@ -135,7 +139,7 @@ public class DriverImpl extends ParamsImpl implements Driver, Cloneable {
                     tc.setDoubleParam(Constants.RESULT_VALUE_X, 
                                       Util.arithmeticMean(resultsX, startRun));                    
                 }                
-                if (runsPerDriver - startRun > 1) {
+                if (actualRuns - startRun > 1) {
                     tc.setDoubleParam(Constants.RESULT_VALUE_STDDEV, 
                                       Util.standardDev(results, startRun));
                     if (hasResultValueX) {
@@ -194,7 +198,7 @@ public class DriverImpl extends ParamsImpl implements Driver, Cloneable {
             _computeMeans = false;
             
             // If number of runs is just 1, we're done
-            if (runsPerDriver - startRun == 1) {
+            if (actualRuns - startRun == 1) {
                 return;
             }
             
