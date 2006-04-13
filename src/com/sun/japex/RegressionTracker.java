@@ -224,10 +224,10 @@ public class RegressionTracker {
             
             // Find the value of the notify attribute
             Object o = query.evaluate("/reg:regressionReport/@notify",
-                    new InputSource(xmlReport), XPathConstants.BOOLEAN);
+                    new InputSource(xmlReport), XPathConstants.STRING);
             
             // If notification needed, then send e-mail message
-            if (((Boolean) o).booleanValue()) {
+            if (((String) o).equals("true")) {
                 
                 // Read html report file into a String
                 int c;
@@ -282,7 +282,7 @@ public class RegressionTracker {
             msg.setSentDate(new Date());
             Transport.send(msg);
             
-            System.out.println("Message sent to '" + recipients + "'");
+            System.out.println("E-mail message sent to '" + recipients + "'");
         } catch (Exception ex) {
             ex.printStackTrace();
         }
