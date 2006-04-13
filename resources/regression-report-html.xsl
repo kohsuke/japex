@@ -4,7 +4,7 @@
     xmlns:reg="http://www.sun.com/japex/regressionReport"
     version='1.0'>
 
-    <xsl:output method="xml" indent="yes" omit-xml-declaration="yes"/>
+    <xsl:output method="xml" indent="yes"/>
      
     <xsl:template match="reg:regressionReport">
         <html xmlns="http://www.w3.org/1999/xhtml">
@@ -15,8 +15,7 @@
                 <tr>
                     <td valign="middle" width="90"><p>
                         <a href="https://japex.dev.java.net">
-                            <img src="https://japex.dev.java.net/images/small_japex.gif" 
-                                 align="middle" border="0"/>
+                            <img src="https://japex.dev.java.net/images/small_japex.gif" align="middle" border="0"/>
                         </a>
                     </p></td>
                     <td valign="middle"><h1>Japex Regression Report</h1></td>  
@@ -28,6 +27,7 @@
                 <li>Last report: <xsl:value-of select="reg:lastReport"/></li>
                 <li>Next report: <xsl:value-of select="reg:nextReport"/></li>
                 <li>Result unit: <xsl:value-of select="reg:resultUnit"/></li>
+                <li>Threshold: <xsl:value-of select="reg:threshold"/></li>
             </ul>
 
             <table width="80%" border="1">
