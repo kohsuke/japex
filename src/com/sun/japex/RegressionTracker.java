@@ -189,7 +189,7 @@ public class RegressionTracker {
                 String lastReportHtml = 
                     lastReport.substring(0, lastReport.lastIndexOf('.')) + ".html";
                 String nextReportHtml = 
-                    lastReport.substring(0, nextReport.lastIndexOf('.')) + ".html";
+                    nextReport.substring(0, nextReport.lastIndexOf('.')) + ".html";
                 
                 transformer.setParameter("lastReportHref", 
                         new URL(baseURL + lastReportHtml).toExternalForm());
