@@ -72,6 +72,12 @@ public class RegressionTracker {
      */
     double threshold = -1.0;
     
+    /**
+     * Base URL used to include live links in regression report. This URL
+     * is prepended to the a report's relative URL.
+     */
+    String baseURL;
+    
     public RegressionTracker() {
     }
     
@@ -81,13 +87,13 @@ public class RegressionTracker {
     
     private static void displayUsageAndExit() {
         System.err.println("Usage: regression-tracker [-threshold percentage] " +
-                "reports-directory output-directory");
+                "[-baseurl URL] reports-directory output-directory");
         System.exit(1);
     }
     
     public void parseCommandLine(String[] args) {
         try {
-            if (args.length < 1 || args.length > 4) {
+            if (args.length < 2 || args.length > 6) {
                 displayUsageAndExit();
             }
             
@@ -97,7 +103,11 @@ public class RegressionTracker {
             for (i = 0; i < args.length; i++) {
                 if (args[i].equals("-threshold")) {
                     threshold = Double.parseDouble(args[++i]);
-                } else {
+                } 
+                else if (args[i].equals("-baseurl")) {
+                    baseURL = args[++i];
+                } 
+                else {
                     break;
                 }
             }
@@ -156,8 +166,13 @@ public class RegressionTracker {
             String outputReportXml = null;
             String outputReportHtml = null;
             
-            String lastReport = files[files.length - 2] + fileSep + "report.xml";
-            String nextReport = files[files.length - 1] + fileSep + "report.xml";
+            String lastReport = reportsDir + fileSep + files[files.length - 2] 
+                    + fileSep + "report.xml";
+            String nextReport = reportsDir + fileSep + files[files.length - 1] 
+                    + fileSep + "report.xml";
+            
+            File lastReportFile = new File(lastReport);
+            File nextReportFile = new File(nextReport);
             
             TransformerFactory tf = TransformerFactory.newInstance();
             URL stylesheet = getClass().getResource("/resources/regression-report.xsl");
@@ -167,16 +182,29 @@ public class RegressionTracker {
             System.out.println("Input reports: ");
             transformer.setParameter("threshold", Double.toString(threshold));
             transformer.setParameter("lastReport",
-                    new URL("file", null, reportsDir.toString() + fileSep + lastReport).toExternalForm());
+                    new URL("file", null, lastReportFile.getAbsolutePath()).toExternalForm());
             transformer.setParameter("nextReport",
-                    new URL("file", null, reportsDir.toString() + fileSep + nextReport).toExternalForm());
+                    new URL("file", null, nextReportFile.getAbsolutePath()).toExternalForm());
+            if (baseURL != null) {
+                String lastReportHtml = 
+                    lastReport.substring(0, lastReport.lastIndexOf('.')) + ".html";
+                String nextReportHtml = 
+                    lastReport.substring(0, nextReport.lastIndexOf('.')) + ".html";
+                
+                transformer.setParameter("lastReportHref", 
+                        new URL(baseURL + lastReportHtml).toExternalForm());
+                transformer.setParameter("nextReportHref",
+                        new URL(baseURL + nextReportHtml).toExternalForm());
+            }
+            
             System.out.println("\t" + transformer.getParameter("lastReport"));
             System.out.println("\t" + transformer.getParameter("nextReport"));
             
             outputReportXml = outputDirectory + fileSep + "report.xml";
+            File outputReportXmlFile = new File(outputReportXml);
             System.out.println("Output reports: ");
             System.out.println("\t" +
-                    new URL("file", null, outputReportXml).toExternalForm());
+                    new URL("file", null, outputReportXmlFile.getAbsolutePath()).toExternalForm());
             
             transformer.transform(
                     new StreamSource(stylesheet.toExternalForm()),      // unused
@@ -188,10 +216,9 @@ public class RegressionTracker {
                     new StreamSource(stylesheet.toExternalForm()));
             
             outputReportHtml = outputDirectory + fileSep + "report.html";
-            if (outputReportHtml != null) {
-                System.out.println("\t" +
-                        new URL("file", null, outputReportHtml).toExternalForm());
-            }
+            File outputReportHtmlFile = new File(outputReportHtml);
+            System.out.println("\t" +  new URL("file", null, 
+                    outputReportHtmlFile.getAbsolutePath()).toExternalForm());
             
             transformer.transform(
                     new StreamSource(new FileInputStream(outputReportXml)),

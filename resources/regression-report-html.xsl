@@ -24,8 +24,20 @@
    
             <h2>Parameters</h2>
             <ul>
-                <li>Last report: <xsl:value-of select="reg:lastReport"/></li>
-                <li>Next report: <xsl:value-of select="reg:nextReport"/></li>
+                <xsl:choose>
+                    <xsl:when test="reg:lastReportHref">
+                        <li>Last report: <a href="{reg:lastReportHref}">
+                            <xsl:value-of select="reg:lastReportHref"/></a>
+                        </li>
+                        <li>Next report: <a href="{reg:nextReportHref}">
+                            <xsl:value-of select="reg:nextReportHref"/></a>
+                        </li>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <li>Last report: <xsl:value-of select="reg:lastReport"/></li>
+                        <li>Next report: <xsl:value-of select="reg:nextReport"/></li>
+                    </xsl:otherwise>
+                </xsl:choose>
                 <li>Result unit: <xsl:value-of select="reg:resultUnit"/></li>
                 <li>Threshold: <xsl:value-of select="reg:threshold"/></li>
             </ul>

@@ -9,6 +9,8 @@
     
     <xsl:param name="lastReport"/>
     <xsl:param name="nextReport"/>
+    <xsl:param name="lastReportHref"/>
+    <xsl:param name="nextReportHref"/>
     <xsl:param name="threshold" select="-1.0"/>
 
     <xsl:template match="/">
@@ -78,6 +80,10 @@
             
             <reg:lastReport><xsl:value-of select="$lastReport"/></reg:lastReport>
             <reg:nextReport><xsl:value-of select="$nextReport"/></reg:nextReport>
+            <xsl:if test="$lastReportHref != ''">
+                <reg:lastReportHref><xsl:value-of select="$lastReportHref"/></reg:lastReportHref>
+                <reg:nextReportHref><xsl:value-of select="$nextReportHref"/></reg:nextReportHref>
+            </xsl:if>
             <reg:resultUnit><xsl:value-of select="$nextReportDoc/rep:resultUnit"/></reg:resultUnit>
             <reg:version><xsl:value-of select="$nextReportDoc/rep:version"/></reg:version>
             <reg:threshold><xsl:value-of select="$threshold"/>%</reg:threshold>
