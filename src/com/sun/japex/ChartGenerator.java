@@ -54,6 +54,7 @@ import org.jfree.data.general.SeriesException;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 
 public class ChartGenerator {
     
@@ -68,12 +69,31 @@ public class ChartGenerator {
      */
     final int _chartWidth, _chartHeight;
     
+    /**
+     * Suggested group size to use when plotting test cases. This
+     * is a maximum value. The actual number of tests per plot may
+     * vary but will not exceed this number.
+     */
+    int _plotGroupSize;
+    
+    /**
+     * By default, test cases are plotted over the list of drivers.
+     * By setting this flag, drivers are plotted over the list of
+     * test cases instead.
+     */
+    boolean _plotDrivers;
+    
     public ChartGenerator(TestSuiteImpl testSuite) {
-        _testSuite = testSuite;        
+        _testSuite = testSuite;      
+        
+        _plotGroupSize = testSuite.getIntParam(Constants.PLOT_GROUP_SIZE);
+        _plotDrivers = testSuite.getBooleanParam(Constants.PLOT_DRIVERS);
         
         // Calculate charts width and height (min = 750, max = 1500)
-        int nOfDrivers = _testSuite.getDriverInfoList().size();
-        _chartWidth = Math.min(Math.max(nOfDrivers * 80, 750), 1500);
+        List driverInfoList = _testSuite.getDriverInfoList();
+        int n = !_plotDrivers ? driverInfoList.size() :
+            ((DriverImpl) driverInfoList.get(0)).getAggregateTestCases().size();
+        _chartWidth = Math.min(Math.max(n * 80, 750), 1500);
         _chartHeight = (int) Math.round(_chartWidth * 0.6);    
     }
     
@@ -297,7 +317,6 @@ public class ChartGenerator {
     
     private int generateTestCaseBarCharts(String baseName, String extension) {
         int nOfFiles = 0;
-        final int maxGroupSize = 5;        
         List driverInfoList = _testSuite.getDriverInfoList();
         
         // Get number of tests from first driver
@@ -305,7 +324,7 @@ public class ChartGenerator {
             ((DriverImpl) driverInfoList.get(0)).getAggregateTestCases().size();
             
         int groupSizesIndex = 0;
-        int[] groupSizes = calculateGroupSizes(nOfTests, maxGroupSize);
+        int[] groupSizes = calculateGroupSizes(nOfTests, _plotGroupSize);
         
         try {            
             String resultUnit = _testSuite.getParam(Constants.RESULT_UNIT);
@@ -341,14 +360,14 @@ public class ChartGenerator {
                         dataset.addValue(normalizerDriver == di ? 100.0 :
                                 (100.0 * tc.getDoubleParam(Constants.RESULT_VALUE) /
                                  normalTc.getDoubleParam(Constants.RESULT_VALUE)),
-                                di.getName(),
-                                tc.getName());                                                
+                                _plotDrivers ? tc.getName() : di.getName(),
+                                _plotDrivers ? di.getName() : tc.getName());                                                
                     }
                     else {
                         dataset.addValue(
                             tc.getDoubleParam(Constants.RESULT_VALUE), 
-                            di.getName(),
-                            tc.getName());                    
+                                _plotDrivers ? tc.getName() : di.getName(),
+                                _plotDrivers ? di.getName() : tc.getName());                                                
                     }
                 }             
                 
@@ -357,12 +376,80 @@ public class ChartGenerator {
                 // Generate chart for this group if complete
                 if (thisGroupSize == groupSizes[groupSizesIndex]) {
                     JFreeChart chart = ChartFactory.createBarChart3D(
-                        "Results per Test (" + resultUnit + ")", 
+                        (_plotDrivers ? "Results per Driver (" : "Results per Test (") 
+                            + resultUnit + ")", 
                         "", resultUnit, 
                         dataset,
                         PlotOrientation.VERTICAL,
                         true, true, false);
                     
+                    chart.setAntiAlias(true);
+                    ChartUtilities.saveChartAsJPEG(
+                        new File(baseName + Integer.toString(nOfFiles) + extension),
+                        chart, _chartWidth, _chartHeight);
+                    
+                    nOfFiles++;
+                    groupSizesIndex++;
+                    thisGroupSize = 0;
+                    dataset = new DefaultCategoryDataset();
+                }
+            }            
+        }
+        catch (RuntimeException e) {
+            throw e;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }        
+        
+        return nOfFiles;
+    }
+    
+    private int generateTestCaseLineCharts(String baseName, String extension) {
+        int nOfFiles = 0;
+        List driverInfoList = _testSuite.getDriverInfoList();
+        
+        // Get number of tests from first driver
+        final int nOfTests = 
+            ((DriverImpl) driverInfoList.get(0)).getAggregateTestCases().size();
+            
+        int groupSizesIndex = 0;
+        int[] groupSizes = calculateGroupSizes(nOfTests, _plotGroupSize);
+        
+        try {            
+            String resultUnit = _testSuite.getParam(Constants.RESULT_UNIT);
+            
+            // Generate charts 
+            DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+            
+            int i = 0, thisGroupSize = 0;
+            for (; i < nOfTests; i++) {
+                Iterator jdi = driverInfoList.iterator();
+                
+                while (jdi.hasNext()) {
+                    DriverImpl di = (DriverImpl) jdi.next();
+                    TestCaseImpl tc = (TestCaseImpl) di.getAggregateTestCases().get(i);
+            
+                    dataset.addValue(
+                        tc.getDoubleParam(Constants.RESULT_VALUE), 
+                        _plotDrivers ? di.getName() : tc.getName(),
+                        _plotDrivers ? tc.getName() : di.getName());                                                
+                }             
+                
+                thisGroupSize++;
+                        
+                // Generate chart for this group if complete
+                if (thisGroupSize == groupSizes[groupSizesIndex]) {
+                    JFreeChart chart = ChartFactory.createLineChart(
+                        (_plotDrivers ? "Results per Driver (" : "Results per Test (") 
+                            + resultUnit + ")", 
+                        "", resultUnit, 
+                        dataset,
+                        PlotOrientation.VERTICAL,
+                        true, true, false);
+
+                    configureLineChart(chart);
+                
                     chart.setAntiAlias(true);
                     ChartUtilities.saveChartAsJPEG(
                         new File(baseName + Integer.toString(nOfFiles) + extension),
@@ -423,7 +510,7 @@ public class ChartGenerator {
                 resultUnitX, resultUnit, 
                 xyDataset, PlotOrientation.VERTICAL, 
                 true, true, false);
-
+            
             // Set log scale depending on japex.resultAxis[_X]
             XYPlot plot = chart.getXYPlot();
             if (_testSuite.getParam(Constants.RESULT_AXIS_X).equalsIgnoreCase("logarithmic")) {
@@ -453,58 +540,6 @@ public class ChartGenerator {
         return nOfFiles;
     }
     
-    private int generateTestCaseLineCharts(String baseName, String extension) {        
-        List driverInfoList = _testSuite.getDriverInfoList();
-        
-        // Get number of tests from first driver
-        final int nOfTests = 
-            ((DriverImpl) driverInfoList.get(0)).getAggregateTestCases().size();
-            
-        try {            
-            String resultUnit = _testSuite.getParam(Constants.RESULT_UNIT);
-                        
-            // Generate charts            
-            for (int i = 0; i < nOfTests; i++) {
-                Iterator jdi = driverInfoList.iterator();
-                DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-                
-                while (jdi.hasNext()) {
-                    DriverImpl di = (DriverImpl) jdi.next();
-                    TestCaseImpl tc = (TestCaseImpl) di.getAggregateTestCases().get(i);
-            
-                    dataset.addValue(
-                         tc.getDoubleParam(Constants.RESULT_VALUE), 
-                         tc.getName(),
-                         di.getName());                    
-                }             
-                
-                JFreeChart chart = ChartFactory.createLineChart(
-                    "Results per Test (" + resultUnit + ")", 
-                    "", resultUnit, 
-                    dataset,
-                    PlotOrientation.VERTICAL,
-                    true, true, false);
-                
-                //CategoryPlot plot = chart.getCategoryPlot();
-                //plot.getRenderer().setStroke(new java.awt.BasicStroke(3.0f));
-                configureLineChart(chart);
-
-                chart.setAntiAlias(true);
-                ChartUtilities.saveChartAsJPEG(
-                    new File(baseName + Integer.toString(i) + extension),
-                    chart, _chartWidth, _chartHeight);
-            }            
-        }
-        catch (RuntimeException e) {
-            throw e;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }        
-        
-        return nOfTests;
-    }
-    
     static private void configureLineChart(JFreeChart chart) {
         CategoryPlot plot = chart.getCategoryPlot();
         
@@ -525,7 +560,7 @@ public class ChartGenerator {
         renderer.setShapesVisible(true);
         renderer.setStroke(new BasicStroke(2.0f));        
     }
-    
+        
     /**
      * Calculate group sizes for tests to avoid a very small final group. 
      * For example, calculateGroupSizes(21, 5) return { 5,5,5,3,3 } instead

@@ -44,7 +44,14 @@
         <xsl:call-template name="resultsPerDriver"/>
       </xsl:for-each>
 
-      <h2>Results Per Test</h2>
+      <xsl:choose>
+          <xsl:when test="rep:plotDrivers = 'true'">
+            <h2>Results Per Driver</h2>
+          </xsl:when>
+          <xsl:otherwise>
+            <h2>Results Per Test</h2>
+          </xsl:otherwise>
+      </xsl:choose>      
       <br/>
       <xsl:for-each select="/*/extrep:testCaseChart">
           <center><img src="{.}"/></center>

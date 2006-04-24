@@ -43,15 +43,17 @@ public class Constants {
 
     // Global input parameters
     public static final String REPORTS_DIRECTORY = "japex.reportsDirectory";
-    public static final String CHART_TYPE        = "japex.chartType";       // barchart | scatterchart
+    public static final String CHART_TYPE        = "japex.chartType";       // barchart | scatterchart | linechart
     public static final String RESULT_UNIT       = "japex.resultUnit";
     public static final String RESULT_UNIT_X     = "japex.resultUnitX";
     public static final String RESULT_AXIS       = "japex.resultAxis";      // normal | logarithmic
     public static final String RESULT_AXIS_X     = "japex.resultAxisX";     // normal | logarithmic
+    public static final String PLOT_DRIVERS      = "japex.plotDrivers";
+    public static final String PLOT_GROUP_SIZE   = "japex.plotGroupSize";   // max group size
     
     // Global output parameters
     public static final String VERSION         = "japex.version";
-    public static final String VERSION_VALUE   = "1.0.9";
+    public static final String VERSION_VALUE   = "1.0.10";
     public static final String OS_NAME         = "japex.osName";
     public static final String OS_ARCHITECTURE = "japex.osArchitecture";
     public static final String DATE_TIME       = "japex.dateTime";
@@ -108,8 +110,8 @@ public class Constants {
     public static final String DEFAULT_NUMBER_OF_THREADS  = "1";
     public static final String DEFAULT_RUNS_PER_DRIVER    = "1";
     public static final String DEFAULT_REPORTS_DIRECTORY  = "reports";
-    public static final String DEFAULT_INCLUDE_WARMUP_RUN = "false";
     public static final String DEFAULT_CHART_TYPE         = "barchart";
     public static final String DEFAULT_RESULT_AXIS        = "normal";
-    
+    public static final String DEFAULT_PLOT_DRIVERS       = "false";
+    public static final String DEFAULT_PLOT_GROUP_SIZE    = "5";    
 }

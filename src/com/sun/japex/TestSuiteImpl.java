@@ -146,6 +146,16 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
             setParam(Constants.RESULT_UNIT, "TPS");
         }
         
+        // Check plot drivers flag and set default if necessary
+        if (!hasParam(Constants.PLOT_DRIVERS)) {
+            setParam(Constants.PLOT_DRIVERS, Constants.DEFAULT_PLOT_DRIVERS);
+        }
+        
+        // Check plot drivers flag and set default if necessary
+        if (!hasParam(Constants.PLOT_GROUP_SIZE)) {
+            setParam(Constants.PLOT_GROUP_SIZE, Constants.DEFAULT_PLOT_GROUP_SIZE);
+        }
+        
         // Check number of threads 
         if (!hasParam(Constants.NUMBER_OF_THREADS)) {
             setParam(Constants.NUMBER_OF_THREADS, 
