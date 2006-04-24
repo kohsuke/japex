@@ -188,6 +188,12 @@ public class ChartGenerator {
             Iterator jdi = _testSuite.getDriverInfoList().iterator();
             for (int i = 0; jdi.hasNext(); i++) {
                 DriverImpl di = (DriverImpl) jdi.next();
+                
+                if (!di.hasParam(Constants.RESULT_ARIT_MEAN_X)) {
+                    System.out.println("Error: Driver '" + di.getName() + "' does not define"
+                            + " any values for the X axis needed to generate a scatter chart");
+                    System.exit(1);
+                }
                                           
                 XYSeries xySeries = new XYSeries(di.getName(), true, false);
                 xySeries.add(di.getDoubleParam(Constants.RESULT_ARIT_MEAN_X),
