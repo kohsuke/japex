@@ -69,12 +69,25 @@ public class ReportFilter implements FileFilter {
      */
     public boolean accept(File pathname) {
         if (pathname.isDirectory()) {
-            long date = pathname.lastModified();
-            if (date >= _from.getTime() && date <= _to.getTime()) {
-                return true;
+            Date d0 = parseDate(pathname);
+            if (d0 != null) {
+                if (d0.compareTo(_from) >= 0 && d0.compareTo(_to) <= 0) {
+                    return true;
+                }
             }
         }
         return false;
     }
-    
+
+    Date parseDate(File f) {
+        String s = f.getName().substring(0,10);
+        DateFormat df= new SimpleDateFormat ("yyyy_MM_dd");
+        Date d0 = null;
+        try {
+            d0 = df.parse(s);
+        } catch (Exception e) {
+            //e.printStackTrace();
+        }
+        return d0;
+    }
 }
