@@ -43,15 +43,15 @@ Questions such as &quot;When did you start/stop the clock?&quot; or
 &quot;What exactly did you include in the wall-clock block?&quot; or
 &quot;Are you reporting latency or throughput?&quot; often arise.</P>
 <P>Japex is a simple yet powerful tool to write Java-based
-micro-benchmarks. It started as simple project over a year ago,
+micro-benchmarks. It started as a simple project over a year ago,
 primarily aimed at testing XML and <A HREF="https://fi.dev.java.net/">Fast
 Infoset</A> performance, but has evolved into a rather sophisticated
 framework with support for XML and HTML output as well as various
 types of charts for displaying the results. It is similar in spirit
 to <A HREF="http://www.junit.org/">JUnit</A> in that if factors out
 most of the repetitive programming logic that is necessary to write
-in micro-benchmarks. This logic includes loading and initializing
-multiple drivers, warming up the VM, timing the inner loop, etc. One
+micro-benchmarks. This logic includes loading and initializing
+multiple drivers, warming up the VM, forking multiple threads, timing the inner loop, etc. One
 of the key design goals for Japex was extensibility. Via the use of a
 simple model of input and output parameters, it is possible to write
 micro-benchmarks to test practically anything.</P>
