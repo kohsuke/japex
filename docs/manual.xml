@@ -186,10 +186,11 @@
                 <token>&lt;driverGroup&gt;</token>,
             <token>&lt;testCaseGroup&gt;</token> and
             <token>&lt;paramGroup&gt;</token>, respectively. For drivers and test cases,
-            groups are useful to define a set of common parameters to be shared among the members of the
-            group. In addition, grouping of drivers, test cases or parameters is necessary when
+            groups are useful to define a set of common parameters to be shared among the members of
+            the group. In addition, grouping of drivers, test cases or parameters is necessary when
             modularizing a configuration file and using <link linkend="XInclude">XInclude</link>.
-            The following example shows how to define a driver group with a set of shared parameters: <example>
+            The following example shows how to define a driver group with a set of shared
+            parameters: <example>
                 <title>Defining a Driver Group</title>
                 <programlisting><![CDATA[    <driverGroup name="MyDriverGroup" xmlns="http://www.sun.com/japex/testSuite">
         <param name="libraryDir" value="lib"/>                   
@@ -210,10 +211,10 @@
             currently no use for the value of this attribute. Driver and test case groups start with
             a sequence of parameters (or parameter groups!) followed by a sequence of test cases or
             drivers, respectively. Thus, driver and test case groups define new parameter scopes
-            whose outer scope depends on the location in which they appear in a configuration
-            file. Wherever a driver, test case and parameter is allowed in a configuration file, so
-            is a group of its kind. To allow modularization of a Japex configuration file, groups
-            can be nested to any depth. </para>
+            whose outer scope depends on the location in which they appear in a configuration file.
+            Wherever a driver, test case and parameter is allowed in a configuration file, so is a
+            group of its kind. To allow modularization of a Japex configuration file, groups can be
+            nested to any depth. </para>
     </sect1>
     <sect1>
         <title>Normalizing Results</title>
@@ -295,10 +296,10 @@
     </sect1>
     <sect1>
         <title>Class Paths and Class Loaders</title>
-        <para>The parameter <token>japex.classPath</token> can be set globally to define the
-            location of driver classes and their dependencies. To add multiple locations to a class
-            path, simply define this parameter multiple times (i.e., no class path separator is
-            allowed). The following example shows how to add three locations to a class path: <example>
+        <para>The parameter <token>japex.classPath</token> can be set to define the location of
+            driver classes and their dependencies. To add multiple locations to a class path, simply
+            define this parameter multiple times (i.e., no class path separator is allowed). The
+            following example shows how to add three locations to a class path: <example>
                 <title>Setting the japex.classPath parameter</title>
                 <programlisting><![CDATA[    <testSuite name="WSpex" xmlns="http://www.sun.com/japex/testSuite">
 
@@ -309,16 +310,14 @@
     </testSuite>]]></programlisting>
             </example> Note the presence of the "*.jar" wildcard in the last location; this syntax
             can be used to add several jar files and is only allowed at the end of a path. </para>
-        <para>Japex creates a specialized class loader to load drivers and their dependencies. This
-            class loader is initialized with the (concatenated) value of
-            <token>japex.classPath</token>. Thus, the class path defined when Japex is started does
-            not affect how drivers are loaded. This is primarily to avoid loading an incorrect
-            version of a component on which both the Japex framework and one or more of drivers rely
-            on (e.g., the JAXB runtime system) <footnote>
-                <para>For even greater flexibility, a per-driver class path could be supported in
-                    future versions. This would permit the loading of different versions of the same
-                    class by different drivers.</para>
-            </footnote>. </para>
+        <para>Although defined globally in the example above, <token>japex.classPath</token> is a
+            driver parameter. Japex creates a specialized class loader to load each driver and its
+            dependencies. This class loader is initialized with the (concatenated) value of
+                <token>japex.classPath</token> as defined for each driver. This ensures drivers to
+            be completely isolated from each other and it also allows to test mutiple versions of
+            the same library (using similarly named Java packages) simultaneously. Moreover, it
+            avoids conflicts between libraries in use by the Japex engine itself and those used
+            by the drivers.</para>
     </sect1>
     <sect1>
         <title>Parameter Values</title>
