@@ -70,8 +70,10 @@ public class ReportFilter implements FileFilter {
     public boolean accept(File pathname) {
         if (pathname.isDirectory()) {
             Date d0 = parseDate(pathname);
+            System.out.println("Report: "+d0.toString());
             if (d0 != null) {
                 if (d0.compareTo(_from) >= 0 && d0.compareTo(_to) <= 0) {
+            System.out.println("Report: "+d0.toString()+" accepted");
                     return true;
                 }
             }
@@ -80,9 +82,12 @@ public class ReportFilter implements FileFilter {
     }
 
     Date parseDate(File f) {
+        Date d0 = null;
+        if (f.getName().length()<0)
+            return null;
+        
         String s = f.getName().substring(0,10);
         DateFormat df= new SimpleDateFormat ("yyyy_MM_dd");
-        Date d0 = null;
         try {
             d0 = df.parse(s);
         } catch (Exception e) {
