@@ -2,16 +2,17 @@
 <!DOCTYPE html
   PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><head><title>Japex</title><link rel="stylesheet" href="manual.css" type="text/css"/><meta name="generator" content="DocBook XSL Stylesheets V1.69.1"/></head><body><div class="article" lang="en"><div class="titlepage"><div><div><h1 class="title"><a id="d0e3"/>Japex</h1></div><div><h3 class="subtitle"><i>
-            <sub>Updated March 14, 2006</sub>
-        </i></h3></div><div><div class="author"><h3 class="author"><span class="firstname">Santiago</span> <span class="surname">Pericas-Geertsen</span></h3><code class="email">&lt;<a href="mailto:Santiago.PericasGeertsen@sun.com">Santiago.PericasGeertsen@sun.com</a>&gt;</code></div></div></div><hr/></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="#d0e18">Introduction</a></span></dt><dt><span class="sect1"><a href="#d0e45">Writing Drivers</a></span></dt><dt><span class="sect1"><a href="#TestSuites">Test Suites</a></span></dt><dt><span class="sect1"><a href="#d0e211">Normalizing Results</a></span></dt><dt><span class="sect1"><a href="#d0e244">Customizing Japex</a></span></dt><dt><span class="sect1"><a href="#d0e345">Class Paths and Class Loaders</a></span></dt><dt><span class="sect1"><a href="#d0e368">Parameter Values</a></span></dt><dt><span class="sect1"><a href="#d0e382">Setting Parameters Using System Properties</a></span></dt><dt><span class="sect1"><a href="#Reference">Parameter Reference</a></span></dt><dt><span class="sect1"><a href="#d0e618">References</a></span></dt></dl></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="d0e18"/>Introduction</h2></div></div></div><p> Japex is a simple yet powerful tool to write Java-based micro-benchmarks. It is
-            similar in spirit to <a href="#JUnit">[JUnit]</a> in that if factors out most of
-            the repetitive programming logic that is necessary to write in micro-benchmarks. This
-            logic includes loading and initializing multiple drivers, warming up the VM, timing the
-            inner loop, etc.</p><p/><p> The input to Japex is an XML file describing a test suite. The output is a
-            timestamped report available in both XML and HTML formats (although generation of the
-            latter can be turned off). HTML reports include one or more bar charts generated using
-                <a href="#JFreeChart">[JFreeChart]</a> which graphically display the data
-            for ease of comparison. </p><p>In the context of this document, the term <span class="emphasis"><em>throughput</em></span> is defined
+            <sub>Version 1.0.10 - Updated April 25, 2006</sub>
+        </i></h3></div><div><div class="author"><h3 class="author"><span class="firstname">Santiago</span> <span class="surname">Pericas-Geertsen</span></h3><code class="email">&lt;<a href="mailto:Santiago.PericasGeertsen@sun.com">Santiago.PericasGeertsen@sun.com</a>&gt;</code></div></div></div><hr/></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="sect1"><a href="#d0e18">Introduction</a></span></dt><dt><span class="sect1"><a href="#d0e50">Writing Drivers</a></span></dt><dt><span class="sect1"><a href="#TestSuites">Test Suites</a></span></dt><dt><span class="sect1"><a href="#d0e234">Normalizing Results</a></span></dt><dt><span class="sect1"><a href="#d0e267">Customizing Japex</a></span></dt><dt><span class="sect1"><a href="#d0e368">Class Paths and Class Loaders</a></span></dt><dt><span class="sect1"><a href="#d0e391">Parameter Values</a></span></dt><dt><span class="sect1"><a href="#d0e405">Setting Parameters Using System Properties</a></span></dt><dt><span class="sect1"><a href="#Reference">Parameter Reference</a></span></dt><dt><span class="sect1"><a href="#d0e656">References</a></span></dt></dl></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="d0e18"/>Introduction</h2></div></div></div><p> Japex is a simple yet powerful tool to write Java-based micro-benchmarks.
+            Micro-benchmarks are simple benchmarks that rarely involve complicated deployments and
+            are often used to test specific parts of an application. They are also characterized by
+            the use of wall-clock blocks: start a clock, run the code, stop the clock and report the
+            result. Japex is similar in spirit to <a href="#JUnit">[JUnit]</a> in that it
+            factors out most of the repetitive programming logic that is necessary to write
+            micro-benchmarks. This logic includes loading and initializing multiple drivers, warming
+            up the VM, forking multiple threads, timing the inner loop, etc.</p><p/><p> The input to Japex is an XML file describing a test suite. The output is a
+            timestamped report in XML and HTML formats (although generation of the latter can be
+            turned off). HTML reports include one or more charts generated using <a href="#JFreeChart">[JFreeChart]</a>. </p><p>In the context of this document, the term <span class="emphasis"><em>throughput</em></span> is defined
             to be work over time. Japex is designed to estimate an independent throughput for each
             of the tests in the suite. Throughput estimation is done based on some parameters
             defined in the input file. There are basically two ways to specify that: (i) fix the
@@ -19,14 +20,16 @@
             addition to each test's individual throughput, aggregate throughtputs in the form of
             arithmetic, geometric and harmonic means are computed for each driver. </p><p>Even though by default Japex will compute a per test and a per driver throughput in
                 <span class="emphasis"><em>transactions per second</em></span> (TPS), it is possible to customize a
-            test suite to either calculate throughput using a different unit, such as KBytes/s, or
-            produce a different kind of <span class="emphasis"><em>result</em></span> such as latency, memory usage or
-            message size.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="d0e45"/>Writing Drivers</h2></div></div></div><p>A driver encapsulates knowledge about a specific algorithm implementation, and thus a
+            test suite to either calculate throughput using a different unit, such as milliseconds
+            or KBs per second, or produce a different kind of <span class="emphasis"><em>result</em></span> such as
+            latency, memory usage or message size.</p><p>For the latest updates as well as the latest tips on how to use Japex, the reader is
+            referred to this <a href="#SantiagosBlog">[Blog]</a> which serves as a
+            supplement to this manual.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="d0e50"/>Writing Drivers</h2></div></div></div><p>A driver encapsulates knowledge about a specific algorithm implementation, and thus a
             different driver is required for each implementation under test. For example, if XML
             parsing is the algorithm under test and parsers X, Y and Z are being evaluated, a
             different driver must be provided for each implementation. </p><p> A driver is a Java class that <span class="emphasis"><em>must</em></span> extend
             <span class="token">JapexDriverBase</span>, which is a class that in turn implements the interface
-                <span class="token">JapexDriver</span> shown below. </p><div class="example"><a id="d0e61"/><p class="title"><b>Example 1. JapexDriver Interface</b></p><pre class="programlisting">    public interface JapexDriver extends Runnable {
+                <span class="token">JapexDriver</span> shown below. </p><div class="example"><a id="d0e66"/><p class="title"><b>Example 1. JapexDriver Interface</b></p><pre class="programlisting">    public interface JapexDriver extends Runnable {
       
         public void initializeDriver();
       
@@ -83,17 +86,16 @@
             is the same for all drivers, this parameter can also be set globally in Japex input
             file). </p><p>There are in fact two result values and two results units, one for the Y axis and one
             for the X axis. The parameters <span class="token">japex.resultValue</span> and
-                <span class="token">japex.resultUnit</span> are synonyms for the Y axis parameters
-                <span class="token">japex.resultValueY</span> and <span class="token">japex.resultUnitY</span>; the
-            parameters <span class="token">japex.resultValueX</span> and <span class="token">japex.resultUnitX</span> can
-            also be set and will be used by Japex for displaying two-dimensional data in certain
-            types of charts. Note that unlike the Y axis parameters, neither of the X axis
-            parameters are automatically computed by Japex.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="TestSuites"/>Test Suites</h2></div></div></div><p>Test suites are described using a single configuration file written in XML. This file
+                <span class="token">japex.resultUnit</span> represent the Y axis, and the parameters
+                <span class="token">japex.resultValueX</span> and <span class="token">japex.resultUnitX</span> represent the
+            X axis. Japex uses these parameters for displaying two-dimensional data in scatter
+            charts. Note that unlike the Y axis parameters, neither of the X axis parameters are
+            automatically computed by Japex.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="TestSuites"/>Test Suites</h2></div></div></div><p>Test suites are described using a configuration file written in XML. This file
             includes information such as runtime class path, drivers and test cases. A driver
             encapsulates knowledge about a specific algorithm implementation, and thus a different
             driver is required for each implementation under test. For example, if XML parsing is
             the algorithm under test and parsers X, Y and Z are being evaluated, a different driver
-            must be provided for each implementation.</p><p> A sample configuration file is shown below: </p><div class="example"><a id="d0e185"/><p class="title"><b>Example 2. Sample Configuration File</b></p><pre class="programlisting">    &lt;testSuite name="Sample Test Suite" xmlns="http://www.sun.com/japex/testSuite"&gt;
+            must be provided for each implementation.</p><p> A sample configuration file is shown below: </p><div class="example"><a id="d0e184"/><p class="title"><b>Example 2. Sample Configuration File</b></p><pre class="programlisting">    &lt;testSuite name="Sample Test Suite" xmlns="http://www.sun.com/japex/testSuite"&gt;
         &lt;param name="libraryDir" value="lib"/&gt;
         &lt;param name="japex.classPath" value="${libraryDir}/../dist/classes"/&gt;
                 
@@ -133,11 +135,38 @@
             being XML siblings, their scope is disjoint.</p><p>Parameters whose names start with the prefix <span class="token">japex.</span> are reserved and
             assigned specific meanings by Japex, regardless of their kind. The reader is referred to
             Section <a href="#Reference" title="Parameter Reference">[Reference]</a> for the list of reserved
-            parameters.</p><p/></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="d0e211"/>Normalizing Results</h2></div></div></div><p>It is often convenient to normalize all the results based on those for a specific
+            parameters.</p><p>Drivers, test cases and parameters can also be defined in groups using
+                <span class="token">&lt;driverGroup&gt;</span>,
+            <span class="token">&lt;testCaseGroup&gt;</span> and
+            <span class="token">&lt;paramGroup&gt;</span>, respectively. For drivers and test cases,
+            groups are useful to define a set of common parameters to be shared among the members of the
+            group. In addition, grouping of drivers, test cases or parameters is necessary when
+            modularizing a configuration file and using <a href="#XInclude">XInclude</a>.
+            The following example shows how to define a driver group with a set of shared parameters: </p><div class="example"><a id="d0e223"/><p class="title"><b>Example 3. Defining a Driver Group</b></p><pre class="programlisting">    &lt;driverGroup name="MyDriverGroup" xmlns="http://www.sun.com/japex/testSuite"&gt;
+        &lt;param name="libraryDir" value="lib"/&gt;                   
+        &lt;param name="proxyHost" value="proxy:8080"/&gt;                   
+                    
+        &lt;driver name="XDriver"&gt;
+            &lt;param name="libraryDir" value="xlib"/&gt;   &lt;!-- Overrides group param --&gt;
+            ...
+        &lt;/driver&gt;                    
+        &lt;driver name="YDriver"&gt;
+            ...
+        &lt;/driver&gt;                    
+        ...            
+    &lt;/driverGroup&gt;</pre></div><p>
+        </p><p>All groups can be named using the <span class="token">name</span> attribute, but there is
+            currently no use for the value of this attribute. Driver and test case groups start with
+            a sequence of parameters (or parameter groups!) followed by a sequence of test cases or
+            drivers, respectively. Thus, driver and test case groups define new parameter scopes
+            whose outer scope depends on the location in which they are inserted in a configuration
+            file. Wherever a driver, test case and parameter is allowed in a configuration file, so
+            is a group of its kind. To allow modularization of a Japex configuration file, groups
+            can be nested to any depth. </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="d0e234"/>Normalizing Results</h2></div></div></div><p>It is often convenient to normalize all the results based on those for a specific
             driver. This is especially useful in those cases where the difference between the
             results is so large that it becomes difficult to read them from a bar chart.</p><p>Defining which driver will be used as the <span class="emphasis"><em>normalizer</em></span> is as simple
             as setting the <span class="token">normal</span> attribute on the <span class="token">driver</span> element as
-            shown below: </p><div class="example"><a id="d0e227"/><p class="title"><b>Example 3. Setting the <span class="token">normal</span> Attribute</b></p><pre class="programlisting">    &lt;testSuite name="ParsingPerformance" xmlns="http://www.sun.com/japex/testSuite"&gt;
+            shown below: </p><div class="example"><a id="d0e250"/><p class="title"><b>Example 4. Setting the <span class="token">normal</span> Attribute</b></p><pre class="programlisting">    &lt;testSuite name="ParsingPerformance" xmlns="http://www.sun.com/japex/testSuite"&gt;
         &lt;param name="libraryDir" value="lib"/&gt;                   
         ...
         &lt;driver name="XDriver" normal="true"&gt;   &lt;!-- Normalize results using this driver --&gt;
@@ -150,7 +179,7 @@
             Japex: the absolute values of the results are still included in the XML report and,
             consequently, in HTML report tables. The default value for <span class="token">normal</span> is
                 <span class="token">false</span>. If more than one driver is defined as the normalizer, all but
-            the first (in document order) are ignored.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="d0e244"/>Customizing Japex</h2></div></div></div><p>The value of the global parameter <span class="token">japex.resultUnit</span> determines the type
+            the first (in document order) are ignored.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="d0e267"/>Customizing Japex</h2></div></div></div><p>The value of the global parameter <span class="token">japex.resultUnit</span> determines the type
             of report generated by Japex. By default, the value of this parameter is
             <span class="token">tps</span> (Transactions Per Second) which is, in essence, the
             <span class="emphasis"><em>speed</em></span> of the software under test. This speed can be computed when
@@ -172,7 +201,7 @@
             the finish phase, i.e., during the call to the <span class="token">finish()</span> method. A number
             of output parameters are made available to the drivers for this purpose, see Section
                 <a href="#Reference" title="Parameter Reference">[Testcase Reference]</a> for more information.</p><p>The following is an example of a driver that outputs the size of an XML file (defined
-            by the testcase parameter "xmlfile") in kilobytes:</p><div class="example"><a id="d0e324"/><p class="title"><b>Example 4. Setting the japex.resultUnit and japex.resultValue parameters</b></p><pre class="programlisting">    public void finish(TestCase testCase) {
+            by the testcase parameter "xmlfile") in kilobytes:</p><div class="example"><a id="d0e347"/><p class="title"><b>Example 5. Setting the japex.resultUnit and japex.resultValue parameters</b></p><pre class="programlisting">    public void finish(TestCase testCase) {
         String xmlFile = testCase.getParam("xmlfile");
         if (xmlFile == null) {
             throw new RuntimeException("xmlfile not specified");
@@ -185,11 +214,11 @@
         </p><p>An error is reported if, in a certain run, only a subset of the drivers set the value
             of <span class="token">japex.resultValue</span>. I.e., the intention is for this parameter to be
             either automatically computed by Japex, or manually computed by <span class="emphasis"><em>all</em></span>
-            drivers. <sup>[<a id="d0e338" href="#ftn.d0e338">1</a>]</sup>
-        </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="d0e345"/>Class Paths and Class Loaders</h2></div></div></div><p>The parameter <span class="token">japex.classPath</span> can be set globally to define the
+            drivers. <sup>[<a id="d0e361" href="#ftn.d0e361">1</a>]</sup>
+        </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="d0e368"/>Class Paths and Class Loaders</h2></div></div></div><p>The parameter <span class="token">japex.classPath</span> can be set globally to define the
             location of driver classes and their dependencies. To add multiple locations to a class
             path, simply define this parameter multiple times (i.e., no class path separator is
-            allowed). The following example shows how to add three locations to a class path: </p><div class="example"><a id="d0e353"/><p class="title"><b>Example 5. Setting the japex.classPath parameter</b></p><pre class="programlisting">    &lt;testSuite name="WSpex" xmlns="http://www.sun.com/japex/testSuite"&gt;
+            allowed). The following example shows how to add three locations to a class path: </p><div class="example"><a id="d0e376"/><p class="title"><b>Example 6. Setting the japex.classPath parameter</b></p><pre class="programlisting">    &lt;testSuite name="WSpex" xmlns="http://www.sun.com/japex/testSuite"&gt;
 
         &lt;param name="japex.classPath" value="./classes/drivers"/&gt;
         &lt;param name="japex.classPath" value="./lib/*.jar"/&gt;
@@ -201,14 +230,14 @@
             <span class="token">japex.classPath</span>. Thus, the class path defined when Japex is started does
             not affect how drivers are loaded. This is primarily to avoid loading an incorrect
             version of a component on which both the Japex framework and one or more of drivers rely
-            on (e.g., the JAXB runtime system) <sup>[<a id="d0e364" href="#ftn.d0e364">2</a>]</sup>. </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="d0e368"/>Parameter Values</h2></div></div></div><p> It is possible to use the syntax <span class="token">${param_name}</span> to refer to the value
+            on (e.g., the JAXB runtime system) <sup>[<a id="d0e387" href="#ftn.d0e387">2</a>]</sup>. </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="d0e391"/>Parameter Values</h2></div></div></div><p> It is possible to use the syntax <span class="token">${param_name}</span> to refer to the value
             of a parameter. If, while evaluating the expression <span class="token">${param_name}</span>, no
             parameter with that name is found, <span class="token">param_name</span> is searched as an
-            environment variable and an error reported if no variable of that name is found.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="d0e382"/>Setting Parameters Using System Properties</h2></div></div></div><p> In order to reduce the number of configuration files, it is often desirable to
+            environment variable and an error reported if no variable of that name is found.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="d0e405"/>Setting Parameters Using System Properties</h2></div></div></div><p> In order to reduce the number of configuration files, it is often desirable to
             externally define or override a global parameter. A typical example is changing the
             number of threads between runs without having to edit or duplicate a configuration file.
             This can be accomplished by using Java system properties and the <span class="token">-D</span>
-            option of the <span class="token">java</span> command. </p><div class="example"><a id="d0e393"/><p class="title"><b>Example 6. </b></p><pre class="programlisting">java -Djapex.numberOfThreads=4 com.sun.japex.Japex config.xml</pre></div><p> Any system property that starts with the "japex." prefix will be set as a
+            option of the <span class="token">java</span> command. </p><div class="example"><a id="d0e416"/><p class="title"><b>Example 7. </b></p><pre class="programlisting">java -Djapex.numberOfThreads=4 com.sun.japex.Japex config.xml</pre></div><p> Any system property that starts with the "japex." prefix will be set as a
             Japex global parameter provided that its value is non-empty (i.e., different from the
             empty string). Ignoring a property whose value is empty is particularly useful when
             invoking Japex via Ant. </p></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="Reference"/>Parameter Reference</h2></div></div></div><p> Input parameters are those specified in the configuration file that defines the test
@@ -220,12 +249,25 @@
             japex.resultValue refer to the the unit and value of the Y axis, respectively. We use
             the notation [X] to indicate that the X is <span class="emphasis"><em>optional</em></span> in a name. For
             example, japex.resultUnit[X] refers to the parameters japex.resultUnit and
-            japex.resultUnitX. </p><div class="table"><a id="d0e408"/><p class="title"><b>Table 1. Global Parameters</b></p><table summary="Global Parameters" border="1"><colgroup><col/><col/></colgroup><thead><tr><th>Parameter</th><th>Description</th></tr></thead><tbody><tr><td>japex.reportsDirectory</td><td> The directory to write timestamped XML and HTML reports. DEFAULT:
+            japex.resultUnitX. </p><div class="table"><a id="d0e431"/><p class="title"><b>Table 1. Global Parameters</b></p><table summary="Global Parameters" border="1"><colgroup><col/><col/></colgroup><thead><tr><th>Parameter</th><th>Description</th></tr></thead><tbody><tr><td>japex.reportsDirectory</td><td> The directory to write timestamped XML and HTML reports. DEFAULT:
                             'reports', TYPE: input.</td></tr><tr><td>japex.chartType</td><td> The type of chart selected for the output report. Possible values
                             are 'barchart', 'linechart' and 'scatterchart'. Scatter charts are the
                             only types of charts with two axes: japex.resultValue will be used for
                             the Y axis and japex.resultValueX for the X axis in this case. DEFAULT:
-                            'barchart', TYPE: input.</td></tr><tr><td> japex.resultUnit[X]</td><td> The unit of japex.resultValue. Unit values are case insensitive.
+                            'barchart', TYPE: input.</td></tr><tr><td>japex.plotGroupSize</td><td> The number of test cases to plot in the same chart. To avoid very
+                            small groups, a simple algorithm is used to compute the size of the last
+                            two groups. For example, if this parameter is set to 5 and there are 21
+                            test cases, to avoid having a group of size 1, Japex will create groups
+                            of sizes 5, 5, 5, 3 and 3. Thus, the value of this parameter only
+                            controls the size of all but the last two groups, for which it is an
+                            upper bound. To force all test cases to be plotted in the same chart,
+                            simply set the value of this parameter to a large integer. DEFAULT: 5,
+                            TYPE: input.</td></tr><tr><td>japex.plotDrivers</td><td> This parameter is particularly useful when japex.chartType is set to
+                            'linechart'. By default, Japex will draw a line for each test case
+                            across the set of drivers. By setting this parameter to true, a line is
+                            drawn for each driver instead each test case. This is particularly
+                            useful for testing scalability of a driver over a set of test cases.
+                            DEFAULT: false, TYPE: input.</td></tr><tr><td> japex.resultUnit[X]</td><td> The unit of japex.resultValue. Unit values are case insensitive.
                             There are number of reserved units that are understood by Japex. These
                             are 'tps', 'ms' and 'mbps'. The first, 'tps' stands for Transactions Per
                             Second and is the default. The second, 'ms' or Milliseconds can be used
@@ -241,7 +283,7 @@
                             japex.resultUnit.</td></tr><tr><td> japex.version</td><td> Version of Japex used in the run. TYPE: output.</td></tr><tr><td> japex.osName</td><td> Name of the operating system. TYPE: output.</td></tr><tr><td> japex.osArchitecture</td><td> Name of the operating system architecture. TYPE: output.</td></tr><tr><td> japex.vmInfo</td><td> Virtual machine information. TYPE: output.</td></tr><tr><td> japex.dateTime</td><td> Timestamp of the run. This value is also used to create a unique
                             directory in which the reports are stored. TYPE: output.</td></tr><tr><td> japex.configFile</td><td> Name of the configuration file used for this run. TYPE:
                         output.</td></tr><tr><td> japex.numberOfCpus</td><td> Number of physical CPUs or processors detected by Japex. TYPE:
-                            output.</td></tr></tbody></table></div><div class="table"><a id="d0e474"/><p class="title"><b>Table 2. Driver Parameters</b></p><table summary="Driver Parameters" border="1"><colgroup><col/><col/></colgroup><thead><tr><th>Parameter</th><th>Description</th></tr></thead><tbody><tr><td> japex.driverClass</td><td> Name of the Java class that implements a driver. If absent, the
+                            output.</td></tr></tbody></table></div><div class="table"><a id="d0e507"/><p class="title"><b>Table 2. Driver Parameters</b></p><table summary="Driver Parameters" border="1"><colgroup><col/><col/></colgroup><thead><tr><th>Parameter</th><th>Description</th></tr></thead><tbody><tr><td> japex.driverClass</td><td> Name of the Java class that implements a driver. If absent, the
                             driver's name is used instead. DEFAULT: undefined, TYPE: input. </td></tr><tr><td> japex.numberOfThreads</td><td> Number of threads to use during the warmup and run phases of a
                             driver. DEFAULT: 1, TYPE: input. </td></tr><tr><td> japex.classPath</td><td> Runtime class path needed to load drivers and related libraries. Can
                             be defined multiple times, with each new definition taken as an addition
@@ -256,13 +298,11 @@
                             parameter to a value greater than one. The resulting output will include
                             vertical means and standard deviations for each test across all runs.
                             Moreover, the vertical means will be used to generate the output report.
-                            DEFAULT: 1, TYPE: input. See also japex.includeWarmupRun.</td></tr><tr><td> japex.includeWarmupRun</td><td> Use this parameter to compute a warmup run for a driver. This is
-                            often necessary whenever the per-test warmup is not enough to reach a
-                            steady state (e.g., in several client-server benchmarks). Note that the
-                            output of this warmup phase will be dropped and will therefore not count
-                            towards the computation of any vertical mean --and consequently will not
-                            affect the output report. DEFAULT: true if japex.runsPerDriver is
-                            greater than 1, false otherwise, Type: input.</td></tr><tr><td> japex.resultAritMean[X]</td><td> Arithmetic mean (average) for all test case results estimated for
+                            DEFAULT: 1, TYPE: input. See also japex.includeWarmupRun.</td></tr><tr><td> japex.warmupsPerDriver</td><td> Number of complete warmup runs per driver. By default Japex will
+                            carry out a warmup run per driver whenever japex.runsPerDriver is
+                            greater than 1. This parameter can be used to set the number of driver
+                            warmup runs independently of japex.runsPerDriver.DEFAULT: 1 if
+                            japex.runsPerDriver is greater than 1, 0 otherwise, TYPE: input.</td></tr><tr><td> japex.includeWarmupRun</td><td> This parameter is deprecated. See japex.warmupsPerDriver.</td></tr><tr><td> japex.resultAritMean[X]</td><td> Arithmetic mean (average) for all test case results estimated for
                             this driver. TYPE: output. </td></tr><tr><td> japex.resultGeomMean[X]</td><td> Geometric mean of all test case results estimated for this driver.
                             TYPE: output. </td></tr><tr><td> japex.resultHarmMean[X]</td><td> Harmonic mean of all test case results estimated for this driver.
                             TYPE: output. </td></tr><tr><td> japex.resultAritMean[X]Stddev</td><td> Standard deviation for the arithmetic means computed for each driver
@@ -271,7 +311,7 @@
                             run. It only applies if there is more than one driver run. TYPE: output.
                         </td></tr><tr><td> japex.resultHarmMean[X]Stddev</td><td> Standard deviation for the harmonic means computed for each driver
                             run. It only applies if there is more than one driver run. TYPE: output.
-                        </td></tr></tbody></table></div><div class="table"><a id="d0e546"/><p class="title"><b>Table 3. Test Case Parameters</b></p><table summary="Test Case Parameters" border="1"><colgroup><col/><col/></colgroup><thead><tr><th>Parameter</th><th>Description</th></tr></thead><tbody><tr><td> japex.warmupTime</td><td> Number of hours, minutes and seconds to warm up the VM prior to
+                        </td></tr></tbody></table></div><div class="table"><a id="d0e584"/><p class="title"><b>Table 3. Test Case Parameters</b></p><table summary="Test Case Parameters" border="1"><colgroup><col/><col/></colgroup><thead><tr><th>Parameter</th><th>Description</th></tr></thead><tbody><tr><td> japex.warmupTime</td><td> Number of hours, minutes and seconds to warm up the VM prior to
                             executing each test. Specified as a string in the format
                             '((HH:)?MM:)?S?S'. Examples are '10' for 10 seconds and '02:00' for 120
                             seconds. Takes precedence over japex.warumpIterations if both are
@@ -301,13 +341,17 @@
                             UNIT: iteration, TYPE: output.</td></tr><tr><td>japex.inputFile</td><td> A path to the input file used in this test. This parameter is
                             primarily used by Japex whenever japex.resultUnit is 'mbps'. Determining
                             the size of the input is required to compute the test's throughput in
-                            Megabits Per Second. TYPE: input/output.</td></tr></tbody></table></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="d0e618"/>References</h2></div></div></div><div class="orderedlist"><ol type="1"><li><p><a id="JUnit"/>
+                            Megabits Per Second. TYPE: input/output.</td></tr></tbody></table></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="d0e656"/>References</h2></div></div></div><div class="orderedlist"><ol type="1"><li><p><a id="JUnit"/>
                     <a href="http://junit.sourceforge.net" target="_top">JUnit</a>
                 </p></li><li><p><a id="JFreeChart"/>
                     <a href="http://www.jfree.org/jfreechart/index.html" target="_top">JFreeChart</a>
-                </p></li></ol></div></div><div class="footnotes"><br/><hr width="100" align="left"/><div class="footnote"><p><sup>[<a id="ftn.d0e338" href="#d0e338">1</a>] </sup>If only a subset of the drivers compute <span class="token">japex.resultValue</span>
+                </p></li><li><p><a id="SantiagosBlog"/>
+                    <a href="http://weblogs.java.net/blog/spericas/" target="_top">Santiago's Blog</a>
+                </p></li><li><p><a id="XInclude"/>
+                    <a href="http://www.w3.org/TR/xinclude/" target="_top">XInclude 1.0</a>
+                </p></li></ol></div></div><div class="footnotes"><br/><hr width="100" align="left"/><div class="footnote"><p><sup>[<a id="ftn.d0e361" href="#d0e361">1</a>] </sup>If only a subset of the drivers compute <span class="token">japex.resultValue</span>
                     explicitly, this is most likely an indication of an error in the benchmark.
                     However, because this observation does not apply in all cases, this behavior is
-                    subject to change in future releases.</p></div><div class="footnote"><p><sup>[<a id="ftn.d0e364" href="#d0e364">2</a>] </sup>For even greater flexibility, a per-driver class path could be supported in
+                    subject to change in future releases.</p></div><div class="footnote"><p><sup>[<a id="ftn.d0e387" href="#d0e387">2</a>] </sup>For even greater flexibility, a per-driver class path could be supported in
                     future versions. This would permit the loading of different versions of the same
                     class by different drivers.</p></div></div></div></body></html>
