@@ -67,7 +67,7 @@ public class TrendReport {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        if (args.length < 2) {
+        if (args.length < 3) {
             displayUsageAndExit(args);
         }
 
@@ -79,6 +79,7 @@ public class TrendReport {
             new TrendReport().run(params);
             
         } catch (Exception e) {
+            displayUsageAndExit(args);
             throw new RuntimeException(e);
         }
         
@@ -152,7 +153,16 @@ public class TrendReport {
         }        
     }
     private static void displayUsageAndExit(String[] args) {
-        System.err.println("Usage: japex-trend Title reportPath outputPath [date] [offset] [driver] [test]");
+        if (args.length==0) {
+            System.err.println("No input");
+        } else {
+            System.err.print("TrendReport ");
+            for (int i=0; i<args.length; i++) {
+                System.err.print("'"+args[i]+"' ");
+            }
+            System.err.println("");
+        }
+        System.err.println("Usage: TrendReport Title reportPath outputPath [date] [offset] [driver] [test] [-o/overwrite]");
         System.exit(1);        
     }
      
