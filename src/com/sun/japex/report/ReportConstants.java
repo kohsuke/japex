@@ -60,5 +60,6 @@ public class ReportConstants {
     
     public static final String DEFAULT_STARTDATE = "TODAY";
     public static final String DEFAULT_DATEOFFSET = "-1Y";
+    public static final String REPORT_DIRECTORY_FORMAT = "yyyy_MM_dd_HH_mm";
     
 }

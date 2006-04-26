@@ -38,6 +38,7 @@
  */
 
 package com.sun.japex.report;
+import java.io.File;
 import java.util.Date;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -46,6 +47,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+
 
 /*
  *TrendReport title reportPath outputPath date offset [-d {driver}] [-m {means}] [-t {test}] [-H/HISTORY] [-O/OVERWRITE]
@@ -95,6 +97,10 @@ public class TrendReportParams {
     boolean _isTestSpecified = false;
     boolean _overwrite = false;
     boolean _history = false;
+    
+    //REPORT_DIRECTORY_FORMAT assumed for all report directories;
+    //may expose the param if neccessary
+    boolean reportByName = true;
     
     int _version = ReportConstants.TRENDREPORT_VERSION_01;
     
@@ -381,5 +387,17 @@ public class TrendReportParams {
     public boolean history() {
         return _history;
     }
-    
+    public static Date parseReportDirectory(File file) {
+        Date date = null;
+        if (file != null) {
+            try {
+                SimpleDateFormat formatter = 
+                        new SimpleDateFormat (ReportConstants.REPORT_DIRECTORY_FORMAT);
+                date = formatter.parse(file.getName());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        return date;
+    }
 }

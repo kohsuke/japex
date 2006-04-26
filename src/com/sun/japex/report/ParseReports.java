@@ -69,7 +69,7 @@ public class ParseReports {
             return;
             
         }
-        Arrays.sort(reportDirs, new DateComparator());
+        Arrays.sort(reportDirs, new DateComparator(params.reportByName));
         
         String separator = System.getProperty("file.separator");
         ReportDataParser handler = null;
@@ -82,9 +82,15 @@ public class ParseReports {
             int lastDay=0, lastMonth=0, lastYear=0;
         
             for (int i = 0; i < reportDirs.length; i++) {
+//System.out.println("report "+(i+1)+": "+reportDirs[i].getName());
                 File file = new File(reportDirs[i].getAbsolutePath()+separator+"report.xml"); 
                 if (file.exists()) {
-                    Date date = new Date(reportDirs[i].lastModified());
+                    Date date;
+                    if (params.reportByName) {
+                        date = TrendReportParams.parseReportDirectory(reportDirs[i]);
+                    } else {
+                        date = new Date(reportDirs[i].lastModified());
+                    }
                     cal.setTime(date);
                     int day = cal.get(cal.DAY_OF_MONTH);
                     int month = cal.get(cal.MONTH);
