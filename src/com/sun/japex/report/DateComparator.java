@@ -42,12 +42,16 @@ package com.sun.japex.report;
 import java.io.File;
 import java.util.Comparator;
 import java.util.Date;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 
 public class DateComparator implements Comparator {
     public static final int ORDER_DESC = 1;
     public static final int ORDER_ASC = 2;
     private int order;    
+    private boolean byName = true;
     /** Creates a new instance of DateComparator */
     public DateComparator() {
         order = ORDER_DESC;
@@ -55,12 +59,22 @@ public class DateComparator implements Comparator {
     public DateComparator(int order) {
         this.order = order;
     }
+    public DateComparator(boolean byName) {
+        this.byName = byName;
+        order = ORDER_DESC;
+    }
     public int compare(Object o1, Object o2) {
         if ( (o1 instanceof File) && (o2 instanceof File) )
         {
-            long lm1 = ((File)o1).lastModified();
-            long lm2 = ((File)o2).lastModified();
-
+            long lm1, lm2;
+            if (byName) {
+                lm1 = convertDate((File)o1);
+                lm2 = convertDate((File)o2);
+            } else {
+                lm1 = ((File)o1).lastModified();
+                lm2 = ((File)o2).lastModified();
+            }
+            
             if ( lm1 < lm2 ) {
                 return (order == ORDER_DESC) ? -1 : 1;
             } else if ( lm1 > lm2 ) {
@@ -82,5 +96,15 @@ public class DateComparator implements Comparator {
         } else {
             return false;
         }
+    }
+    long convertDate(File file) {
+        long time = 0;
+        if (file != null) {
+            Date d0 = TrendReportParams.parseReportDirectory(file);
+            if (d0 != null) {
+                time = d0.getTime();
+            }
+        }
+        return time;
     }
 }
