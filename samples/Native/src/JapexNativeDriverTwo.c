@@ -10,6 +10,7 @@
  */
 jobject userDataToObject(JNIEnv *env, void *userData, int size);
 void* objectToUserData(JNIEnv *env, jobject object);
+const char* getParam(JNIEnv *env, jobject this, const char *name);
 void setLongParam(JNIEnv *env, jobject this, const char *name, long value);
 long getLongParam(JNIEnv *env, jobject this, const char *name);
 
@@ -117,6 +118,18 @@ JNIEXPORT void JNICALL Java_com_sun_japex_jdsl_nativecode_JapexNativeDriver_term
 }
 
 /* ---- THE FOLLOWING TWO METHODS SHOW HOW TO ACCESS DRIVER PARAMS ----- */
+
+const char* getParam(JNIEnv *env, jobject this, const char *name)
+{
+    jclass cls;
+    jmethodID mid;
+    jstring value;
+
+    cls = (*env)->GetObjectClass(env, this);
+    mid = (*env)->GetMethodID(env, cls, "getParam", "(Ljava/lang/String;)Ljava/lang/String;");
+    value = (jstring) (*env)->CallObjectMethod(env, this, mid, (*env)->NewStringUTF(env, name));
+    return value == NULL ? (const char*) value : (*env)->GetStringUTFChars(env, value, NULL);
+}
 
 void setLongParam(JNIEnv *env, jobject this, const char *name, long value) 
 {
