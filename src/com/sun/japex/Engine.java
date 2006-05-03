@@ -44,9 +44,7 @@ import java.text.*;
 import java.net.*;
 import java.io.File;
 import java.util.concurrent.*;
-import java.lang.management.GarbageCollectorMXBean;
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
+import java.lang.management.*;
 
 public class Engine {
     
@@ -100,7 +98,15 @@ public class Engine {
      */
     protected List<GarbageCollectorMXBean> _gCCollectors;
     
+    /**
+     * GC time in millis during measurement period
+     */
     protected long _gCTime;
+
+    /**
+     * Used to compute per driver heap memory usage
+     */
+    long _beforeHeapMemoryUsage;
     
     public Engine() {
         _gCCollectors = ManagementFactory.getGarbageCollectorMXBeans();                 
@@ -146,7 +152,7 @@ public class Engine {
                 int nOfThreads = _driverImpl.getIntParam(Constants.NUMBER_OF_THREADS);
                 int runsPerDriver = _driverImpl.getIntParam(Constants.RUNS_PER_DRIVER);
                 int warmupsPerDriver = _driverImpl.getIntParam(Constants.WARMUPS_PER_DRIVER);
-                
+
                 // Create a Japex class loader for this driver
                 JapexClassLoader jcLoader = 
                     new JapexClassLoader(_driverImpl.getParam(Constants.CLASS_PATH));
@@ -177,9 +183,18 @@ public class Engine {
 		    _threadPool.prestartAllCoreThreads();
 		}
 
+                // Reset memory usage before starting runs
+                resetPeakMemoryUsage();
+                        
                 // Display driver's name
                 forEachRun();
                 
+                // Set memory usage param and display info
+                setPeakMemoryUsage(_driverImpl);                
+                System.out.println("    Peak heap usage: "
+                    + Util.formatDouble(_driverImpl.getDoubleParam(Constants.PEAK_HEAP_USAGE))
+                    + " KB");
+                    
                 // Call terminate on all driver instances
                 for (int i = 0; i < nOfThreads; i++) {
                     for (int j = 0; j < actualRuns; j++) {
@@ -190,7 +205,7 @@ public class Engine {
                 // Shutdown thread pool
                 if (nOfThreads > 1) {
 		    _threadPool.shutdown();
-                }
+                }                
             }   
         }
         catch (RuntimeException e) {
@@ -421,6 +436,35 @@ public class Engine {
         }        
     }
 
+    private void resetPeakMemoryUsage() {
+        // Force GC before collecting current usage
+        System.gc();
+        
+        // Accumulate usage from all heap-type pools
+        _beforeHeapMemoryUsage = 0L;
+        for (MemoryPoolMXBean b : ManagementFactory.getMemoryPoolMXBeans()) {
+            b.resetPeakUsage();     // Sets it to current usage
+            if (b.getType() == MemoryType.HEAP) {
+                _beforeHeapMemoryUsage += b.getPeakUsage().getUsed();
+            }
+        }
+    }
+    
+    private void setPeakMemoryUsage(DriverImpl driver) {
+        long afterHeapMemoryUsage = 0L;
+        
+        // Accumulate usage from all heap-type pools
+        for (MemoryPoolMXBean b : ManagementFactory.getMemoryPoolMXBeans()) {
+            if (b.getType() == MemoryType.HEAP) {
+                afterHeapMemoryUsage += b.getPeakUsage().getUsed();
+            }
+        }
+
+        // Set output parameter
+        driver.setDoubleParam(Constants.PEAK_HEAP_USAGE,
+                (afterHeapMemoryUsage - _beforeHeapMemoryUsage) / 1024.0);
+    }
+    
     private List<Long> getGCAbsoluteTimes() {
         List<Long> gCTimes = new ArrayList();
         for (GarbageCollectorMXBean gcc : _gCCollectors) {

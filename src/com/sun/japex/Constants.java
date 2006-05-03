@@ -53,7 +53,7 @@ public class Constants {
     
     // Global output parameters
     public static final String VERSION         = "japex.version";
-    public static final String VERSION_VALUE   = "1.0.10";
+    public static final String VERSION_VALUE   = "1.0.11";
     public static final String OS_NAME         = "japex.osName";
     public static final String OS_ARCHITECTURE = "japex.osArchitecture";
     public static final String DATE_TIME       = "japex.dateTime";
@@ -82,6 +82,8 @@ public class Constants {
     public static final String RESULT_ARIT_MEAN_X_STDDEV = "japex.resultAritMeanXStddev";
     public static final String RESULT_GEOM_MEAN_X_STDDEV = "japex.resultGeomMeanXStddev";
     public static final String RESULT_HARM_MEAN_X_STDDEV = "japex.resultHarmMeanXStddev";
+    
+    public static final String PEAK_HEAP_USAGE = "japex.peakHeapUsage";
     
     // Testcase input parameters
     public static final String RUN_ITERATIONS    = "japex.runIterations";
