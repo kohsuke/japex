@@ -58,12 +58,12 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
      * configuration file. Note that base drivers that are used
      * for extension are omitted from the final list.
      */
-    List<DriverImpl> _driverInfo = new ArrayList<DriverImpl>();
+    List<DriverImpl> _driverList = new ArrayList<DriverImpl>();
     
     /*
      * This is a temporary list of base drivers that are used
      * to extend others. Drivers in this list will eventually
-     * be removed from <code>_driverInfo</code>.
+     * be removed from <code>_driverList</code>.
      */
     List<DriverImpl> _baseDriversUsed = new ArrayList<DriverImpl>();
         
@@ -204,11 +204,11 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
             Runtime.getRuntime().availableProcessors());
                 
         // Create and populate list of drivers and base drivers used
-        _driverInfo = createDriverList(ts.getDriverOrDriverGroup(), this);
+        _driverList = createDriverList(ts.getDriverOrDriverGroup(), this);
                 
         // Remove base drivers in use so that they are ignored
         for (DriverImpl driverInfo : _baseDriversUsed) {
-            _driverInfo.remove(driverInfo);
+            _driverList.remove(driverInfo);
         }
 
         // Create and populate list of test cases
@@ -216,7 +216,7 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
             ts.getTestCaseOrTestCaseGroup(), this);
                         
         // Set list of test cases on each driver
-        for (DriverImpl di: _driverInfo) {
+        for (DriverImpl di: _driverList) {
             di.setTestCases(testCases);
         }
     }
@@ -281,7 +281,7 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
             // Single driver or driver group?
             if (o instanceof DriverType) {
                 DriverType dt = (DriverType) o;
-                driverInfo = createDriverImpl(dt, defaults);
+                driverInfo = createDriverImpl(dt, defaults, result);
                 
                 // If japex.driverClass not specified, use the driver's name
                 if (!driverInfo.hasParam(Constants.DRIVER_CLASS)) {
@@ -323,7 +323,9 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
      * the extends attribute is specified) or by directly allocating a new
      * instance.
      */
-    private DriverImpl createDriverImpl(DriverType dt, ParamsImpl inScope) {
+    private DriverImpl createDriverImpl(DriverType dt, ParamsImpl inScope,
+            List<DriverImpl> driverList) 
+    {
         DriverImpl driverInfo = null;
         
         // Check if this driver extends another
@@ -331,7 +333,7 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
         
         if (baseDriver != null) {
             boolean baseDriverFound = false;
-            for (DriverImpl base : _driverInfo) {
+            for (DriverImpl base : driverList) {
                 if (base.getName().equals(baseDriver)) {
                     // Cloning works in depth for parameters
                     driverInfo = (DriverImpl) base.clone();  
@@ -444,7 +446,7 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
     }
     
     public List getDriverInfoList() {
-        return _driverInfo;
+        return _driverList;
     }
     
     /**
@@ -462,14 +464,14 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
         
         // Compute a parameter closure for all drivers
         Set<String> paramsClosure = new HashSet<String>();
-        for (DriverImpl di : _driverInfo) {
+        for (DriverImpl di : _driverList) {
             for (String name : di.nameSet()) {
                 paramsClosure.add(name);
             }
         }
 
         // Close the set of driver params in all drivers
-        for (DriverImpl di : _driverInfo) {
+        for (DriverImpl di : _driverList) {
             for (String name : paramsClosure) {
                 if (!di.hasLocalParam(name)) {
                     di.setParam(name, "n/a");
@@ -478,7 +480,7 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
         }        
         
         // Iterate through each class (aka driver)
-        Iterator jdi = _driverInfo.iterator();
+        Iterator jdi = _driverList.iterator();
         while (jdi.hasNext()) {
             DriverImpl di = (DriverImpl) jdi.next();
             di.serialize(report, 2);
