@@ -1,5 +1,7 @@
 <project name="japex" default="dist" basedir=".">
     <property environment="env"/>
+
+    <property file="${user.home}/build.properties" />
     
     <property name="app.jar" value="japex.jar"/>
 
@@ -233,5 +235,55 @@
 
     <target name="package" depends="dist-package" 
        description="Creates a downloadable package with binaries, docs and samples"/>
+
+    <target name="push-to-maven-prepare" depends="dist"
+        description="prepare a repository iamge for the push-to-maven target">
+        <taskdef resource="maven-repository-importer.properties">
+            <classpath>
+                <pathelement path="tools/lib/maven-repository-importer.jar" />
+            </classpath>
+        </taskdef>
+        <delete dir="build/maven-repo" /><!-- clean it -->
+        <!-- ${suffix} can be overridden to "" for posting releases -->
+        <property name="suffix" value="-SNAPSHOT" />
+        <maven-repository-importer
+            destdir="build/maven-repo" version="${release.impl.version}">
+            <artifact
+            jar="dist/lib/japex.jar"
+            pom="etc/poms/japex.pom" />
+            <artifact
+            jar="dist/jdsl/jdsl.jar"
+            pom="etc/poms/jdsl.pom" />
+        </maven-repository-importer>
+    </target>
+
+    <macrodef name="cvs-import">
+        <attribute name="src"/>
+        <attribute name="dest"/>
+        <attribute name="cvsroot"/>
+        <sequential>
+            <tstamp />
+            <echo>importing to CVS...</echo>
+            <cvs dest="@{src}">
+                <commandline>
+                    <argument value="-d@{cvsroot}"/>
+                    <argument line="-z9 import -ko"/>
+                    <argument value="-W"/>
+                    <argument line="*.jar -kb"/>
+                    <argument value="-m"/>
+                    <argument value="deploying new jars to the java.net maven repository"/>
+          
+                    <argument value="@{dest}"/>
+                    <argument line="deployment-to-maven-repository t${DSTAMP}${TSTAMP}" />
+                </commandline>
+            </cvs>
+        </sequential>
+    </macrodef>
+  
+    <target name="push-to-maven" depends="push-to-maven-prepare"
+        description="publish artifacts into the maven repository">
+        <echo>importing to CVS...</echo>
+        <cvs-import src="build/maven-repo" dest="japex/repo" cvsroot=":pserver:${java.net.user.name}@kohsuke.sfbay.sun.com:/cvs" />
+    </target>
 
 </project>
