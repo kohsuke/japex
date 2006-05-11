@@ -7,6 +7,8 @@
     <dependency>
       <groupId>com.sun.japex</groupId>
       <artifactId>japex</artifactId>
+      <!-- version of japex and jdsl must be in sync -->
+      <version>1.0.11</version>
     </dependency>
   </dependencies>
 </project>
