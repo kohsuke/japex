@@ -518,7 +518,7 @@ public class Engine {
                     
             // Tx = sum(I_k) / T for k in 1..N
             tps = tc.getLongParam(Constants.RUN_ITERATIONS_SUM) /
-                  (Util.parseDuration(tc.getParam(Constants.RUN_TIME)) / 1000.0);
+                  (avgT / 1000.0);
         } 
         else {
             // Compute average run time across all threads
