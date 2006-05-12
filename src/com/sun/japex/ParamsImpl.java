@@ -261,6 +261,15 @@ public class ParamsImpl implements Params {
         }
     }
 
+    /**
+     * Same as <code>getDoubleParam(String)</code> but returning
+     * 0.0 instead of NaN.
+     */
+    public synchronized double getDoubleParamNoNaN(String name) {
+        double result = getDoubleParam(name);
+        return Double.isNaN(result) ? 0.0 : result;
+    }
+    
     // -- Other methods --------------------------------------------------
     
     /**

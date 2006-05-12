@@ -192,7 +192,7 @@ public class Engine {
                 // Set memory usage param and display info
                 setPeakMemoryUsage(_driverImpl);                
                 System.out.println("    Peak heap usage: "
-                    + Util.formatDouble(_driverImpl.getDoubleParam(Constants.PEAK_HEAP_USAGE))
+                    + _driverImpl.getParam(Constants.PEAK_HEAP_USAGE)
                     + " KB");
                     
                 // Call terminate on all driver instances
@@ -304,136 +304,149 @@ public class Engine {
             // Get list of tests
             List tcList = _driverImpl.getTestCases(_driverRun);
             int nOfTests = tcList.size();
-
+            
             // Iterate through list of test cases
             Iterator tci = tcList.iterator();
             while (tci.hasNext()) {
                 long runTime = 0L;
-                TestCaseImpl tc = (TestCaseImpl) tci.next();               
-
+                TestCaseImpl tc = (TestCaseImpl) tci.next();
+                
                 if (Japex.verbose) {
                     System.out.println(tc.getName());
-                }
-                else {
+                } else {
                     System.out.print(tc.getName() + ",");
                 }
-
-               // Get elapsed time for all GCs
-               List<Long> gCStartTimes = getGCAbsoluteTimes();
-                    
-               // If nOfThreads == 1, re-use this thread
-                if (nOfThreads == 1) {
-                    // -- Prepare phase --------------------------------------
-
-                    _drivers[0][_driverRun].setTestCase(tc);     // tc is shared!
-                    _drivers[0][_driverRun].prepare();
-
-                    // -- Warmup phase ---------------------------------------
-
-                    endTime = tc.hasParam(Constants.WARMUP_TIME) ? 
-                        Util.currentTimeMillis() + 
-                            Util.parseDuration(tc.getParam(Constants.WARMUP_TIME)) : 0L;
-                                        
-                    // First time call does warmup
-                    _drivers[0][_driverRun].setEndTime(endTime);
-                    _drivers[0][_driverRun].call();
-
-                    // -- Run phase -------------------------------------------
-
-                    endTime = tc.hasParam(Constants.RUN_TIME) ? 
-                        Util.currentTimeMillis() + 
-                            Util.parseDuration(tc.getParam(Constants.RUN_TIME)) : 0L;
-                    
-                    // Second time call does run
-                    _drivers[0][_driverRun].setEndTime(endTime);
-                    _drivers[0][_driverRun].call();
-                }
-                else {  // nOfThreads > 1
-                        
-                    // -- Prepare phase --------------------------------------
-
-                    // Initialize driver instance with test case object do prepare
-                    for (int i = 0; i < nOfThreads; i++) {
-                        _drivers[i][_driverRun].setTestCase(tc);     // tc is shared!
-                        _drivers[i][_driverRun].prepare();
-                    }
-
-                    // -- Warmup phase ---------------------------------------
-
-                    // Fork all threads -- first time drivers will warmup
-                    Future<?>[] futures = new Future<?>[nOfThreads];   
-                    
-                    endTime = tc.hasParam(Constants.WARMUP_TIME) ? 
-                        Util.currentTimeMillis() + 
-                            Util.parseDuration(tc.getParam(Constants.WARMUP_TIME)) : 0L;
-
-                    for (int i = 0; i < nOfThreads; i++) {
-                        _drivers[i][_driverRun].setEndTime(endTime);
-                        futures[i] = _threadPool.submit(_drivers[i][_driverRun]);
-                    }
-
-                    // Wait for all threads to finish
-                    for (int i = 0; i < nOfThreads; i++) {
-                        futures[i].get();
-                    }
-                    
-                    // -- Run phase -------------------------------------------
-
-                    endTime = tc.hasParam(Constants.RUN_TIME) ? 
-                        Util.currentTimeMillis() + 
-                            Util.parseDuration(tc.getParam(Constants.RUN_TIME)) : 0L;
-                    
-                    // Fork all threads -- second time drivers will run
-                    for (int i = 0; i < nOfThreads; i++) {
-                        _drivers[i][_driverRun].setEndTime(endTime);
-                        futures[i] = _threadPool.submit(_drivers[i][_driverRun]);
-                    }
-
-                    // Wait for all threads to finish
-                    for (int i = 0; i < nOfThreads; i++) {
-                        futures[i].get();
-                    }
-                }
                 
-                // Get the total time take for GC over the measurement period
-                _gCTime = getGCRelativeTotalTime(gCStartTimes);
-
-                // Finish phase                         
-                for (int i = 0; i < nOfThreads; i++) {
-                    _drivers[i][_driverRun].finish();
-                }                    
+                // Get elapsed time for all GCs
+                List<Long> gCStartTimes = getGCAbsoluteTimes();
+                
+                Future<?>[] futures = null;
+                try {
+                    // If nOfThreads == 1, re-use this thread
+                    if (nOfThreads == 1) {
+                        // -- Prepare phase --------------------------------------
+                        
+                        _drivers[0][_driverRun].setTestCase(tc);     // tc is shared!
+                        _drivers[0][_driverRun].prepare();
+                        
+                        // -- Warmup phase ---------------------------------------
+                        
+                        endTime = tc.hasParam(Constants.WARMUP_TIME) ?
+                            Util.currentTimeMillis() +
+                                Util.parseDuration(tc.getParam(Constants.WARMUP_TIME)) : 0L;
+                        
+                        // First time call does warmup
+                        _drivers[0][_driverRun].setEndTime(endTime);
+                        _drivers[0][_driverRun].call();
+                        
+                        // -- Run phase -------------------------------------------
+                        
+                        endTime = tc.hasParam(Constants.RUN_TIME) ?
+                            Util.currentTimeMillis() +
+                                Util.parseDuration(tc.getParam(Constants.RUN_TIME)) : 0L;
+                        
+                        // Second time call does run
+                        _drivers[0][_driverRun].setEndTime(endTime);
+                        _drivers[0][_driverRun].call();
+                    } else {  // nOfThreads > 1
+                        
+                        // -- Prepare phase --------------------------------------
+                        
+                        // Initialize driver instance with test case object do prepare
+                        for (int i = 0; i < nOfThreads; i++) {
+                            _drivers[i][_driverRun].setTestCase(tc);     // tc is shared!
+                            _drivers[i][_driverRun].prepare();
+                        }
+                        
+                        // -- Warmup phase ---------------------------------------
+                        
+                        // Fork all threads -- first time drivers will warmup
+                        futures = new Future<?>[nOfThreads];
+                        
+                        endTime = tc.hasParam(Constants.WARMUP_TIME) ?
+                            Util.currentTimeMillis() +
+                                Util.parseDuration(tc.getParam(Constants.WARMUP_TIME)) : 0L;
+                        
+                        for (int i = 0; i < nOfThreads; i++) {
+                            _drivers[i][_driverRun].setEndTime(endTime);
+                            futures[i] = _threadPool.submit(_drivers[i][_driverRun]);
+                        }
+                        
+                        // Wait for all threads to finish
+                        for (int i = 0; i < nOfThreads; i++) {
+                            futures[i].get();
+                        }
+                        
+                        // -- Run phase -------------------------------------------
+                        
+                        endTime = tc.hasParam(Constants.RUN_TIME) ?
+                            Util.currentTimeMillis() +
+                                Util.parseDuration(tc.getParam(Constants.RUN_TIME)) : 0L;
+                        
+                        // Fork all threads -- second time drivers will run
+                        for (int i = 0; i < nOfThreads; i++) {
+                            _drivers[i][_driverRun].setEndTime(endTime);
+                            futures[i] = _threadPool.submit(_drivers[i][_driverRun]);
+                        }
+                        
+                        // Wait for all threads to finish
+                        for (int i = 0; i < nOfThreads; i++) {
+                            futures[i].get();
+                        }
+                    }
+                    
+                    // Get the total time take for GC over the measurement period
+                    _gCTime = getGCRelativeTotalTime(gCStartTimes);
+                    
+                    // Finish phase
+                    for (int i = 0; i < nOfThreads; i++) {
+                        _drivers[i][_driverRun].finish();
+                    }
+                } 
+                catch (Exception e) {
+                    // Set japex.resultValue to Not-A-Number
+                    tc.setDoubleParam(Constants.RESULT_VALUE, Double.NaN);
+                } 
+                finally {
+                    if (futures != null) {
+                        // Cancel all remaining threads
+                        for (int i = 0; i < nOfThreads; i++) {
+                            futures[i].cancel(true);
+                        }
+                    }
+                }
                 
                 double result;
                 if (tc.hasParam(Constants.RESULT_VALUE)) {
                     result = tc.getDoubleParam(Constants.RESULT_VALUE);
-                }
+                } 
                 else {
-                     result = computeResultValue(tc, nOfThreads, nOfCpus);
-                     tc.setDoubleParam(Constants.RESULT_VALUE, result);
-                }        
-
-                // Compute running means 
+                    result = computeResultValue(tc, nOfThreads, nOfCpus);
+                    tc.setDoubleParam(Constants.RESULT_VALUE, result);
+                }
+                
+                // Compute running means
                 _aritMeanresult += result / nOfTests;
                 _geomMeanresult *= Math.pow(result, 1.0 / nOfTests);
                 _harmMeanresultInverse += 1.0 / (nOfTests * result);
-
+                
                 // Display results for this test
                 if (Japex.verbose) {
                     System.out.println("           " + tc.getParam(Constants.RESULT_VALUE));
                     System.out.print("           ");
-                }
+                } 
                 else {
                     System.out.print(tc.getParam(Constants.RESULT_VALUE) + ",");
                     System.out.flush();
                 }
             }
-        }
+        } 
         catch (RuntimeException e) {
             throw e;
-        }
+        } 
         catch (Exception e) {
             throw new RuntimeException(e);
-        }        
+        }
     }
 
     private void resetPeakMemoryUsage() {

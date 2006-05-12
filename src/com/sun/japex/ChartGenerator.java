@@ -139,8 +139,22 @@ public class ChartGenerator {
                 DriverImpl di = (DriverImpl) jdi.next();       
                 if (di.isNormal()) {
                     normalizerDriver = di; 
-                    resultUnit = "% of " + resultUnit;
                     break;
+                }
+            }
+            
+            // Check if normalizer driver can be used as such
+            if (normalizerDriver != null) {
+                if (normalizerDriver.getDoubleParamNoNaN(Constants.RESULT_ARIT_MEAN) == 0.0
+                    || normalizerDriver.getDoubleParamNoNaN(Constants.RESULT_GEOM_MEAN) == 0.0
+                    || normalizerDriver.getDoubleParamNoNaN(Constants.RESULT_HARM_MEAN) == 0.0) 
+                {
+                    System.out.println("Warning: Driver '" + normalizerDriver.getName() + 
+                            "' cannot be used to normalize results");
+                    normalizerDriver = null;
+                }
+                else {
+                    resultUnit = "% of " + resultUnit;                    
                 }
             }
             
@@ -152,39 +166,39 @@ public class ChartGenerator {
                 if (normalizerDriver != null) {
                     dataset.addValue(
                         normalizerDriver == di ? 100.0 :
-                        (100.0 * di.getDoubleParam(Constants.RESULT_ARIT_MEAN) /
-                         normalizerDriver.getDoubleParam(Constants.RESULT_ARIT_MEAN)),
+                        (100.0 * di.getDoubleParamNoNaN(Constants.RESULT_ARIT_MEAN) /
+                            normalizerDriver.getDoubleParamNoNaN(Constants.RESULT_ARIT_MEAN)),
                         di.getName(),
                         "Arithmetic Mean");
                     dataset.addValue(
                         normalizerDriver == di ? 100.0 :
-                        (100.0 * di.getDoubleParam(Constants.RESULT_GEOM_MEAN) /
-                         normalizerDriver.getDoubleParam(Constants.RESULT_GEOM_MEAN)),
+                        (100.0 * di.getDoubleParamNoNaN(Constants.RESULT_GEOM_MEAN) /
+                            normalizerDriver.getDoubleParamNoNaN(Constants.RESULT_GEOM_MEAN)),
                         di.getName(),
                         "Geometric Mean");
                     dataset.addValue(
                         normalizerDriver == di ? 100.0 :
-                        (100.0 * di.getDoubleParam(Constants.RESULT_HARM_MEAN) /
-                         normalizerDriver.getDoubleParam(Constants.RESULT_HARM_MEAN)),
+                        (100.0 * di.getDoubleParamNoNaN(Constants.RESULT_HARM_MEAN) /
+                            normalizerDriver.getDoubleParamNoNaN(Constants.RESULT_HARM_MEAN)),
                         di.getName(),
                         "Harmonic Mean");                    
                 }
                 else {
                     dataset.addValue(
-                        di.getDoubleParam(Constants.RESULT_ARIT_MEAN), 
+                        di.getDoubleParamNoNaN(Constants.RESULT_ARIT_MEAN), 
                         di.getName(),
                         "Arithmetic Mean");
                     dataset.addValue(
-                        di.getDoubleParam(Constants.RESULT_GEOM_MEAN), 
+                        di.getDoubleParamNoNaN(Constants.RESULT_GEOM_MEAN), 
                         di.getName(),
                         "Geometric Mean");
                     dataset.addValue(
-                        di.getDoubleParam(Constants.RESULT_HARM_MEAN), 
+                        di.getDoubleParamNoNaN(Constants.RESULT_HARM_MEAN), 
                         di.getName(),
                         "Harmonic Mean");
                 }
             }
-            
+                        
             return ChartFactory.createBarChart3D(
                 "Result Summary (" + resultUnit + ")", 
                 "", resultUnit, 
@@ -216,12 +230,12 @@ public class ChartGenerator {
                 }
                                           
                 XYSeries xySeries = new XYSeries(di.getName(), true, false);
-                xySeries.add(di.getDoubleParam(Constants.RESULT_ARIT_MEAN_X),
-                             di.getDoubleParam(Constants.RESULT_ARIT_MEAN));
-                xySeries.add(di.getDoubleParam(Constants.RESULT_GEOM_MEAN_X),
-                             di.getDoubleParam(Constants.RESULT_GEOM_MEAN));
-                xySeries.add(di.getDoubleParam(Constants.RESULT_HARM_MEAN_X),
-                             di.getDoubleParam(Constants.RESULT_HARM_MEAN));   
+                xySeries.add(di.getDoubleParamNoNaN(Constants.RESULT_ARIT_MEAN_X),
+                             di.getDoubleParamNoNaN(Constants.RESULT_ARIT_MEAN));
+                xySeries.add(di.getDoubleParamNoNaN(Constants.RESULT_GEOM_MEAN_X),
+                             di.getDoubleParamNoNaN(Constants.RESULT_GEOM_MEAN));
+                xySeries.add(di.getDoubleParamNoNaN(Constants.RESULT_HARM_MEAN_X),
+                             di.getDoubleParamNoNaN(Constants.RESULT_HARM_MEAN));   
                 xyDataset.addSeries(xySeries);
             }
                         
@@ -267,15 +281,15 @@ public class ChartGenerator {
                 DriverImpl di = (DriverImpl) jdi.next();
                               
                 dataset.addValue(
-                    di.getDoubleParam(Constants.RESULT_ARIT_MEAN), 
+                    di.getDoubleParamNoNaN(Constants.RESULT_ARIT_MEAN), 
                     "Arithmetic Mean", 
                     di.getName());
                 dataset.addValue(
-                    di.getDoubleParam(Constants.RESULT_GEOM_MEAN), 
+                    di.getDoubleParamNoNaN(Constants.RESULT_GEOM_MEAN), 
                     "Geometric Mean",
                     di.getName());
                 dataset.addValue(
-                    di.getDoubleParam(Constants.RESULT_HARM_MEAN), 
+                    di.getDoubleParamNoNaN(Constants.RESULT_HARM_MEAN), 
                     "Harmonic Mean",
                     di.getName());
             }
@@ -337,8 +351,20 @@ public class ChartGenerator {
                 DriverImpl di = (DriverImpl) jdi.next();       
                 if (di.isNormal()) {
                     normalizerDriver = di; 
-                    resultUnit = "% of " + resultUnit;
                     break;
+                }
+            }
+            
+            // Check if normalizer driver can be used as such
+            if (normalizerDriver != null) {
+                if (normalizerDriver.getDoubleParamNoNaN(Constants.RESULT_ARIT_MEAN) == 0.0
+                    || normalizerDriver.getDoubleParamNoNaN(Constants.RESULT_GEOM_MEAN) == 0.0
+                    || normalizerDriver.getDoubleParamNoNaN(Constants.RESULT_HARM_MEAN) == 0.0) 
+                {
+                    normalizerDriver = null;
+                }
+                else {
+                    resultUnit = "% of " + resultUnit;                    
                 }
             }
             
@@ -358,14 +384,14 @@ public class ChartGenerator {
                         TestCaseImpl normalTc = 
                             (TestCaseImpl) normalizerDriver.getAggregateTestCases().get(i);
                         dataset.addValue(normalizerDriver == di ? 100.0 :
-                                (100.0 * tc.getDoubleParam(Constants.RESULT_VALUE) /
-                                 normalTc.getDoubleParam(Constants.RESULT_VALUE)),
+                                (100.0 * tc.getDoubleParamNoNaN(Constants.RESULT_VALUE) /
+                                 normalTc.getDoubleParamNoNaN(Constants.RESULT_VALUE)),
                                 _plotDrivers ? tc.getName() : di.getName(),
                                 _plotDrivers ? di.getName() : tc.getName());                                                
                     }
                     else {
                         dataset.addValue(
-                            tc.getDoubleParam(Constants.RESULT_VALUE), 
+                            tc.getDoubleParamNoNaN(Constants.RESULT_VALUE), 
                                 _plotDrivers ? tc.getName() : di.getName(),
                                 _plotDrivers ? di.getName() : tc.getName());                                                
                     }
@@ -431,7 +457,7 @@ public class ChartGenerator {
                     TestCaseImpl tc = (TestCaseImpl) di.getAggregateTestCases().get(i);
             
                     dataset.addValue(
-                        tc.getDoubleParam(Constants.RESULT_VALUE), 
+                        tc.getDoubleParamNoNaN(Constants.RESULT_VALUE), 
                         _plotDrivers ? di.getName() : tc.getName(),
                         _plotDrivers ? tc.getName() : di.getName());                                                
                 }             
@@ -492,8 +518,8 @@ public class ChartGenerator {
                 for (int j = 0; j < nOfTests; j++) {
                     TestCaseImpl tc = (TestCaseImpl) di.getAggregateTestCases().get(j);
                     try {
-                        xySeries.add(tc.getDoubleParam(Constants.RESULT_VALUE_X),
-                                     tc.getDoubleParam(Constants.RESULT_VALUE));
+                        xySeries.add(tc.getDoubleParamNoNaN(Constants.RESULT_VALUE_X),
+                                     tc.getDoubleParamNoNaN(Constants.RESULT_VALUE));
                     }
                     catch (SeriesException e) {
                         // Ignore duplicate x-valued points

@@ -212,7 +212,7 @@ public class Util {
     }
     
     public static String formatDouble(double value) {
-        return _decimalFormat.format(value);   
+        return Double.isNaN(value) ? "NaN" : _decimalFormat.format(value);   
     }
     
     public static String getManifestAsString(URLClassLoader cl, String jarBaseName) {
