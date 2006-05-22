@@ -313,14 +313,14 @@ public class Engine {
                 
                 if (Japex.verbose) {
                     System.out.println(tc.getName());
-                } else {
+                } 
+                else {
                     System.out.print(tc.getName() + ",");
                 }
                 
-                // Get elapsed time for all GCs
-                List<Long> gCStartTimes = getGCAbsoluteTimes();
-                
                 Future<?>[] futures = null;
+                List<Long> gCStartTimes = null;
+                
                 try {
                     // If nOfThreads == 1, re-use this thread
                     if (nOfThreads == 1) {
@@ -344,11 +344,16 @@ public class Engine {
                         endTime = tc.hasParam(Constants.RUN_TIME) ?
                             Util.currentTimeMillis() +
                                 Util.parseDuration(tc.getParam(Constants.RUN_TIME)) : 0L;
+ 
+                        // Run GC and reset GC start times
+                        System.gc();                       
+                        gCStartTimes = getGCAbsoluteTimes();
                         
                         // Second time call does run
                         _drivers[0][_driverRun].setEndTime(endTime);
                         _drivers[0][_driverRun].call();
-                    } else {  // nOfThreads > 1
+                    } 
+                    else {  // nOfThreads > 1
                         
                         // -- Prepare phase --------------------------------------
                         
@@ -382,6 +387,10 @@ public class Engine {
                         endTime = tc.hasParam(Constants.RUN_TIME) ?
                             Util.currentTimeMillis() +
                                 Util.parseDuration(tc.getParam(Constants.RUN_TIME)) : 0L;
+                        
+                        // Run GC and reset GC start times
+                        System.gc();                       
+                        gCStartTimes = getGCAbsoluteTimes();
                         
                         // Fork all threads -- second time drivers will run
                         for (int i = 0; i < nOfThreads; i++) {
@@ -450,9 +459,16 @@ public class Engine {
     }
 
     private void resetPeakMemoryUsage() {
-        // Force GC before collecting current usage
-        System.gc();
-        
+        // Force GC before collecting current usage (from JLS 4th)
+        Runtime rt = Runtime.getRuntime();
+        long wasFree, isFree = rt.freeMemory();
+        do {
+            wasFree = isFree;
+            rt.runFinalization();
+            rt.gc();
+            isFree = rt.freeMemory();
+        } while (isFree > wasFree);
+                
         // Accumulate usage from all heap-type pools
         _beforeHeapMemoryUsage = 0L;
         for (MemoryPoolMXBean b : ManagementFactory.getMemoryPoolMXBeans()) {
