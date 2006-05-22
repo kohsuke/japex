@@ -180,8 +180,6 @@ public class JapexDriverBase implements JapexDriver, Params {
 
         TestCaseImpl tc = _testCase;
         
-        System.gc();    // Force GC before entering loop
-        
         long runIterations = 0;
         long millis, startTime, duration;
         
