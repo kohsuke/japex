@@ -50,6 +50,7 @@ public class Japex {
     
     public static boolean html = true;
     public static boolean verbose = false;
+    public static boolean resultPerLine = false;
     public static Date TODAY = new Date();
     
     /** Creates a new instance of Japex */
@@ -76,6 +77,9 @@ public class Japex {
             }
             else if (args[i].equals("-verbose")) {
                 verbose = true;
+            }
+            else if (args[i].equals("-line")) {
+                resultPerLine = true;
             }
             else {
                 configFile = args[i];

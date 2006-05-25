@@ -62,11 +62,11 @@ public class Constants {
     public static final String NUMBER_OF_CPUS  = "japex.numberOfCpus";
     
     // Driver input parameters        
-    public static final String DRIVER_CLASS = "japex.driverClass";
-    public static final String CLASS_PATH        = "japex.classPath";
-    public static final String NUMBER_OF_THREADS = "japex.numberOfThreads";
-    public static final String RUNS_PER_DRIVER   = "japex.runsPerDriver";
-    public static final String WARMUPS_PER_DRIVER   = "japex.warmupsPerDriver";
+    public static final String DRIVER_CLASS       = "japex.driverClass";
+    public static final String CLASS_PATH         = "japex.classPath";
+    public static final String NUMBER_OF_THREADS  = "japex.numberOfThreads";
+    public static final String RUNS_PER_DRIVER    = "japex.runsPerDriver";
+    public static final String WARMUPS_PER_DRIVER = "japex.warmupsPerDriver";
     
     // Driver output parameters
     public static final String RESULT_ARIT_MEAN = "japex.resultAritMean";
@@ -95,16 +95,18 @@ public class Constants {
     // Testcase output parameters
     public static final String ACTUAL_RUN_ITERATIONS = "japex.actualRunIterations";
     public static final String ACTUAL_WARMUP_ITERATIONS = "japex.actualWarmupIterations";    
-    public static final String ACTUAL_RUN_TIME      = "japex.actualRunTime";
-    public static final String ACTUAL_WARMUP_TIME   = "japex.actualWarmupTime";
-    public static final String ACTUAL_PREPARE_TIME  = "japex.actualPrepareTime";        
-    public static final String RESULT_VALUE         = "japex.resultValue";
-    public static final String RESULT_VALUE_STDDEV  = "japex.resultValueStddev";
-    public static final String RESULT_VALUE_X       = "japex.resultValueX";
-    public static final String RESULT_VALUE_X_STDDEV  = "japex.resultValueXStddev";
+    public static final String ACTUAL_RUN_TIME       = "japex.actualRunTime";
+    public static final String ACTUAL_WARMUP_TIME    = "japex.actualWarmupTime";
+    public static final String ACTUAL_PREPARE_TIME   = "japex.actualPrepareTime";        
+    public static final String RESULT_VALUE          = "japex.resultValue";
+    public static final String RESULT_VALUE_STDDEV   = "japex.resultValueStddev";
+    public static final String RESULT_VALUE_X        = "japex.resultValueX";
+    public static final String RESULT_VALUE_X_STDDEV = "japex.resultValueXStddev";
     
-    public static final String RUN_ITERATIONS_SUM   = "japex.runIterationsSum";
-    public static final String RUN_TIME_SUM         = "japex.runTimeSum";
+    public static final String WARMUP_ITERATIONS_SUM = "japex.warmupIterationsSum";
+    public static final String WARMUP_TIME_SUM       = "japex.warmupTimeSum";
+    public static final String RUN_ITERATIONS_SUM    = "japex.runIterationsSum";
+    public static final String RUN_TIME_SUM          = "japex.runTimeSum";
     
     // Default values
     public static final String DEFAULT_WARMUP_ITERATIONS  = "300";

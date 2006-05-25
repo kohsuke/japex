@@ -297,7 +297,7 @@ public class Engine {
     
     private void forEachTestCase() {
         try {
-            long endTime;
+            double endTime;
             int nOfCpus = _driverImpl.getIntParam(Constants.NUMBER_OF_CPUS);
             int nOfThreads = _driverImpl.getIntParam(Constants.NUMBER_OF_THREADS);
             
@@ -339,6 +339,10 @@ public class Engine {
                         _drivers[0][_driverRun].setEndTime(endTime);
                         _drivers[0][_driverRun].call();
                         
+                        // Set actual warmup time using sum if just one thread
+                        tc.setDoubleParam(Constants.ACTUAL_WARMUP_TIME,
+                            tc.getDoubleParam(Constants.WARMUP_TIME_SUM));
+                        
                         // -- Run phase -------------------------------------------
                         
                         endTime = tc.hasParam(Constants.RUN_TIME) ?
@@ -352,6 +356,10 @@ public class Engine {
                         // Second time call does run
                         _drivers[0][_driverRun].setEndTime(endTime);
                         _drivers[0][_driverRun].call();
+                        
+                        // Set actual run time using sum if there's one thread
+                        tc.setDoubleParam(Constants.ACTUAL_RUN_TIME,
+                            tc.getDoubleParam(Constants.RUN_TIME_SUM));
                     } 
                     else {  // nOfThreads > 1
                         
@@ -382,6 +390,10 @@ public class Engine {
                             futures[i].get();
                         }
                         
+                        // Set actual warmup time using average over threads
+                        tc.setDoubleParam(Constants.ACTUAL_WARMUP_TIME,
+                            tc.getDoubleParam(Constants.WARMUP_TIME_SUM) / nOfThreads);
+                        
                         // -- Run phase -------------------------------------------
                         
                         endTime = tc.hasParam(Constants.RUN_TIME) ?
@@ -402,6 +414,10 @@ public class Engine {
                         for (int i = 0; i < nOfThreads; i++) {
                             futures[i].get();
                         }
+                        
+                        // Set actual run time using average over threads
+                        tc.setDoubleParam(Constants.ACTUAL_RUN_TIME,
+                            tc.getDoubleParam(Constants.RUN_TIME_SUM) / nOfThreads);                        
                     }
                     
                     // Get the total time take for GC over the measurement period
@@ -521,42 +537,24 @@ public class Engine {
      */        
     private double computeResultValue(TestCase tc, int nOfThreads, int nOfCpus) {
         String resultUnit = _testSuite.getParam(Constants.RESULT_UNIT);
-        boolean isTimeFixed = tc.hasParam(Constants.RUN_TIME);
         
         if (Japex.verbose) {
-            if (isTimeFixed) {
-                System.out.println("             " + 
-                    Thread.currentThread().getName() + 
-                        " japex.runIterationsSum = " +
-                            tc.getLongParam(Constants.RUN_ITERATIONS_SUM)); 
-            }
-            else {
-                System.out.println("             " + 
-                    Thread.currentThread().getName() + 
-                        " japex.runTimeSum (ms) = " +
-                            tc.getDoubleParam(Constants.RUN_TIME_SUM));
-            }
+            System.out.println("             " + 
+                Thread.currentThread().getName() + 
+                    " japex.runIterationsSum = " +
+                        tc.getLongParam(Constants.RUN_ITERATIONS_SUM)); 
+            System.out.println("             " + 
+                Thread.currentThread().getName() + 
+                    " japex.runTimeSum (ms) = " +
+                        tc.getDoubleParam(Constants.RUN_TIME_SUM));
         }
 
-        double tps, avgT;
-        
-        // Compute throughput in TPS based on config params
-        if (isTimeFixed) {
-            // Just get average time from test case
-            avgT = Util.parseDuration(tc.getParam(Constants.RUN_TIME));
-                    
-            // Tx = sum(I_k) / T for k in 1..N
-            tps = tc.getLongParam(Constants.RUN_ITERATIONS_SUM) /
-                  (avgT / 1000.0);
-        } 
-        else {
-            // Compute average run time across all threads
-            avgT = tc.getDoubleParam(Constants.RUN_TIME_SUM) / nOfThreads;
-            
-            // Tx = N * I / avg(T_k) for k in 1..N
-            tps = (nOfThreads * tc.getLongParam(Constants.RUN_ITERATIONS)) /
-                  (avgT / 1000.0);          
-        }
+        // Get actual run time
+        double actualTime = tc.getDoubleParam(Constants.ACTUAL_RUN_TIME);
+
+        // Tx = sum(I_k) / T for k in 1..N
+        double tps = tc.getLongParam(Constants.RUN_ITERATIONS_SUM) /
+              (actualTime / 1000.0);
         
         // Compute latency as L = (min(C, N) / Tx) * 1000
         double l = Math.min(nOfCpus, nOfThreads) / tps * 1000.0;
@@ -579,7 +577,7 @@ public class Engine {
         }     
         else if (resultUnit.equalsIgnoreCase("%GCTIME")) {      // EXPERIMENTAL
             // Calculate % of GC relative to the run time
-            double gctime = (_gCTime / avgT) * 100.0;
+            double gctime = (_gCTime / actualTime) * 100.0;
             
             // Report latency on the X axis
             _testSuite.setParam(Constants.RESULT_UNIT_X, "ms");

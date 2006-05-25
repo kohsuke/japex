@@ -52,31 +52,6 @@ public class Util {
     static final int KB = 1024;
     static final String spaces = "                                        ";
     
-    static Method currentTime;
-    static boolean unitIsMillis;
-    
-    static {
-        // Use nanoTime() if available - JDK 1.5
-        try {
-            currentTime = System.class.getMethod("nanoTime", (Class[]) null);
-            unitIsMillis = false;
-        }
-        catch (NoSuchMethodException e) {
-            try {
-                currentTime = System.class.getMethod("currentTimeMillis", (Class[]) null);
-                unitIsMillis = true;
-            }
-            catch (NoSuchMethodException ee) {
-                e.printStackTrace();
-                System.exit(1);
-            }
-        }
-    }
-    
-    /** Creates a new instance of Util */
-    public Util() {
-    }
-
     static String getSpaces(int length) {
         return spaces.substring(0, length);
     }
@@ -137,27 +112,11 @@ public class Util {
     }        
     
     public static long currentTimeNanos() {
-        try {
-            long t = ((Number) currentTime.invoke(null, (Object[]) null)).longValue();
-            return unitIsMillis ? millisToNanos(t) : t;
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-        return 0;
+        return System.nanoTime();
     }
     
-    public static long currentTimeMillis() {
-        try {
-            long t = ((Number) currentTime.invoke(null, (Object[]) null)).longValue();
-            return unitIsMillis ? t : (long) nanosToMillis(t);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-        return 0;
+    public static double currentTimeMillis() {
+        return nanosToMillis(System.nanoTime());
     }
     
     public static long millisToNanos(long millis) {
