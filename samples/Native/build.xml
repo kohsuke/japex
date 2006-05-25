@@ -1,7 +1,7 @@
 <project name="Japex Native Sample" default="run"  basedir=".">
     <property environment="env"/>
     
-    <property file="properties.solaris"/>
+    <property file="properties.macos"/>
 
     <property name="config" value="native-config.xml"/>
 

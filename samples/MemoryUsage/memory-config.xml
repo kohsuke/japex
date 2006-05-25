@@ -17,6 +17,8 @@
         <param name="description" value="Memory usage sample class"/>
     </driver>
     
-    <testCase name="dummy"/>
+    <testCase name="test1"/>
+    <testCase name="test2"/>
+    <testCase name="test3"/>
 
 </testSuite>

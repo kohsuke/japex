@@ -163,10 +163,10 @@ void* objectToUserData(JNIEnv *env, jobject object) {
 
 /* --------------------- DO NOT EDIT BELOW THIS LINE ------------------- */
 
-jlong timeMillis() {
+jdouble timeMillis() {
     struct timeval t;
     gettimeofday(&t, 0);
-    return (jlong)(((long)t.tv_sec) * 1000L + ((long)t.tv_usec) / 1000L);
+    return t.tv_sec * 1000 + t.tv_usec / 1000.0;
 }
 
 /*
@@ -175,7 +175,7 @@ jlong timeMillis() {
  * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_com_sun_japex_jdsl_nativecode_JapexNativeDriver_runLoopDuration
-  (JNIEnv *env, jobject this, jlong duration, jobject userData) 
+  (JNIEnv *env, jobject this, jdouble duration, jobject userData) 
 {
     jclass cls;
     jfieldID fid;
@@ -186,10 +186,10 @@ JNIEXPORT jint JNICALL Java_com_sun_japex_jdsl_nativecode_JapexNativeDriver_runL
     fid = (*env)->GetFieldID(env, cls, "_testCase", "Lcom/sun/japex/TestCaseImpl;");
     _testCase = (*env)->GetObjectField(env, this, fid);
     
-    jlong startTime = timeMillis();
-    jlong endTime = startTime + duration;
+    jdouble startTime = timeMillis();
+    jdouble endTime = startTime + duration;
 
-    jlong currentTime = 0;
+    jdouble currentTime = 0;
     jint iterations = 0;
     do {
         Java_com_sun_japex_jdsl_nativecode_JapexNativeDriver_run(env, this, _testCase, userData);

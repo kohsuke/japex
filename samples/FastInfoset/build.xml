@@ -11,6 +11,7 @@
         <java dir="." fork="true" classname="com.sun.japex.Japex">
             <jvmarg value="-server"/>
             <classpath refid="class.path"/>
+            <jvmarg value="-Djapex.numberOfThreads=1"/>
             <arg line="${config}"/>
         </java>
     </target>

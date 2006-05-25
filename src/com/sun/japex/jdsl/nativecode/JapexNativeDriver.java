@@ -83,10 +83,7 @@ public class JapexNativeDriver extends JapexDriverBase {
 
         TestCaseImpl tc = _testCase;
         
-        // Force GC
-        System.gc();
-        
-        long millis, startTime, duration;        
+        double millis, startTime, duration;        
         int runIterations = 0;
         
         if (tc.hasParam(Constants.RUN_TIME)) {
@@ -96,37 +93,28 @@ public class JapexNativeDriver extends JapexDriverBase {
              * run for the same period of time, i.e. until _endTime.
              */             
             duration = _endTime - Util.currentTimeMillis();
-            runIterations = runLoopDuration(duration, _userData);
-            
-            // Accumulate actual number of iterations
-            synchronized (tc) {
-                long actualRunIterations =  
-                    tc.hasParam(Constants.RUN_ITERATIONS_SUM) ? 
-                        tc.getLongParam(Constants.RUN_ITERATIONS_SUM) : 0L;
-                tc.setLongParam(Constants.RUN_ITERATIONS_SUM, 
-                               actualRunIterations + runIterations);
-            }        
+            runIterations = runLoopDuration(duration, _userData);        
         }
         else {
             runIterations = tc.getIntParam(Constants.RUN_ITERATIONS);
-            
             startTime = Util.currentTimeMillis();
 	    runLoopIterations(runIterations, _userData);
-            duration = Util.currentTimeMillis() - startTime;
-            
-            // Accumulate actual run time (use millis for this sum)
-            synchronized (tc) {
-                double actualRunTime =
-                    tc.hasParam(Constants.RUN_TIME_SUM) ?
-                        tc.getDoubleParam(Constants.RUN_TIME_SUM) : 0.0;
-                tc.setDoubleParam(Constants.RUN_TIME_SUM,
-                                  actualRunTime + duration);
-            }                
+            duration = Util.currentTimeMillis() - startTime;            
         }        
         
-        // In multi-threaded mode, last thread that ends sets these
-        tc.setLongParam(Constants.ACTUAL_RUN_ITERATIONS, runIterations);
-        tc.setDoubleParam(Constants.ACTUAL_RUN_TIME, duration);
+        // Accumulate actual number of iterations
+        synchronized (tc) {
+            long runIterationsSum =  
+                tc.hasParam(Constants.RUN_ITERATIONS_SUM) ? 
+                    tc.getLongParam(Constants.RUN_ITERATIONS_SUM) : 0L;
+            tc.setLongParam(Constants.RUN_ITERATIONS_SUM, 
+                            runIterationsSum + runIterations);
+            double runTimeSum =
+                tc.hasParam(Constants.RUN_TIME_SUM) ?
+                    tc.getDoubleParam(Constants.RUN_TIME_SUM) : 0.0;
+            tc.setDoubleParam(Constants.RUN_TIME_SUM,
+                              runTimeSum + duration);
+        }        
         
         if (Japex.verbose) {
             System.out.println("               " + 
@@ -172,7 +160,6 @@ public class JapexNativeDriver extends JapexDriverBase {
     
     /**
      * Called once or more for every test to obtain perf data.
-     *
      */
     public void run(TestCase testCase) {
         run(testCase, _userData);
@@ -203,7 +190,7 @@ public class JapexNativeDriver extends JapexDriverBase {
     /**
      * Called for looping over a specified duration
      */
-    native public int runLoopDuration(long duration, Object userData);
+    native public int runLoopDuration(double duration, Object userData);
 
     /**
      * Called for looping over a specified number iterations
