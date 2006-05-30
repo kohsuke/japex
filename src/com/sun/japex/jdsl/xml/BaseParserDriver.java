@@ -40,10 +40,9 @@ import com.sun.japex.Constants;
 import com.sun.japex.JapexDriverBase;
 import com.sun.japex.TestCase;
 import com.sun.xml.fastinfoset.sax.SAXDocumentSerializer;
-import com.sun.xml.fastinfoset.sax.VocabularyGenerator;
+import com.sun.xml.fastinfoset.tools.VocabularyGenerator;
 import com.sun.xml.fastinfoset.vocab.ParserVocabulary;
 import com.sun.xml.fastinfoset.vocab.SerializerVocabulary;
-import com.sun.xml.fastinfoset.stax.StAXDocumentSerializer;
 import org.jvnet.fastinfoset.FastInfosetParser;
 
 import java.io.BufferedInputStream;

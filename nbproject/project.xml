@@ -69,7 +69,7 @@
             <compilation-unit>
                 <package-root>src/binding</package-root>
                 <package-root>src</package-root>
-                <classpath mode="compile">lib/jfreechart/jcommon-1.0.0-rc1.jar:lib/jfreechart/jfreechart-1.0.0-rc1.jar:lib/jwsdp/activation.jar:lib/jwsdp/ant.jar:lib/jwsdp/FastInfoset.jar:lib/jwsdp/jaxb-api.jar:lib/jwsdp/jaxb-impl.jar:lib/jwsdp/jaxb-xjc.jar:lib/jwsdp/jaxb1-impl.jar:lib/jwsdp/jsr173_api.jar:lib/jwsdp/resolver.jar:lib/jwsdp/sjsxp.jar:lib/jwsdp/xalan.jar:lib/jwsdp/xercesImpl.jar:lib/jwsdp/xml-apis.jar:lib/jdsl/junit.jar:lib/jdsl/streambuffer.jar:lib/jwsdp/mail.jar</classpath>
+                <classpath mode="compile">lib/jfreechart/jcommon-1.0.0-rc1.jar:lib/jfreechart/jfreechart-1.0.0-rc1.jar:lib/jwsdp/activation.jar:lib/jwsdp/ant.jar:lib/jwsdp/jaxb-api.jar:lib/jwsdp/jaxb-impl.jar:lib/jwsdp/jaxb-xjc.jar:lib/jwsdp/jaxb1-impl.jar:lib/jwsdp/jsr173_api.jar:lib/jwsdp/resolver.jar:lib/jwsdp/sjsxp.jar:lib/jwsdp/xalan.jar:lib/jwsdp/xercesImpl.jar:lib/jwsdp/xml-apis.jar:lib/jwsdp/mail.jar:lib/jdsl/junit.jar:lib/jdsl/streambuffer.jar:lib/jdsl/FastInfoset.jar</classpath>
                 <built-to>build/classes</built-to>
                 <source-level>1.5</source-level>
             </compilation-unit>

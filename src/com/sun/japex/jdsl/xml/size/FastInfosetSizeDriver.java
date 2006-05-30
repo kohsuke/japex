@@ -39,12 +39,11 @@ package com.sun.japex.jdsl.xml.size;
 import com.sun.japex.jdsl.xml.DriverConstants;
 import com.sun.japex.jdsl.xml.FastInfosetParamSetter;
 import com.sun.xml.fastinfoset.sax.SAXDocumentSerializer;
-import com.sun.xml.fastinfoset.sax.VocabularyGenerator;
+import com.sun.xml.fastinfoset.tools.VocabularyGenerator;
 import com.sun.xml.fastinfoset.vocab.SerializerVocabulary;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.net.URI;
 import javax.xml.parsers.SAXParser;
 
 

@@ -41,7 +41,7 @@ import com.sun.japex.TestCase;
 import com.sun.japex.jdsl.xml.DriverConstants;
 import com.sun.japex.jdsl.xml.FastInfosetParamSetter;
 import com.sun.xml.fastinfoset.dom.DOMDocumentSerializer;
-import com.sun.xml.fastinfoset.sax.VocabularyGenerator;
+import com.sun.xml.fastinfoset.tools.VocabularyGenerator;
 import com.sun.xml.fastinfoset.vocab.SerializerVocabulary;
 import java.io.BufferedInputStream;
 import java.io.File;

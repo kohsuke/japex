@@ -36,20 +36,10 @@
 
 package com.sun.japex.jdsl.xml.roundtrip.dom;
 
-import com.sun.japex.jdsl.xml.TestCaseUtil;
 import com.sun.japex.TestCase;
 import com.sun.japex.jdsl.xml.DriverConstants;
-import com.sun.japex.jdsl.xml.FastInfosetParamSetter;
 import com.sun.xml.fastinfoset.dom.DOMDocumentParser;
 import com.sun.xml.fastinfoset.dom.DOMDocumentSerializer;
-import com.sun.xml.fastinfoset.sax.VocabularyGenerator;
-import com.sun.xml.fastinfoset.vocab.SerializerVocabulary;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
 
 public class FastInfosetDOMDriver extends BaseJAXPDOMDriver {
     protected DOMDocumentParser _ddp;
