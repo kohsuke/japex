@@ -229,7 +229,11 @@ public class Engine {
                 else {
                     System.out.print("\n    Run " + (_driverRun - warmupsPerDriver + 1) + ": ");                        
                 }
-
+                
+                if (Japex.resultPerLine) {
+                    System.out.println("");
+                }
+                
                 // geometric mean = (sum{i,n} x_i) / n
                 _geomMeanresult = 1.0;
                 // arithmetic mean = (prod{i,n} x_i)^(1/n)
@@ -239,10 +243,17 @@ public class Engine {
 
                 forEachTestCase();
 
-                System.out.print(
-                    "aritmean," + Util.formatDouble(_aritMeanresult) +
-                    ",geommean," + Util.formatDouble(_geomMeanresult) +
-                    ",harmmean," + Util.formatDouble(1.0 / _harmMeanresultInverse));
+                if (Japex.resultPerLine) {
+                    System.out.print(
+                            "      aritmean," + Util.formatDouble(_aritMeanresult) +
+                            ",\n      geommean," + Util.formatDouble(_geomMeanresult) +
+                            ",\n      harmmean," + Util.formatDouble(1.0 / _harmMeanresultInverse));
+                } else {
+                    System.out.print(
+                            "aritmean," + Util.formatDouble(_aritMeanresult) +
+                            ",geommean," + Util.formatDouble(_geomMeanresult) +
+                            ",harmmean," + Util.formatDouble(1.0 / _harmMeanresultInverse));
+                }
             }
 
             int startRun = warmupsPerDriver;
@@ -314,6 +325,9 @@ public class Engine {
                 if (Japex.verbose) {
                     System.out.println(tc.getName());
                 } 
+                else if (Japex.resultPerLine) {
+                    System.out.print("      " + tc.getName() + ",");
+                }
                 else {
                     System.out.print(tc.getName() + ",");
                 }
@@ -460,6 +474,9 @@ public class Engine {
                     System.out.println("           " + tc.getParam(Constants.RESULT_VALUE));
                     System.out.print("           ");
                 } 
+                else if (Japex.resultPerLine) {
+                    System.out.println(tc.getParam(Constants.RESULT_VALUE) + ",");
+                }
                 else {
                     System.out.print(tc.getParam(Constants.RESULT_VALUE) + ",");
                     System.out.flush();

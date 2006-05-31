@@ -94,7 +94,11 @@ public class Japex {
     }
 
     private static void displayUsageAndExit() {
-        System.err.println("Usage: japex [-verbose] [-nohtml] japex-config-file");
+        System.err.println(
+            "Usage: japex [-verbose] [-nohtml] [-line] japex-config-file\n" +
+            "   -verbose: Display additional information about the benchmark's execution\n" +
+            "   -nohtml : Do not generate HTML report (only XML report)\n" +
+            "   -line   : Insert additional newlines to separate test case results");
         System.exit(1);        
     }
     
