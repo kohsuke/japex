@@ -163,6 +163,15 @@ public class ParamsImpl implements Params {
         return false;
     }
     
+    public synchronized void removeParam(String name) {
+        if (hasParam(name)) {
+            _mapping.remove(name);
+        }
+        else if (_defaults != null) {
+            _defaults.removeParam(name);
+        }
+    }
+    
     // -- String params --------------------------------------------------
     
     public synchronized void setParam(String name, String value) {

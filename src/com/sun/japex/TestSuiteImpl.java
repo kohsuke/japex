@@ -215,6 +215,21 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
         TestCaseArrayList testCases = createTestCaseList(
             ts.getTestCaseOrTestCaseGroup(), this);
                         
+        // If running in test mode just do one iteration
+        if (Japex.test) {
+            setIntParam(Constants.WARMUPS_PER_DRIVER, 0);
+            setIntParam(Constants.RUNS_PER_DRIVER, 1);
+            removeParam(Constants.WARMUP_TIME);
+            removeParam(Constants.RUN_TIME);
+            
+            for (TestCaseImpl tc : testCases) {
+                tc.removeParam(Constants.WARMUP_TIME);
+                tc.removeParam(Constants.RUN_TIME);
+                tc.setIntParam(Constants.WARMUP_ITERATIONS, 0);
+                tc.setIntParam(Constants.RUN_ITERATIONS, 1);
+            }
+        }
+                
         // Set list of test cases on each driver
         for (DriverImpl di: _driverList) {
             di.setTestCases(testCases);

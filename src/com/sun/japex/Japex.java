@@ -51,6 +51,8 @@ public class Japex {
     public static boolean html = true;
     public static boolean verbose = false;
     public static boolean resultPerLine = false;
+    public static boolean test = false;
+    
     public static Date TODAY = new Date();
     
     /** Creates a new instance of Japex */
@@ -81,6 +83,9 @@ public class Japex {
             else if (args[i].equals("-line")) {
                 resultPerLine = true;
             }
+            else if (args[i].equals("-test")) {
+                test = true;
+            }
             else {
                 configFile = args[i];
             }
@@ -98,7 +103,8 @@ public class Japex {
             "Usage: japex [-verbose] [-nohtml] [-line] japex-config-file\n" +
             "   -verbose: Display additional information about the benchmark's execution\n" +
             "   -nohtml : Do not generate HTML report (only XML report)\n" +
-            "   -line   : Insert additional newlines to separate test case results");
+            "   -line   : Insert additional newlines to separate test case results\n" +
+            "   -test   : Test configuration file without producing any output reports");
         System.exit(1);        
     }
     
@@ -106,6 +112,9 @@ public class Japex {
         try {            
             // Create testsuite object from configuration file
             TestSuiteImpl testSuite = new Engine().start(configFile);
+            
+            // If running in test mode, just return
+            if (test) return;
             
             // Create report directory
             String fileSep = System.getProperty("file.separator");

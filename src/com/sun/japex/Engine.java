@@ -117,6 +117,10 @@ public class Engine {
             // Load config file
             ConfigFileLoader cfl = new ConfigFileLoader(configFile);
             _testSuite = cfl.getTestSuite();
+            
+            if (Japex.test) {
+                System.out.println("Running in test mode without generating reports ...");
+            }
 
             // Print estimated running time
             if (_testSuite.hasParam(Constants.WARMUP_TIME) && 
