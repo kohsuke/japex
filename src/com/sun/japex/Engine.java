@@ -147,10 +147,11 @@ public class Engine {
 
     private void forEachDriver() {
         try {
-            // Iterate through each driver
-            Iterator jdi = _testSuite.getDriverInfoList().iterator();
-            while (jdi.hasNext()) {                               
-                _driverImpl = (DriverImpl) jdi.next();
+            List<DriverImpl> driverList = _testSuite.getDriverInfoList();
+            
+            // Iterate through each driver in final list
+            for (int k = 0; k < driverList.size(); k++) {
+                _driverImpl = driverList.get(k);
 
                 int nOfCpus = _driverImpl.getIntParam(Constants.NUMBER_OF_CPUS);
                 int nOfThreads = _driverImpl.getIntParam(Constants.NUMBER_OF_THREADS);
@@ -167,16 +168,27 @@ public class Engine {
                 
                 // Allocate a matrix of nOfThreads * actualRuns size and initialize each instance
                 int actualRuns = warmupsPerDriver + runsPerDriver;
-                _drivers = new JapexDriverBase[nOfThreads][actualRuns];
-                for (int i = 0; i < nOfThreads; i++) {
-                    for (int j = 0; j < actualRuns; j++) {
-                        _drivers[i][j] = 
-                            jcLoader.getJapexDriver(
-                                _driverImpl.getParam(Constants.DRIVER_CLASS));   // returns fresh copy
-                        _drivers[i][j].setDriver(_driverImpl);
-                        _drivers[i][j].setTestSuite(_testSuite);
-                        _drivers[i][j].initializeDriver();
+                try {
+                    _drivers = new JapexDriverBase[nOfThreads][actualRuns];
+                    for (int i = 0; i < nOfThreads; i++) {
+                        for (int j = 0; j < actualRuns; j++) {
+                            _drivers[i][j] = 
+                                jcLoader.getJapexDriver(
+                                    _driverImpl.getParam(Constants.DRIVER_CLASS));   // returns fresh copy
+                            _drivers[i][j].setDriver(_driverImpl);
+                            _drivers[i][j].setTestSuite(_testSuite);
+                            _drivers[i][j].initializeDriver();
+                        }
                     }
+                }
+                catch (ClassNotFoundException e) {
+                    System.out.println("\n  Warning: Unable to load driver '" 
+                        + _driverImpl.getName() + "'");
+                    System.out.println("           " + e.toString());
+                    
+                    // Remove driver from final list, adjust k and continue
+                    _testSuite.getDriverInfoList().remove(_driverImpl);
+                    k--; continue;                    
                 }
 
 		// Created thread pool of nOfThreads size and pre-start threads                

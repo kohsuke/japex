@@ -460,7 +460,7 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
         return _name;        
     }
     
-    public List getDriverInfoList() {
+    public List<DriverImpl> getDriverInfoList() {
         return _driverList;
     }
     
