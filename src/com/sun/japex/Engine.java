@@ -181,7 +181,7 @@ public class Engine {
                         }
                     }
                 }
-                catch (ClassNotFoundException e) {
+                catch (Throwable e) {
                     System.out.println("\n  Warning: Unable to load driver '" 
                         + _driverImpl.getName() + "'");
                     System.out.println("           " + e.toString());
