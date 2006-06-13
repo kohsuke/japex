@@ -1,0 +1,13 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.sun.japex.jdsl</groupId>
+  <artifactId>jdsl</artifactId>
+  <version>1.0.16</version>
+  <dependencies>
+    <dependency>
+      <groupId>com.sun.japex</groupId>
+      <artifactId>japex</artifactId>
+    </dependency>
+  </dependencies>
+</project>
+
