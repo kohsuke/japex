@@ -61,8 +61,34 @@ public class SunSJSXPStAXDriver extends BaseParserDriver {
         try {
             _inputStream.reset();
             _reader = _factory.createXMLStreamReader(_inputStream);
+            
+            char[] text;
+            int acount, ncount;
+            String local, prefix, uri;
+            
             while (_reader.hasNext()) {
-                _reader.next();
+                int event = _reader.next();
+                _reader.getEventType();
+                switch (event) {
+                    case XMLStreamReader.START_ELEMENT:
+                        local = _reader.getLocalName();
+                        prefix = _reader.getPrefix();
+                        uri = _reader.getNamespaceURI();
+                        acount = _reader.getAttributeCount();
+                        ncount = _reader.getNamespaceCount();
+                        break;
+                    case XMLStreamReader.END_ELEMENT:
+                        local = _reader.getLocalName();
+                        prefix = _reader.getPrefix();
+                        uri = _reader.getNamespaceURI();
+                        break;
+                    case XMLStreamReader.CHARACTERS:
+                    case XMLStreamReader.SPACE:
+                        text = _reader.getTextCharacters();
+                        break;
+                    default:
+                        break;
+                }
             }
             _reader.close();
         }

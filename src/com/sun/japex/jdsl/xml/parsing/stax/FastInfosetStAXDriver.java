@@ -36,6 +36,8 @@
 
 package com.sun.japex.jdsl.xml.parsing.stax;
 
+import javax.xml.stream.XMLStreamReader;
+
 import com.sun.japex.TestCase;
 import com.sun.japex.jdsl.xml.BaseParserDriver;
 import com.sun.japex.jdsl.xml.DriverConstants;
@@ -51,22 +53,49 @@ public class FastInfosetStAXDriver extends BaseParserDriver implements FastInfos
     public void initializeDriver() {
         _staxParser = new StAXDocumentParser();
         _staxParser.setStringInterning(getBooleanParam(DriverConstants.STRING_INTERNING_PROPERTY));
-    }   
-        
+    }
+    
     public FastInfosetParser getParser() {
         return _staxParser;
     }
-            
+    
     public void run(TestCase testCase) {
         try {
             _inputStream.reset();
-            _staxParser.setInputStream(_inputStream);
+            _staxParser.setInputStream(_inputStream);       // Instead of creating new instance
+            
+            char[] text;
+            int acount, ncount;
+            String local, prefix, uri;
+            
             while (_staxParser.hasNext()) {
-                _staxParser.next();
-            }
-        }
+                int event = _staxParser.next();
+                _staxParser.getEventType();
+                switch (event) {
+                    case XMLStreamReader.START_ELEMENT:
+                        local = _staxParser.getLocalName();
+                        prefix = _staxParser.getPrefix();
+                        uri = _staxParser.getNamespaceURI();
+                        acount = _staxParser.getAttributeCount();
+                        ncount = _staxParser.getNamespaceCount();
+                        break;
+                    case XMLStreamReader.END_ELEMENT:
+                        local = _staxParser.getLocalName();
+                        prefix = _staxParser.getPrefix();
+                        uri = _staxParser.getNamespaceURI();
+                        break;
+                    case XMLStreamReader.CHARACTERS:
+                    case XMLStreamReader.SPACE:
+                        text = _staxParser.getTextCharacters();
+                        break;
+                    default:
+                        break;
+                }
+            }            
+            _staxParser.close();
+        } 
         catch (Exception e) {
             e.printStackTrace();
         }
-    }    
+    }
 }
