@@ -69,7 +69,7 @@
     </target>
     
     <target name="prepare.binding" depends="prepare">
-        <uptodate property="generate.xml.notRequired" targetfile="src/binding/com/sun/japex/testsuite/TestSuite.java">
+        <uptodate property="generate.xml.notRequired" targetfile="src/binding/com/sun/japex/testsuite/TestSuiteElement.java">
             <srcfiles dir="resources" includes="testsuite.xsd"/>
         </uptodate>
         <mkdir dir="src/binding"/>
