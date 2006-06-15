@@ -46,6 +46,8 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.net.URL;
 import java.net.URLClassLoader;
+import javax.xml.parsers.*;
+import org.xml.sax.XMLReader;
 
 public class Util {
     
@@ -254,4 +256,28 @@ public class Util {
         return filename.toString();
     }
     
+    private static SAXParserFactory saxParserFactory;
+    
+    static {
+        saxParserFactory = SAXParserFactory.newInstance();
+        saxParserFactory.setNamespaceAware(true);
+        try {
+            saxParserFactory.setXIncludeAware(true);
+        }
+        catch (UnsupportedOperationException e) {
+            System.err.print("Warning: Available SAX parser factory does not support XInclude");
+        }
+    }
+        
+    public static XMLReader getXIncludeXMLReader() {
+        try {
+            return saxParserFactory.newSAXParser().getXMLReader();
+        }
+        catch (RuntimeException e) {
+            throw e;
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -24,8 +24,12 @@
    
                 <h2>Global Parameters</h2>
                 <ul>
+                    <!-- japex.configFile -->
+                    <li><xsl:text>configFile: </xsl:text>
+                    <a href="{rep:configFile}"><xsl:value-of select="rep:configFile"/></a>
+                    </li>
                     <!-- Use not(@name) to omit sibling drivers -->
-                    <xsl:for-each select="*[not(@name)]">
+                    <xsl:for-each select="*[not(@name) and local-name() != 'configFile']">
                         <li><xsl:value-of select="name()"/>
                         <xsl:text>: </xsl:text>
                         <xsl:value-of select="."/></li>

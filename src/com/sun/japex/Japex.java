@@ -45,6 +45,8 @@ import java.util.Date;
 import java.net.URL;
 import javax.xml.transform.*;
 import javax.xml.transform.stream.*;
+import javax.xml.transform.sax.*;
+import org.xml.sax.*;
 
 public class Japex {
     
@@ -55,7 +57,13 @@ public class Japex {
     
     public static Date TODAY = new Date();
     
-    /** Creates a new instance of Japex */
+    private static String identityTx = 
+        "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">" +
+        "<xsl:template match=\"@*|node()\">" +
+        "<xsl:copy><xsl:apply-templates select=\"@*|node()\"/></xsl:copy>" +
+        "</xsl:template>" +
+        "</xsl:stylesheet>";
+    
     public Japex() {
     }
     
@@ -131,11 +139,24 @@ public class Japex {
             System.out.println("Generating reports ...");
             System.out.println("  " + 
                 new File(outputDir + "/" + "report.xml").toURL());
-            OutputStreamWriter osr = new OutputStreamWriter(
+            OutputStreamWriter osw = new OutputStreamWriter(
                 new FileOutputStream(
                     new File(outputDir + fileSep + "report.xml")));
-            osr.write(report.toString());
-            osr.close();
+            osw.write(report.toString());
+            osw.close();
+            
+            // Copy config to outputDir expanding includes/entities
+            File configInput = new File(configFile);
+            File configOutput = new File(outputDir + fileSep + configInput.getName());
+            TransformerFactory tf = TransformerFactory.newInstance();  
+            XMLReader xmlReader = Util.getXIncludeXMLReader();
+            
+            // Note that built-in identity transform does not expand entities
+            Transformer id = tf.newTransformer(
+                new StreamSource(new StringReader(identityTx)));
+            SAXSource source = new SAXSource(Util.getXIncludeXMLReader(),
+                new InputSource(configInput.toURL().toString()));
+            id.transform(source, new StreamResult(configOutput));
 
             // Return if no HTML needs to be output
             if (!html) return;
@@ -162,7 +183,6 @@ public class Japex {
             extendedReport.append("</extendedTestSuiteReport>\n");
 
             // Generate HTML report
-            TransformerFactory tf = TransformerFactory.newInstance();        
             URL stylesheet = getClass().getResource("/resources/report.xsl");
             if (stylesheet != null) {
                 Transformer transformer = tf.newTransformer(
