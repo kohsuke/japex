@@ -357,7 +357,11 @@ public class ParamsImpl implements Params {
     }
 
     /**
-     * Expand expression of the form ${paramname}
+     * Expand sub-expressions of the form ${name}, where 'name' refers 
+     * to another Japex param, a system property or an environment 
+     * variable, in that order. That is, a Japex parameter shadows a 
+     * system property which in turn shadows an environment variable 
+     * of the same name. 
      */
     private String evaluate(String name, String value) {
         StringTokenizer tokenizer = 
@@ -417,8 +421,8 @@ public class ParamsImpl implements Params {
         }
         
         /*
-          * Second pass: split up buffer into literal and non-literal expressions.
-          */
+         * Second pass: split up buffer into literal and non-literal expressions.
+         */
         tokenizer = new StringTokenizer(buffer.toString(), DELIMITER, true);
         StringBuffer result = new StringBuffer();
         
@@ -432,14 +436,22 @@ public class ParamsImpl implements Params {
                     result.append(paramValue);
                 }
                 else {
-                    // If not defined, check OS environment
-                    paramValue = getEnvVariable(paramName);
+                    // If not defined, check system property
+                    paramValue = System.getProperty(paramName);
                     if (paramValue != null) {
-                        result.append(paramValue);                            
+                        result.append(paramValue);                       
                     }
                     else {
-                        throw new RuntimeException("Undefined parameter '"
-                          + paramName + "'");        
+                        // If not defined, check OS environment
+                        paramValue = getEnvVariable(paramName);
+                        if (paramValue != null) {
+                            result.append(paramValue);                            
+                        }
+                        else {
+                            throw new RuntimeException("Undefined parameter, " +
+                              "property or environment variable '"
+                              + paramName + "'");        
+                        }
                     }
                 }                    
                 
