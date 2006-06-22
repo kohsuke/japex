@@ -448,9 +448,16 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
         for (Iterator i = sysProps.keySet().iterator(); i.hasNext();) {
             String name = (String) i.next();
             if (name.startsWith("japex.")) {
-                String value = sysProps.getProperty(name);
-                if (value.length() > 0) {
-                    setParam(name, value);
+                // Check if the global param exists before overriding
+                if (hasParam(name)) {
+                    String value = sysProps.getProperty(name);
+                    if (value.length() > 0) {
+                        setParam(name, value);
+                    }
+                }
+                else {
+                    System.out.println("Warning: Trying to override " +
+                        "undefined parameter '" + name + "'");
                 }
             }
         }

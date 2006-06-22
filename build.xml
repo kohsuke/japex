@@ -16,7 +16,7 @@
     <property name="package.dir" value="package"/>
     <property name="build.number" value=""/>
     <property name="build.id" value="${DSTAMP}-${TSTAMP}"/>
-    <property name="release.impl.version" value="1.0.17"/>
+    <property name="release.impl.version" value="1.0.18"/>
 
     <!-- task that generates a manifest file -->
     <macrodef name="createManifest">
@@ -165,6 +165,22 @@
         </copy>
     </target>
     
+    <target name="japex-runtime" depends="dist"
+        description="Create a single jar file with all Japex runtime dependencies">
+        <echo message="Creating package/japex-runtime.jar ..."/>
+        <mkdir dir="package/tmp"/>
+        <unjar dest="package/tmp" src="dist/lib/ant.jar"/>
+        <unjar dest="package/tmp" src="dist/lib/jaxb-api.jar"/>
+        <unjar dest="package/tmp" src="dist/lib/jaxb-impl.jar"/>
+        <unjar dest="package/tmp" src="dist/lib/jcommon-1.0.0-rc1.jar"/>
+        <unjar dest="package/tmp" src="dist/lib/jfreechart-1.0.0-rc1.jar"/>
+        <unjar dest="package/tmp" src="dist/lib/mail.jar"/>
+        <unjar dest="package/tmp" src="dist/lib/activation.jar"/>   
+        <jar basedir="package/tmp" jarfile="package/japex-runtime.jar"
+             manifest="package/tmp/META-INF/MANIFEST.MF"/>
+        <!-- <delete dir="package/tmp"/> -->
+    </target>
+    
     <target name="run" depends="dist" description="Test using simple config file">
         <ant dir="${basedir}/samples/FastInfoset" target="run" inheritrefs="true">
             <property name="config" value="speed-config.xml"/>
@@ -281,16 +297,16 @@
     </macrodef>
   
     <!-- 
-      - Define a build.properties file in your home directory
-      - as follows:
-      - maven.proxy.host=...
-      - maven.proxy.port=...
-      - java.net.user.name=...
-      -->
+    - Define a build.properties file in your home directory
+    - as follows:
+    - maven.proxy.host=...
+    - maven.proxy.port=...
+    - java.net.user.name=...
+    -->
     <target name="push-to-maven" depends="push-to-maven-prepare"
         description="Publish artifacts into the maven repository">
         <cvs-import src="build/maven-repo" dest="japex/repo" 
-            cvsroot=":pserver:${java.net.user.name}@java-net-cvs.east.sun.com:/cvs" />
+        cvsroot=":pserver:${java.net.user.name}@java-net-cvs.east.sun.com:/cvs" />
     </target>
 
 </project>
