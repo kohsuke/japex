@@ -306,7 +306,7 @@
     <target name="push-to-maven" depends="push-to-maven-prepare"
         description="Publish artifacts into the maven repository">
         <cvs-import src="build/maven-repo" dest="japex/repo" 
-        cvsroot=":pserver:${java.net.user.name}@java-net-cvs.east.sun.com:/cvs" />
+        cvsroot=":pserver:${java.net.user.name}@java-net-cvs:/cvs" />
     </target>
 
 </project>
