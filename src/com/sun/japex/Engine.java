@@ -206,11 +206,13 @@ public class Engine {
                 forEachRun();
                 
                 // Set memory usage param and display info
-                setPeakMemoryUsage(_driverImpl);                
-                System.out.println("    Peak heap usage: "
-                    + _driverImpl.getParam(Constants.PEAK_HEAP_USAGE)
-                    + " KB");
-                    
+                if (_driverImpl.getBooleanParam(Constants.REPORT_PEAK_HEAP_USAGE)) {
+                    setPeakMemoryUsage(_driverImpl);
+                    System.out.println("    Peak heap usage: "
+                        + _driverImpl.getParam(Constants.PEAK_HEAP_USAGE)
+                        + " KB");
+                }
+                
                 // Call terminate on all driver instances
                 for (int i = 0; i < nOfThreads; i++) {
                     for (int j = 0; j < actualRuns; j++) {

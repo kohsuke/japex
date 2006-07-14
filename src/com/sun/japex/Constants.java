@@ -84,6 +84,7 @@ public class Constants {
     public static final String RESULT_HARM_MEAN_X_STDDEV = "japex.resultHarmMeanXStddev";
     
     public static final String PEAK_HEAP_USAGE = "japex.peakHeapUsage";
+    public static final String REPORT_PEAK_HEAP_USAGE = "japex.reportPeakHeapUsage";
     
     // Testcase input parameters
     public static final String RUN_ITERATIONS    = "japex.runIterations";
