@@ -55,6 +55,8 @@ public class Japex {
     public static boolean resultPerLine = false;
     public static boolean test = false;
     
+    public static int exitCode = 0;
+    
     public static Date TODAY = new Date();
     
     private static String identityTx = 
@@ -104,6 +106,8 @@ public class Japex {
         }
 
         new Japex().run(configFile);
+        
+        System.exit(exitCode);
     }
 
     private static void displayUsageAndExit() {

@@ -188,7 +188,12 @@ public class Engine {
                     
                     // Remove driver from final list, adjust k and continue
                     _testSuite.getDriverInfoList().remove(_driverImpl);
-                    k--; continue;                    
+                    k--; 
+                    
+                    // Increment Japex exit code as a counter for errors
+                    Japex.exitCode++;
+                    
+                    continue;                    
                 }
 
 		// Created thread pool of nOfThreads size and pre-start threads                
@@ -463,6 +468,9 @@ public class Engine {
                 catch (Exception e) {
                     // Set japex.resultValue to Not-A-Number
                     tc.setDoubleParam(Constants.RESULT_VALUE, Double.NaN);
+                    
+                    // Increment Japex exit code as a counter for errors
+                    Japex.exitCode++;
                 } 
                 finally {
                     if (futures != null) {
