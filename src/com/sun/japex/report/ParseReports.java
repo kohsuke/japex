@@ -1,24 +1,24 @@
 /*
  * Japex ver. 0.1 software ("Software")
- * 
+ *
  * Copyright, 2004-2005 Sun Microsystems, Inc. All Rights Reserved.
- * 
+ *
  * This Software is distributed under the following terms:
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice,
  * this list of conditions and the following disclaimer.
- * 
+ *
  * Redistribution in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of Sun Microsystems, Inc., 'Java', 'Java'-based names,
  * nor the names of contributors may be used to endorse or promote products
  * derived from this Software without specific prior written permission.
- * 
+ *
  * The Software is provided "AS IS," without a warranty of any kind. ALL
  * EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND WARRANTIES, INCLUDING
  * ANY IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
@@ -31,18 +31,19 @@
  * AND REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT OF THE USE OF OR
  * INABILITY TO USE SOFTWARE, EVEN IF SUN HAS BEEN ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGES.
- * 
+ *
  * You acknowledge that the Software is not designed, licensed or intended
  * for use in the design, construction, operation or maintenance of any
  * nuclear facility.
  */
 
 package com.sun.japex.report;
+
 import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
-import javax.xml.parsers.SAXParserFactory; 
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser; 
+import javax.xml.parsers.SAXParser;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -54,17 +55,19 @@ import java.util.Map;
 import java.util.HashMap;
 
 public class ParseReports {
+    
     ArrayList _reports = new ArrayList();
+    
     ArrayList _dates = new ArrayList();
+    
     boolean hasReport = false;
     
-    /** Creates a new instance of ParseReport */
     public ParseReports(TrendReportParams params) {
         File cwd = new File(params.reportPath());
         ReportFilter filter =new ReportFilter(params.dateFrom(), params.dateTo());
         File[] reportDirs = cwd.listFiles(filter);
         if (reportDirs == null) {
-            System.out.println("No report found between " + params.dateFrom() + 
+            System.out.println("No report found between " + params.dateFrom() +
                     " and " + params.dateTo() + ". exit.");
             return;
             
@@ -73,17 +76,16 @@ public class ParseReports {
         
         String separator = System.getProperty("file.separator");
         ReportDataParser handler = null;
-        // Use the default (non-validating) parser
         SAXParserFactory factory = SAXParserFactory.newInstance();
+        
         try {
             // Parse the input
             SAXParser saxParser = factory.newSAXParser();
             GregorianCalendar cal = new GregorianCalendar();
-            int lastDay=0, lastMonth=0, lastYear=0;
-        
+            
             for (int i = 0; i < reportDirs.length; i++) {
 //System.out.println("report "+(i+1)+": "+reportDirs[i].getName());
-                File file = new File(reportDirs[i].getAbsolutePath()+separator+"report.xml"); 
+                File file = new File(reportDirs[i].getAbsolutePath()+separator+"report.xml");
                 if (file.exists()) {
                     Date date;
                     if (params.reportByName) {
@@ -92,39 +94,30 @@ public class ParseReports {
                         date = new Date(reportDirs[i].lastModified());
                     }
                     cal.setTime(date);
-                    int day = cal.get(cal.DAY_OF_MONTH);
-                    int month = cal.get(cal.MONTH);
-                    int year = cal.get(cal.YEAR);
-                    //add one report per day, TimeSeries does not allow multiple points for the same day
-                    if (day==lastDay && month==lastMonth && year==lastYear) {
-                        //skip
-                    } else {
-                        handler = new ReportDataParser(params);
-                        saxParser.parse(file, handler);
-                        Map report = (Map)handler.getReports();
-                        if (report != null) {
-                            _reports.add(report);
-                            _dates.add(date);
-                            hasReport = true;
-                            lastDay = day;
-                            lastMonth = month;
-                            lastYear = year;
-                        }
+                    handler = new ReportDataParser(params);
+                    saxParser.parse(file, handler);
+                    Map report = (Map)handler.getReports();
+                    if (report != null) {
+                        _reports.add(report);
+                        _dates.add(date);
+                        hasReport = true;
                     }
                 }
-            }
-        
-        } catch (Throwable t) {
-            t.printStackTrace();
+            }            
         }
-        
+        catch (RuntimeException e) {
+            throw e;
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }        
     }
     
     public Map[] getReports() {
         if (!hasReport) return null;
         Map[] reports = new HashMap[_reports.size()];
         reports = (Map[])_reports.toArray(reports);
-        return reports;        
+        return reports;
     }
     
     public Date[] getDates() {
