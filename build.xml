@@ -187,8 +187,18 @@
         </ant>
     </target>
     
+    <target name="run-trendreport" depends="dist" description="Run sample trend report">
+        <ant dir="${basedir}/samples/FastInfoset" target="generate-trends" inheritrefs="true"/>
+    </target>
+    
     <target name="debug-nb" depends="dist" description="Debug using simple config file">
         <ant dir="${basedir}/samples/FastInfoset" target="debug-nb" inheritrefs="true">
+            <property name="config" value="speed-size-config.xml"/>
+        </ant>
+    </target>
+    
+    <target name="debug-nb-trendreport" depends="dist" description="Debug using simple config file">
+        <ant dir="${basedir}/samples/FastInfoset" target="debug-nb-trendreport" inheritrefs="true">
             <property name="config" value="speed-size-config.xml"/>
         </ant>
     </target>
