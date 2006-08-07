@@ -295,7 +295,8 @@ public class DriverImpl extends ParamsImpl implements Driver, Cloneable {
      */
     public void serialize(StringBuffer report, int spaces) {
         report.append(Util.getSpaces(spaces) 
-            + "<driver name=\"" + _name + "\">\n");
+            + "<driver name=\"" + _name + "\""
+            + (_isNormal ? " normal=\"true\">\n" : ">\n"));
 
         // Called before serializing driver params
         List aggregateTestCases = getAggregateTestCases();
