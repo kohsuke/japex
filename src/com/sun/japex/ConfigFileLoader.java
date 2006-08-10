@@ -54,6 +54,13 @@ public class ConfigFileLoader {
     
     public ConfigFileLoader(String fileName) throws ConfigFileException {
         try {
+            System.out.println("Reading configuration file '" + fileName + "' ...");
+            
+            // Run config file through conditional processor
+            ConditionalProcessor processor = new ConditionalProcessor();
+            Reader config = processor.process(new FileReader(fileName));
+            
+            // Get an XInclude aware XML reader
             XMLReader reader = Util.getXIncludeXMLReader();
             
             // Create a JAXB unmarshaller
@@ -61,8 +68,7 @@ public class ConfigFileLoader {
             Unmarshaller u = ctx.createUnmarshaller();
 
             // Unmarshall using SAXSource to pass XInclude SAX parser
-            SAXSource saxSource = new SAXSource(reader,
-                new InputSource(new File(fileName).toURL().toString()));
+            SAXSource saxSource = new SAXSource(reader, new InputSource(config));
             TestSuiteElement testsuite = (TestSuiteElement) u.unmarshal(saxSource);
             
             // Map JAXB object model to internal object model
