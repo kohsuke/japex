@@ -16,7 +16,7 @@
     <property name="package.dir" value="package"/>
     <property name="build.number" value=""/>
     <property name="build.id" value="${DSTAMP}-${TSTAMP}"/>
-    <property name="release.impl.version" value="1.0.18"/>
+    <property name="release.impl.version" value="1.0.19"/>
 
     <!-- task that generates a manifest file -->
     <macrodef name="createManifest">
@@ -49,7 +49,7 @@
     </path>
 
     <path id="class.path">
-        <pathelement location="dist/${app.jar}"/>
+        <pathelement location="dist/lib/${app.jar}"/>
     </path>
     
     <path id="jni.class.path">
