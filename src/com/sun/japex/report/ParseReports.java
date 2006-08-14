@@ -64,7 +64,7 @@ public class ParseReports {
     
     public ParseReports(TrendReportParams params) {
         File cwd = new File(params.reportPath());
-        ReportFilter filter =new ReportFilter(params.dateFrom(), params.dateTo());
+        ReportFilter filter = new ReportFilter(params.dateFrom(), params.dateTo());
         File[] reportDirs = cwd.listFiles(filter);
         if (reportDirs == null) {
             System.out.println("No report found between " + params.dateFrom() +
@@ -72,7 +72,7 @@ public class ParseReports {
             return;
             
         }
-        Arrays.sort(reportDirs, new DateComparator(params.reportByName));
+        Arrays.sort(reportDirs, new DateComparator());
         
         String separator = System.getProperty("file.separator");
         ReportDataParser handler = null;
@@ -81,25 +81,20 @@ public class ParseReports {
         try {
             // Parse the input
             SAXParser saxParser = factory.newSAXParser();
-            GregorianCalendar cal = new GregorianCalendar();
             
             for (int i = 0; i < reportDirs.length; i++) {
-//System.out.println("report "+(i+1)+": "+reportDirs[i].getName());
-                File file = new File(reportDirs[i].getAbsolutePath()+separator+"report.xml");
+                File file = new File(reportDirs[i].getAbsolutePath()
+                    + separator + "report.xml");
+                
                 if (file.exists()) {
-                    Date date;
-                    if (params.reportByName) {
-                        date = TrendReportParams.parseReportDirectory(reportDirs[i]);
-                    } else {
-                        date = new Date(reportDirs[i].lastModified());
-                    }
-                    cal.setTime(date);
+                    Calendar cal = 
+                        TrendReportParams.parseReportDirectory(reportDirs[i]);
                     handler = new ReportDataParser(params);
                     saxParser.parse(file, handler);
-                    Map report = (Map)handler.getReports();
+                    Map report = (Map) handler.getReports();
                     if (report != null) {
                         _reports.add(report);
-                        _dates.add(date);
+                        _dates.add(cal);
                         hasReport = true;
                     }
                 }
@@ -120,10 +115,10 @@ public class ParseReports {
         return reports;
     }
     
-    public Date[] getDates() {
+    public Calendar[] getDates() {
         if (!hasReport) return null;
-        Date[] dates = new Date[_reports.size()];
-        dates = (Date[])_dates.toArray(dates);
+        Calendar[] dates = new GregorianCalendar[_reports.size()];
+        dates = (Calendar[])_dates.toArray(dates);
         return dates;
     }
 }

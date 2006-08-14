@@ -40,25 +40,14 @@
 package com.sun.japex.report;
 
 public class ReportConstants {
-    public static final int TRENDREPORT_VERSION_01 = 1;
-    public static final int TRENDREPORT_VERSION_02 = 2;
     
-    public static final int REPORT_UNKNOWN = 0;
-    public static final int REPORT_DEFAULT = 1;  //all drivers, all means, one means per chart
-    public static final int REPORT_ALLDRIVERS = 2; //use DEFAULT for means plus all tests, one testcase per chart
-    public static final int REPORT_ALLDRIVERS_ALLMEANS = 3; //-d or not, -m, all means/drivers on one chart, smart grouping testcases
-    public static final int REPORT_ONEDRIVER = 4; //all means specified on one chart, smart grouping testcases specified
-    public static final int REPORT_ALLTESTS = 5; //smart grouping testcases
-    public static final int REPORT_TESTS = 6; //all tests specified on one chart
-    
+    public static final String VERSION = "1.0.0";
     
     public static final String ARITHMETIC_MEANS = "Arithmetic";
     public static final String GEOMETIC_MEANS = "Geometic";
     public static final String HARMONIC_MEANS = "Harmonic";
     
-    public static final String KEYWORD_ALL = "all";
-    
-    public static final String DEFAULT_STARTDATE = "TODAY";
+    public static final String DEFAULT_STARTDATE = "today";
     public static final String DEFAULT_DATEOFFSET = "-1Y";
     public static final String REPORT_DIRECTORY_FORMAT = "yyyy_MM_dd_HH_mm";
     

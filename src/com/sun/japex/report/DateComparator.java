@@ -1,24 +1,24 @@
 /*
  * Japex ver. 0.1 software ("Software")
- * 
+ *
  * Copyright, 2004-2005 Sun Microsystems, Inc. All Rights Reserved.
- * 
+ *
  * This Software is distributed under the following terms:
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice,
  * this list of conditions and the following disclaimer.
- * 
+ *
  * Redistribution in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of Sun Microsystems, Inc., 'Java', 'Java'-based names,
  * nor the names of contributors may be used to endorse or promote products
  * derived from this Software without specific prior written permission.
- * 
+ *
  * The Software is provided "AS IS," without a warranty of any kind. ALL
  * EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND WARRANTIES, INCLUDING
  * ANY IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
@@ -31,7 +31,7 @@
  * AND REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT OF THE USE OF OR
  * INABILITY TO USE SOFTWARE, EVEN IF SUN HAS BEEN ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGES.
- * 
+ *
  * You acknowledge that the Software is not designed, licensed or intended
  * for use in the design, construction, operation or maintenance of any
  * nuclear facility.
@@ -41,70 +41,61 @@ package com.sun.japex.report;
 
 import java.io.File;
 import java.util.Comparator;
+import java.util.Calendar;
 import java.util.Date;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-
 public class DateComparator implements Comparator {
+    
     public static final int ORDER_DESC = 1;
     public static final int ORDER_ASC = 2;
-    private int order;    
-    private boolean byName = true;
-    /** Creates a new instance of DateComparator */
+    
+    private int order;
+    
+    
     public DateComparator() {
         order = ORDER_DESC;
     }
+    
     public DateComparator(int order) {
         this.order = order;
     }
-    public DateComparator(boolean byName) {
-        this.byName = byName;
-        order = ORDER_DESC;
-    }
+    
     public int compare(Object o1, Object o2) {
-        if ( (o1 instanceof File) && (o2 instanceof File) )
-        {
+        if ((o1 instanceof File) && (o2 instanceof File)) {
             long lm1, lm2;
-            if (byName) {
-                lm1 = convertDate((File)o1);
-                lm2 = convertDate((File)o2);
-            } else {
-                lm1 = ((File)o1).lastModified();
-                lm2 = ((File)o2).lastModified();
-            }
+            lm1 = convertDate((File)o1);
+            lm2 = convertDate((File)o2);
             
-            if ( lm1 < lm2 ) {
+            if (lm1 < lm2) {
                 return (order == ORDER_DESC) ? -1 : 1;
-            } else if ( lm1 > lm2 ) {
+            } else if (lm1 > lm2) {
                 return (order == ORDER_DESC) ? 1 : -1;
             } else {
                 return 0;
             }
-        } else if ( (o1 instanceof Comparable) && (o2 instanceof Comparable) ) {
+        } else if ((o1 instanceof Comparable) && (o2 instanceof Comparable)) {
             return ((Comparable)o1).compareTo( ((Comparable)o2) );
-        }
-        else
-        {
-            return -1;
-        }        
-    }
-    public boolean equals(Object obj) {
-        if ( obj instanceof DateComparator ) {
-            return true;
         } else {
-            return false;
+            return -1;
         }
     }
+    
+    public boolean equals(Object obj) {
+        return (obj instanceof DateComparator);
+    }
+    
     long convertDate(File file) {
         long time = 0;
         if (file != null) {
-            Date d0 = TrendReportParams.parseReportDirectory(file);
+            Calendar d0 = TrendReportParams.parseReportDirectory(file);
             if (d0 != null) {
-                time = d0.getTime();
+                time = d0.getTimeInMillis();
             }
         }
         return time;
     }
+    
 }

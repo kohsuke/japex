@@ -38,20 +38,21 @@
  */
 
 package com.sun.japex.report;
+
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
-/**
- * Test results per driver
- * 
- */
+
 public class ResultPerDriver {    
+    
     double _harmMean;
     double _geomMean;
     double _aritMean;
+    
     Map _testResults;
+    
     ArrayList _tests = new ArrayList();
-    /** Creates a new instance of ReportPerDriver */
+    
     public ResultPerDriver() {
         _testResults = new HashMap();
     }
@@ -66,6 +67,7 @@ public class ResultPerDriver {
         }
         return 0;
     }
+    
     public void setHarmMean(String value) {
         try {
             _harmMean = Double.parseDouble(value);
@@ -73,6 +75,7 @@ public class ResultPerDriver {
             System.out.println(e.getMessage());
         }
     }    
+    
     public double getHarmMean() {
         return _harmMean;
     }
@@ -84,6 +87,7 @@ public class ResultPerDriver {
             System.out.println(e.getMessage());
         }
     }
+    
     public double getGeomMean() {
         return _geomMean;
     }
@@ -95,6 +99,7 @@ public class ResultPerDriver {
             System.out.println(e.getMessage());
         }
     }
+    
     public double getAritMean() {
         return _aritMean;
     }
@@ -108,6 +113,7 @@ public class ResultPerDriver {
         }
         
     }
+    
     public double getResult(String testName) {
         if (!_testResults.containsKey(testName)) return 0;
         double value = ((Double)_testResults.get(testName)).doubleValue(); 
