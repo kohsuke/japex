@@ -108,6 +108,10 @@ public class ParseReports {
         }        
     }
     
+    public boolean reportsFound() {
+        return _reports.size() > 0;
+    }
+    
     public Map[] getReports() {
         if (!hasReport) return null;
         Map[] reports = new HashMap[_reports.size()];

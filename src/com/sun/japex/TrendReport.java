@@ -63,7 +63,19 @@ public class TrendReport {
     
     public void run(TrendReportParams params) {       
         try {
-            ParseReports testReports = new ParseReports(params);            
+            // Parse command line args and collect reports
+            ParseReports testReports = new ParseReports(params);
+            
+            // If we haven't found any reports then exit
+            if (!testReports.reportsFound()) {
+                System.err.println("Error: No Japex reports found in '"
+                        + params.reportPath() + "' between '" 
+                        + params.dateFrom().getTime() + "' and '" 
+                        + params.dateTo().getTime() + "'");
+                System.exit(1);
+            }
+            
+            // Create generator and produce report
             new ReportGenerator(params, testReports).createReport();            
             
             // Copy some resources to output directory
