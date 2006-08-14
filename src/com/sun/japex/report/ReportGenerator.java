@@ -116,7 +116,7 @@ public class ReportGenerator {
                 (ResultPerDriver) _japexTestResults[0].get(_drivers[0]);
         _tests = result.getTests();        
         _dateFormatter = new SimpleDateFormat("MM-dd");   
-        _dateTimeFormatter = new SimpleDateFormat("MM-dd hh:mm");
+        _dateTimeFormatter = new SimpleDateFormat("MM-dd HH:mm");
         _indexPage = new IndexPage(_params, true);
     }
     
