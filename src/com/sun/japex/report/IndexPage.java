@@ -92,9 +92,9 @@ public class IndexPage {
         int start = 0;
         int end = 0;
         StringBuffer newindex = new StringBuffer();
-        newindex.append("<li><a href=\"#" + _params.title() + "\">" + 
-                _params.title() + "</a></li>\n");
-        newindex.append(REPORT_NEWINDEX + "\n");
+        newindex.append("<option value=\"#" + _params.title() + "\">" + 
+                _params.title() + "</option>");
+        newindex.append(REPORT_NEWINDEX);
         
         StringBuffer newrow = new StringBuffer();
         newrow.append("<table id=\"" + _params.title() + "\" ");
@@ -106,7 +106,7 @@ public class IndexPage {
         newrow.append("<tr><td colspan=\"2\" align=\"center\"><img src=\"" + 
                 chartName + "\"></td></tr>");
         newrow.append("</table><br>");
-        newrow.append(REPORT_NEWROW+"\n");
+        newrow.append(REPORT_NEWROW);
         
         start = _content.indexOf(REPORT_TITLE);
         if (start > 0) {
@@ -142,6 +142,9 @@ public class IndexPage {
     private String getTemplate() {
         StringBuffer template = new StringBuffer();
         template.append("<html>\n<link href=\"report.css\" type=\"text/css\" rel=\"stylesheet\"/>\n");
+        template.append("<head><script>"
+                + "function jump(menu){window.location.hash=menu.choice.options[menu.choice.selectedIndex].value;}"
+                + "</script></head>");   
         template.append("<body><table border=\"0\" cellpadding=\"2\"><tr>" +
             "<td valign=\"middle\" width=\"90\"><p>" +
             "<a href=\"https://japex.dev.java.net\">" +
@@ -157,9 +160,10 @@ public class IndexPage {
         template.append("<li>Timestamp: " + df.format(new Date()));
         template.append("</li>\n</ul>\n");
         template.append("<h2>Results</h2>");
-        template.append("<ul>");
+        template.append("<form action=\"dummy\" method=\"post\">"
+                + "<select name=\"choice\" size=\"1\" onChange=\"jump(this.form)\">");
         template.append(REPORT_NEWINDEX);
-        template.append("</ul>");
+        template.append("</select></form><br>");
         template.append(REPORT_NEWROW);
         
         template.append("<br><br><small><hr/><font size=\"-2\">Generated using " +
