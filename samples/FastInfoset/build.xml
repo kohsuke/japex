@@ -50,8 +50,7 @@
             <jvmarg value="-Xnoagent"/>
             <jvmarg value="-Djava.compiler=none"/>
             <jvmarg value="-Xrunjdwp:transport=dt_socket,address=${jpda.address}"/>
-            <arg line="-overwrite"/>
-            <arg value="FastInfoset Sample Trend Report"/>
+            <arg value="FastInfoset Sample"/>
             <arg line="reports"/>
             <arg line="reports/trends"/>
         </java>
@@ -60,8 +59,7 @@
     <target name="generate-trends">
         <java dir="." fork="true" classname="com.sun.japex.TrendReport">
             <classpath refid="class.path"/>
-            <arg line="-overwrite"/>
-            <arg value="FastInfoset Sample Trend Report"/>
+            <arg value="FastInfoset Sample"/>
             <arg line="reports"/>
             <arg line="reports/trends"/>
         </java>
