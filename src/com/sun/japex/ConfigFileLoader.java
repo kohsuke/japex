@@ -68,7 +68,9 @@ public class ConfigFileLoader {
             Unmarshaller u = ctx.createUnmarshaller();
 
             // Unmarshall using SAXSource to pass XInclude SAX parser
-            SAXSource saxSource = new SAXSource(reader, new InputSource(config));
+            InputSource is = new InputSource(config);
+            is.setSystemId(fileName);       // Needed for XInclude to get base
+            SAXSource saxSource = new SAXSource(reader, is);
             TestSuiteElement testsuite = (TestSuiteElement) u.unmarshal(saxSource);
             
             // Map JAXB object model to internal object model
