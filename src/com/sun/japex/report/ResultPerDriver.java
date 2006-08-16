@@ -57,6 +57,11 @@ public class ResultPerDriver {
         _testResults = new HashMap();
     }
     
+    public boolean hasValidMeans() {
+        return !Double.isNaN(_aritMean) && !Double.isNaN(_geomMean)
+            && !Double.isNaN(_harmMean);
+    }
+    
     public double getMeans(String key) {
         if (key.equalsIgnoreCase(ReportConstants.ARITHMETIC_MEANS)) {
             return _aritMean;

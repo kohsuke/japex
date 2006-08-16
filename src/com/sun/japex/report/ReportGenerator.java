@@ -153,7 +153,7 @@ public class ReportGenerator {
                             formatter = _dateTimeFormatter;
                         }
                         
-                        if (result.getResult(_tests[k]) != 0) {
+                        if (!Double.isNaN(result.getResult(_tests[k]))) {
                             dataset.addValue(result.getResult(_tests[k]),
                                     _drivers[ii], formatter.format(_dates[i].getTime()));
                         }
@@ -180,7 +180,8 @@ public class ReportGenerator {
         for (int ii = 0; ii < _drivers.length; ii++) {
             for (int i = 0; i < _japexTestResults.length; i++) {
                 result = (ResultPerDriver) _japexTestResults[i].get(_drivers[ii]);
-                if (result != null) {
+                
+                if (result != null && result.hasValidMeans()) {
                     SimpleDateFormat formatter = _dateFormatter;
                     
                     // If previous or next are on the same day, include time
