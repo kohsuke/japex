@@ -469,6 +469,11 @@ public class Engine {
                     // Set japex.resultValue to Not-A-Number
                     tc.setDoubleParam(Constants.RESULT_VALUE, Double.NaN);
                     
+                    // Print stack trace if verbose mode enabled
+                    if (Japex.verbose) {
+                        e.printStackTrace();
+                    }
+                    
                     // Increment Japex exit code as a counter for errors
                     Japex.exitCode++;
                 } 
