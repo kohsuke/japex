@@ -49,6 +49,7 @@ import java.awt.Shape;
 import java.awt.BasicStroke;
 import java.awt.Polygon;
 import java.awt.Color;
+import java.util.Arrays;
 
 import org.jfree.chart.*;
 import org.jfree.chart.plot.*;
@@ -111,6 +112,7 @@ public class ReportGenerator {
         for (Object obj : map.keySet()) {
             _drivers[i++] = (String) obj;
         }
+        Arrays.sort(_drivers);
         
         ResultPerDriver result = 
                 (ResultPerDriver) _japexTestResults[0].get(_drivers[0]);
