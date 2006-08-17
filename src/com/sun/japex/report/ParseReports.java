@@ -67,11 +67,8 @@ public class ParseReports {
         ReportFilter filter = new ReportFilter(params.dateFrom(), params.dateTo());
         File[] reportDirs = cwd.listFiles(filter);
         if (reportDirs == null) {
-            System.out.println("No report found between " + params.dateFrom() +
-                    " and " + params.dateTo() + ". exit.");
-            return;
-            
-        }
+            return;            
+        }        
         Arrays.sort(reportDirs, new DateComparator());
         
         String separator = System.getProperty("file.separator");
