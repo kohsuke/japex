@@ -1,5 +1,5 @@
 /*
- * Japex ver. 0.1 software ("Software")
+ * Japex software ("Software")
  *
  * Copyright, 2004-2005 Sun Microsystems, Inc. All Rights Reserved.
  *
@@ -39,15 +39,11 @@
 
 package com.sun.japex.report;
 
-import java.io.File;
 import java.util.Date;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.ArrayList;
-import java.util.StringTokenizer;
 
 import static com.sun.japex.report.ReportConstants.*;
 
@@ -62,6 +58,8 @@ import static com.sun.japex.report.ReportConstants.*;
  *   offset: Positive or negative offset from 'date' in the format '-?[0-9]+(D|W|M|Y)'
  *     where D=days, W=weeks, M=months and Y=years (default -1Y)
  *
+ * @author Santiago.PericasGeertsen@sun.com
+ * @author Joe.Wang@sun.com
  */
 public class TrendReportParams {
     
@@ -196,22 +194,4 @@ public class TrendReportParams {
         System.exit(1);
     }
     
-    // TODO: Why is this method here
-    public static Calendar parseReportDirectory(File file) {
-        Calendar result = null;
-        
-        if (file != null) {
-            try {
-                SimpleDateFormat formatter =
-                        new SimpleDateFormat(ReportConstants.REPORT_DIRECTORY_FORMAT);
-                Date date = formatter.parse(file.getName());
-                result = new GregorianCalendar();
-                result.setTime(date);
-            } 
-            catch (ParseException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return result;
-    }
 }

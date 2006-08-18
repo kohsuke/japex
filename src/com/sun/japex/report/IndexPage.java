@@ -1,5 +1,5 @@
 /*
- * Japex ver. 0.1 software ("Software")
+ * Japex software ("Software")
  *
  * Copyright, 2004-2005 Sun Microsystems, Inc. All Rights Reserved.
  *
@@ -40,18 +40,20 @@
 package com.sun.japex.report;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.BufferedInputStream;
-import java.io.InputStream;
-import java.io.DataInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Date;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
-import static com.sun.japex.TrendReport.FILE_SEP;
+import static com.sun.japex.report.TrendReport.FILE_SEP;
 
+/**
+ * Report page generator.
+ *
+ * @author Joe.Wang@sun.com
+ * @author Santiago.PericasGeertsen@sun.com
+ */
 public class IndexPage {
 
     static final String REPORT_TITLE = "<!--{title}-->";

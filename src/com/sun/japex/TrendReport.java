@@ -1,5 +1,5 @@
 /*
- * Japex ver. 0.1 software ("Software")
+ * Japex software ("Software")
  *
  * Copyright, 2004-2005 Sun Microsystems, Inc. All Rights Reserved.
  *
@@ -39,82 +39,20 @@
 
 package com.sun.japex;
 
-import com.sun.japex.report.*;
+import com.sun.japex.report.TrendReportParams;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.io.BufferedOutputStream;
-import java.net.URL;
-
+/**
+ * This class only exists for backward compatibility. Use 
+ * <code>com.sun.japex.report.TrendReport</code> instead.
+ *
+ * @author Santiago.PericasGeertsen@sun.com
+ */
 public class TrendReport {
-    
-    public static final String FILE_SEP = System.getProperty("file.separator");
-    
-    public TrendReport() {
-    }
     
     public static void main(String[] args) {
         TrendReportParams params = new TrendReportParams(args);
-        new TrendReport().run(params);            
+        new com.sun.japex.report.TrendReport().run(params);            
         System.exit(0);        
     }
     
-    public void run(TrendReportParams params) {       
-        try {
-            // Parse command line args and collect reports
-            ParseReports testReports = new ParseReports(params);
-            
-            // If we haven't found any reports then exit
-            if (!testReports.reportsFound()) {
-                System.err.println("Error: No Japex reports found in '"
-                        + params.reportPath() + "' between '" 
-                        + params.dateFrom().getTime() + "' and '" 
-                        + params.dateTo().getTime() + "'");
-                System.exit(1);
-            }
-            
-            // Create generator and produce report
-            new ReportGenerator(params, testReports).createReport();            
-            
-            // Copy some resources to output directory
-            copyResource("report.css", params.outputPath());
-            copyResource("small_japex.gif", params.outputPath());
-        }            
-        catch (RuntimeException e) {
-            throw e;
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void copyResource(String basename, String outputDir) {
-        InputStream is;
-        OutputStream os;
-        
-        try {
-            int c;
-            URL css = getClass().getResource("/resources/" + basename);
-            if (css != null) {
-                is = css.openStream();
-                os = new BufferedOutputStream(new FileOutputStream(
-                        new File(outputDir + FILE_SEP + basename)));
-                
-                while ((c = is.read()) != -1) {
-                    os.write(c);
-                }
-                is.close();
-                os.close();
-            }
-        } 
-        catch (RuntimeException e) {
-            throw e;
-        } 
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-         
 }

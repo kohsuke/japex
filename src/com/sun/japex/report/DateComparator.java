@@ -1,5 +1,5 @@
 /*
- * Japex ver. 0.1 software ("Software")
+ * Japex software ("Software")
  *
  * Copyright, 2004-2005 Sun Microsystems, Inc. All Rights Reserved.
  *
@@ -43,10 +43,15 @@ import java.io.File;
 import java.util.Comparator;
 import java.util.Calendar;
 import java.util.Date;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+/**
+ * Date comparator for timestamped reports.
+ *
+ * @author Joe.Wang@sun.com
+ * @author Santiago.PericasGeertsen@sun.com
+ */
 public class DateComparator implements Comparator {
     
     public static final int ORDER_DESC = 1;
@@ -90,12 +95,30 @@ public class DateComparator implements Comparator {
     long convertDate(File file) {
         long time = 0;
         if (file != null) {
-            Calendar d0 = TrendReportParams.parseReportDirectory(file);
+            Calendar d0 = parseReportDirectory(file);
             if (d0 != null) {
                 time = d0.getTimeInMillis();
             }
         }
         return time;
     }
+    
+    Calendar parseReportDirectory(File file) {
+        Calendar result = null;
+        
+        if (file != null) {
+            try {
+                SimpleDateFormat formatter =
+                        new SimpleDateFormat(ReportConstants.REPORT_DIRECTORY_FORMAT);
+                Date date = formatter.parse(file.getName());
+                result = Calendar.getInstance();
+                result.setTime(date);
+            } 
+            catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return result;
+    }    
     
 }

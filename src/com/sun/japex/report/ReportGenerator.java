@@ -1,5 +1,5 @@
 /*
- * Japex ver. 0.1 software ("Software")
+ * Japex software ("Software")
  *
  * Copyright, 2004-2005 Sun Microsystems, Inc. All Rights Reserved.
  *
@@ -42,197 +42,100 @@ package com.sun.japex.report;
 import com.sun.japex.Util;
 
 import java.io.File;
-import java.util.Calendar;
-import java.util.Map;
-import java.text.SimpleDateFormat;
-import java.awt.Shape;
-import java.awt.BasicStroke;
-import java.awt.Polygon;
-import java.awt.Color;
-import java.util.Arrays;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.jfree.chart.*;
-import org.jfree.chart.plot.*;
-import org.jfree.data.xy.*;
-import org.jfree.chart.axis.ValueAxis;
-import org.jfree.chart.axis.CategoryAxis;
-import org.jfree.chart.axis.CategoryLabelPositions;
-import org.jfree.data.general.SeriesException;
-import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.renderer.category.LineAndShapeRenderer;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 
 import static java.util.Calendar.*;
-import static com.sun.japex.TrendReport.FILE_SEP;
+import static com.sun.japex.report.TrendReport.FILE_SEP;
 
-/*
- * The original design of TrendReport was to create one chart at a time, e.g. to
- * create a full report, TrendReport would have to executed multiple times using
- * TrendDataset. The new feature request is for this class to generate full
- * report in accordance with report type.
+/**
+ * Trend report generator class.
+ *
+ * @author Joe.Wang@sun.com
+ * @author Santiago.PericasGeertsen@sun.com
  */
-public class ReportGenerator {
+public class ReportGenerator extends ChartGenerator {
     
     static final int CHART_WIDTH  = 750;
     static final int CHART_HEIGHT = 450;
     
+    IndexPage _indexPage;
+    
     TrendReportParams _params;
-    
-    Map[] _japexTestResults;
-    
-    Calendar[] _dates;
-    
-    String[] _tests;
-    
-    String[] _drivers;
-    
-    boolean _hasReports = true;
-    
-    IndexPage _indexPage = null;
-    
-    SimpleDateFormat _dateFormatter;
-    
-    SimpleDateFormat _dateTimeFormatter;
-    
-    public ReportGenerator(TrendReportParams params, ParseReports japexReports) {
-        _params = params;
-        _japexTestResults = japexReports.getReports();
-        if (_japexTestResults != null) {
-            _dates = japexReports.getDates();
-        } 
-        else {
-            _hasReports = false;
-        }
+
+    /**
+     * Complete set of test case names. Use a list to preserve 
+     * order from test suite reports.
+     */
+    List<String> _testCaseNames = new ArrayList<String>();
         
-        // Initialize list of drivers using domain of first map
-        Map map = _japexTestResults[0];
-        _drivers = new String[map.keySet().size()];
-        int i = 0;
-        for (Object obj : map.keySet()) {
-            _drivers[i++] = (String) obj;
-        }
-        Arrays.sort(_drivers);
-        
-        ResultPerDriver result = 
-                (ResultPerDriver) _japexTestResults[0].get(_drivers[0]);
-        _tests = result.getTests();        
-        _dateFormatter = new SimpleDateFormat("MM-dd");   
-        _dateTimeFormatter = new SimpleDateFormat("MM-dd HH:mm");
+    public ReportGenerator(TrendReportParams params, 
+            List<? extends TestSuiteReport> reports) 
+    {
+        super(reports);
+        _params = params;        
         _indexPage = new IndexPage(_params, true);
+        
+        // Populate set of test cases across all reports
+        for (TestSuiteReport report : reports) {
+            for (TestSuiteReport.Driver driver : report.getDrivers()) {
+                for (TestSuiteReport.TestCase test : driver.getTestCases()) {
+                    String testName = test.getName();                    
+                    if (!_testCaseNames.contains(testName)) {
+                        _testCaseNames.add(testName);
+                    }
+                }
+            }
+        }
     }
     
-    public boolean createReport() {
-        if (!_hasReports)
-            return false;
-        
-        // Only one type of test report is supported
+    public void createReport() {
         singleMeansChart();
         oneTestcaseChart();
-        
-        return true;
     }
     
-    private void oneTestcaseChart() {        
-        DefaultCategoryDataset dataset;
-        ResultPerDriver result = null;
-        
-        for (int k = 0; k < _tests.length; k++) {
-            dataset = new DefaultCategoryDataset();
-            
-            for (int ii = 0; ii < _drivers.length; ii++) {
-                for (int i = 0; i < _japexTestResults.length; i++) {
-                    result = (ResultPerDriver) _japexTestResults[i].get(_drivers[ii]);
-                    if (result != null) {
-                        SimpleDateFormat formatter = _dateFormatter;
-                        
-                        // If previous or next are on the same day, include time
-                        if (i > 0 && onSameDate(_dates[i], _dates[i - 1])) {
-                            formatter = _dateTimeFormatter;
-                        }
-                        if (i + 1 < _japexTestResults.length
-                                && onSameDate(_dates[i], _dates[i + 1])) {
-                            formatter = _dateTimeFormatter;
-                        }
-                        
-                        if (!Double.isNaN(result.getResult(_tests[k]))) {
-                            dataset.addValue(result.getResult(_tests[k]),
-                                    _drivers[ii], formatter.format(_dates[i].getTime()));
-                        }
-                    }
-                }
-            }
-            
-            String chartName = Util.getFilename(_tests[k]) + ".jpg";
-            _params.setTitle(_tests[k]);
-            _indexPage.updateContent(chartName);
-            saveChart(_tests[k], dataset, chartName, CHART_WIDTH, CHART_HEIGHT);
-        }
-        
-        _indexPage.writeContent();        
-    }
-        
     private void singleMeansChart() {
-        DefaultCategoryDataset aritDataset = new DefaultCategoryDataset();
-        DefaultCategoryDataset geomDataset = new DefaultCategoryDataset();
-        DefaultCategoryDataset harmDataset = new DefaultCategoryDataset();
-        
-        ResultPerDriver result = null;
-        
-        for (int ii = 0; ii < _drivers.length; ii++) {
-            for (int i = 0; i < _japexTestResults.length; i++) {
-                result = (ResultPerDriver) _japexTestResults[i].get(_drivers[ii]);
-                
-                if (result != null && result.hasValidMeans()) {
-                    SimpleDateFormat formatter = _dateFormatter;
-                    
-                    // If previous or next are on the same day, include time
-                    if (i > 0 && onSameDate(_dates[i], _dates[i - 1])) {
-                        formatter = _dateTimeFormatter;                        
-                    }
-                    if (i + 1 < _japexTestResults.length 
-                        && onSameDate(_dates[i], _dates[i + 1])) {
-                        formatter = _dateTimeFormatter;
-                    }
-                    
-                    aritDataset.addValue(result.getAritMean(),
-                            _drivers[ii], formatter.format(_dates[i].getTime()));
-                    geomDataset.addValue(result.getGeomMean(),
-                            _drivers[ii], formatter.format(_dates[i].getTime()));
-                    harmDataset.addValue(result.getHarmMean(),
-                            _drivers[ii], formatter.format(_dates[i].getTime()));
-                }
-            }
-        }
-        
-        //IndexPage indexPage = new IndexPage(_params, true);
+        // Chart for arithmetic means
+        JFreeChart chart = createTrendChart(MeanMode.ARITHMETIC);                
         _params.setTitle("Arithmetic Means");
-        saveChart("Arithmetic Means", aritDataset, "ArithmeticMeans.jpg", 
-                CHART_WIDTH, CHART_HEIGHT);
+        saveChart(chart, "ArithmeticMeans.jpg", CHART_WIDTH, CHART_HEIGHT);       
         _indexPage.updateContent("ArithmeticMeans.jpg");
-        saveChart("Geometric Means", geomDataset, "GeometricMeans.jpg", 
-                CHART_WIDTH, CHART_HEIGHT);
+        
+        // Chart for geometric means
+        chart = createTrendChart(MeanMode.GEOMETRIC);
+        saveChart(chart, "GeometricMeans.jpg", CHART_WIDTH, CHART_HEIGHT);
         _params.setTitle("Geometric Means");
         _indexPage.updateContent("GeometricMeans.jpg");
-        saveChart("Harmonic Means", harmDataset, "HarmonicMeans.jpg", 
-                CHART_WIDTH, CHART_HEIGHT);
+        
+        // Chart for harmonic means
+        chart = createTrendChart(MeanMode.HARMONIC);
+        saveChart(chart, "HarmonicMeans.jpg", CHART_WIDTH, CHART_HEIGHT);
         _params.setTitle("Harmonic Means");
         _indexPage.updateContent("HarmonicMeans.jpg");
+        
+        // Write content to index page
         _indexPage.writeContent();
     }
+    
+    private void oneTestcaseChart() {
+        // Generate a chart of each test case in our set
+        for (String testCaseName : _testCaseNames) {
+            JFreeChart chart = createTrendChart(testCaseName);            
+            String chartName = Util.getFilename(testCaseName) + ".jpg";
+            _params.setTitle(testCaseName);
+            _indexPage.updateContent(chartName);
+            saveChart(chart, chartName, CHART_WIDTH, CHART_HEIGHT);
+        }
         
-    private void saveChart(String title, DefaultCategoryDataset dataset,
-            String fileName, int width, int height) 
+        // Write content to index page
+        _indexPage.writeContent();
+    }
+                
+    private void saveChart(JFreeChart chart, String fileName, int width, 
+            int height) 
     {
-        JFreeChart chart = ChartFactory.createLineChart(
-                title,
-                "", "",
-                dataset,
-                PlotOrientation.VERTICAL,
-                true, true, false);
-        configureLineChart(chart);
-        chart.setAntiAlias(true);
-        
         try {
             // Converts chart in JPEG file named [name].jpg
             File file = new File(_params.outputPath());
@@ -249,45 +152,6 @@ public class ReportGenerator {
         catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-    
-    static private void configureLineChart(JFreeChart chart) {
-        CategoryPlot plot = chart.getCategoryPlot();
-        
-        final DrawingSupplier supplier = new DefaultDrawingSupplier(
-            DefaultDrawingSupplier.DEFAULT_PAINT_SEQUENCE,
-            DefaultDrawingSupplier.DEFAULT_OUTLINE_PAINT_SEQUENCE,
-            DefaultDrawingSupplier.DEFAULT_STROKE_SEQUENCE,
-            DefaultDrawingSupplier.DEFAULT_OUTLINE_STROKE_SEQUENCE,
-            // Draw a small diamond 
-            new Shape[] { new Polygon(new int[] {3, 0, -3, 0}, 
-                                      new int[] {0, 3, 0, -3}, 4) }
-        );
-        plot.setDomainGridlinePaint(Color.black);
-        plot.setRangeGridlinePaint(Color.black);
-        plot.setDrawingSupplier(supplier);
-        
-        LineAndShapeRenderer renderer = (LineAndShapeRenderer) plot.getRenderer();
-        renderer.setShapesVisible(true);
-        renderer.setStroke(new BasicStroke(2.0f));        
-        
-        CategoryAxis axis = plot.getDomainAxis();
-        axis.setCategoryLabelPositions(CategoryLabelPositions.DOWN_90);
     }    
-    
-    /**
-     * Compare two calendar instances ignoring the time of the day.
-     */
-    private static boolean onSameDate(Calendar c1, Calendar c2) {
-        Calendar cc1 = (Calendar) c1.clone();
-        cc1.set(HOUR_OF_DAY, 0);
-        cc1.set(MINUTE, 0);
-        cc1.set(SECOND, 0);
-        Calendar cc2 = (Calendar) c2.clone();
-        cc2.set(HOUR_OF_DAY, 0);
-        cc2.set(MINUTE, 0);
-        cc2.set(SECOND, 0);
-        return cc1.equals(cc2);
-    }
     
 }

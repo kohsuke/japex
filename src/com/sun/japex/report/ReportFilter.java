@@ -1,5 +1,5 @@
 /*
- * Japex ver. 0.1 software ("Software")
+ * Japex software ("Software")
  *
  * Copyright, 2004-2005 Sun Microsystems, Inc. All Rights Reserved.
  *
@@ -44,9 +44,14 @@ import java.io.FileFilter;
 import java.util.Date;
 import java.util.Calendar;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+/**
+ * Report filter based on user options.
+ *
+ * @author Joe.Wang@sun.com
+ * @author Santiago.PericasGeertsen@sun.com
+ */
 public class ReportFilter implements FileFilter {
     
     Calendar _from, _to;
