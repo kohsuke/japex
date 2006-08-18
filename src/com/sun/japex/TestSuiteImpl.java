@@ -195,7 +195,7 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
         setParam(Constants.VERSION, Constants.VERSION_VALUE);
         setParam(Constants.OS_NAME, System.getProperty("os.name"));
         setParam(Constants.OS_ARCHITECTURE, System.getProperty("os.arch"));
-        DateFormat df = new SimpleDateFormat("dd MMM yyyy/HH:mm:ss z");
+        DateFormat df = new SimpleDateFormat(Constants.DEFAULT_DATE_TIME_FORMAT);
         setParam(Constants.DATE_TIME, df.format(Japex.TODAY));
         setParam(Constants.VM_INFO,
             System.getProperty("java.vendor") + " " + 

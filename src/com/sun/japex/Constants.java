@@ -119,4 +119,6 @@ public class Constants {
     public static final String DEFAULT_RESULT_AXIS        = "normal";
     public static final String DEFAULT_PLOT_DRIVERS       = "false";
     public static final String DEFAULT_PLOT_GROUP_SIZE    = "5";    
+    
+    public static final String DEFAULT_DATE_TIME_FORMAT   = "dd MMM yyyy/HH:mm:ss z";
 }
