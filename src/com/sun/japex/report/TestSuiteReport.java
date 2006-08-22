@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Calendar;
+import java.util.Locale;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -113,7 +114,7 @@ public class TestSuiteReport implements Comparable<TestSuiteReport> {
             }
         }
         
-        SimpleDateFormat format = new SimpleDateFormat(DEFAULT_DATE_TIME_FORMAT);
+        SimpleDateFormat format = new SimpleDateFormat(DEFAULT_DATE_TIME_FORMAT, Locale.ENGLISH);
         try {
             // Get global param dateTime from report
             Date d = format.parse(_params.get("dateTime"));

@@ -43,6 +43,7 @@ import java.io.File;
 import java.util.Comparator;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -109,7 +110,7 @@ public class DateComparator implements Comparator {
         if (file != null) {
             try {
                 SimpleDateFormat formatter =
-                        new SimpleDateFormat(ReportConstants.REPORT_DIRECTORY_FORMAT);
+                        new SimpleDateFormat(ReportConstants.REPORT_DIRECTORY_FORMAT, Locale.ENGLISH);
                 Date date = formatter.parse(file.getName());
                 result = Calendar.getInstance();
                 result.setTime(date);

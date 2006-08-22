@@ -43,6 +43,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Date;
+import java.util.Locale;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
@@ -156,7 +157,7 @@ public class IndexPage {
         template.append("<h2>Global Parameters</h2>");
         template.append("<ul>\n<li>Report Path: " + _params.reportPath() +  "</li>\n");
         template.append("<li>Output Path: " + _params.outputPath() + "</li>\n");
-        DateFormat df = new SimpleDateFormat("dd MMM yyyy/HH:mm:ss z");
+        DateFormat df = new SimpleDateFormat("dd MMM yyyy/HH:mm:ss z", Locale.ENGLISH);
         template.append("<li>Report Period: " + _params.dateFrom().getTime() + " - " 
                 + _params.dateTo().getTime() + "</li>\n");
         template.append("<li>Timestamp: " + df.format(new Date()));
