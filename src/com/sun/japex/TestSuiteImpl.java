@@ -48,6 +48,8 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
     
     final static String PATH_SEPARATOR = System.getProperty("path.separator");
     
+    TestSuiteElement _testSuiteElement;
+    
     /**
      * This test suite's name.
      */
@@ -74,13 +76,15 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
      * used in Japex.
      */
     public TestSuiteImpl(TestSuiteElement ts) {
+        _testSuiteElement = ts;
+        
         _name = ts.getName();
         
         // Set global properties by traversing JAXB's model
-        List<ParamType> params = createParamList(ts.getParamOrParamGroup());
+        List<ParamElement> params = createParamList(ts.getParamOrParamGroup());
         
         if (params != null) {
-            for (ParamType pt : params) {
+            for (ParamElement pt : params) {
                 String name = pt.getName();
                 String value = pt.getValue();
                 String oldValue = getParam(name);
@@ -247,14 +251,14 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
         TestCaseArrayList result = new TestCaseArrayList();
         
         for (Object o : testCaseOrTestGroup) {
-            if (o instanceof TestCaseType) {
-                TestCaseType tc = (TestCaseType) o;
+            if (o instanceof TestCaseElement) {
+                TestCaseElement tc = (TestCaseElement) o;
 
                 // Create new TestCaseImpl
                 TestCaseImpl testCase = new TestCaseImpl(tc.getName(), defaults);
 
                 // Copy params from JAXB object to Japex object
-                for (ParamType pt : createParamList(tc.getParamOrParamGroup())) {
+                for (ParamElement pt : createParamList(tc.getParamOrParamGroup())) {
                     testCase.setParam(pt.getName(), pt.getValue());
                 }            
                 
@@ -262,11 +266,11 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
                 result.add(testCase);
             }
             else {
-                TestCaseGroupType testCaseGroup = (TestCaseGroupType) o;
+                TestCaseGroupElement testCaseGroup = (TestCaseGroupElement) o;
 
                 // Create a new scope for this group
                 ParamsImpl groupScope = new ParamsImpl(defaults);
-                for (ParamType pt : createParamList(testCaseGroup.getParamOrParamGroup())) {
+                for (ParamElement pt : createParamList(testCaseGroup.getParamOrParamGroup())) {
                     groupScope.setParam(pt.getName(), pt.getValue());
                 }            
 
@@ -294,8 +298,8 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
             DriverImpl driverInfo = null;
             
             // Single driver or driver group?
-            if (o instanceof DriverType) {
-                DriverType dt = (DriverType) o;
+            if (o instanceof DriverElement) {
+                DriverElement dt = (DriverElement) o;
                 driverInfo = createDriverImpl(dt, defaults, result);
                 
                 // If japex.driverClass not specified, use the driver's name
@@ -307,11 +311,11 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
                 result.add(driverInfo);
             }
             else {
-                DriverGroupType driverGroup = (DriverGroupType) o;
+                DriverGroupElement driverGroup = (DriverGroupElement) o;
                 
                 // Create group's scope using testsuite params as default
                 ParamsImpl groupScope = new ParamsImpl(defaults);
-                for (ParamType pt : 
+                for (ParamElement pt : 
                      createParamList(driverGroup.getParamOrParamGroup()))
                 {
                     String name = pt.getName();
@@ -338,7 +342,7 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
      * the extends attribute is specified) or by directly allocating a new
      * instance.
      */
-    private DriverImpl createDriverImpl(DriverType dt, ParamsImpl inScope,
+    private DriverImpl createDriverImpl(DriverElement dt, ParamsImpl inScope,
             List<DriverImpl> driverList) 
     {
         DriverImpl driverInfo = null;
@@ -387,7 +391,7 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
         }
 
         // Copy params from JAXB object to Japex object
-        for (ParamType pt : createParamList(dt.getParamOrParamGroup())) {
+        for (ParamElement pt : createParamList(dt.getParamOrParamGroup())) {
             String name = pt.getName();
             String value = pt.getValue();
             String oldValue = driverInfo.getParam(name);
@@ -409,15 +413,15 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
      * Returns a flat list of params by recursively traversing param
      * groups, if necessary. 
      */
-    private List<ParamType> createParamList(List<Object> paramOrParamGroup) {
-        List<ParamType> result = new ArrayList<ParamType>();
+    private List<ParamElement> createParamList(List<Object> paramOrParamGroup) {
+        List<ParamElement> result = new ArrayList<ParamElement>();
         
         for (Object o : paramOrParamGroup) {
-            if (o instanceof ParamType) {
-                result.add((ParamType) o);
+            if (o instanceof ParamElement) {
+                result.add((ParamElement) o);
             }
             else {
-                ParamOrParamGroupType p = (ParamOrParamGroupType) o;
+                ParamGroupElement p = (ParamGroupElement) o;
                 result.addAll(createParamList(p.getParamOrParamGroup()));
             }
         }
@@ -454,6 +458,10 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
                 }
             }
         }
+    }
+    
+    public TestSuiteElement getTestSuiteElement() {
+        return _testSuiteElement;
     }
     
     public String getName() {

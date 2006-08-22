@@ -40,8 +40,6 @@
 package com.sun.japex;
 
 import java.util.*;
-import java.text.*;
-import java.net.*;
 import java.io.File;
 import java.util.concurrent.*;
 import java.lang.management.*;
@@ -112,10 +110,10 @@ public class Engine {
         _gCCollectors = ManagementFactory.getGarbageCollectorMXBeans();                 
     }
     
-    public TestSuiteImpl start(String configFile) {
+    public TestSuiteImpl start(List<String> configFiles) {
         try { 
             // Load config file
-            ConfigFileLoader cfl = new ConfigFileLoader(configFile);
+            ConfigFileLoader cfl = new ConfigFileMerger(configFiles);
             _testSuite = cfl.getTestSuite();
             
             if (Japex.test) {

@@ -39,14 +39,18 @@
 
 package com.sun.japex;
 
+import com.sun.corba.se.impl.orbutil.closure.Constant;
+import com.sun.japex.testsuite.TestSuiteElement;
 import java.io.*;
 import java.text.*;
 import java.util.Date;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
 import javax.xml.transform.*;
 import javax.xml.transform.stream.*;
-import javax.xml.transform.sax.*;
-import org.xml.sax.*;
 
 public class Japex {
     
@@ -77,12 +81,13 @@ public class Japex {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        if (args.length < 1 || args.length > 3) {
+        if (args.length < 1) {
             displayUsageAndExit();
         }
 
         // Parse command-line arguments
-        String configFile = null;
+        boolean merge = false;
+        List<String> configFiles = new ArrayList();
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-nohtml")) {
                 html = false;
@@ -96,34 +101,45 @@ public class Japex {
             else if (args[i].equals("-test")) {
                 test = true;
             }
+            else if (args[i].equals("-merge")) {
+                merge = true;
+            }
             else {
-                configFile = args[i];
+                configFiles.add(args[i]);
             }
         }
         
-        if (configFile == null) {
+        if (configFiles.isEmpty()) {
             displayUsageAndExit();
         }
 
-        new Japex().run(configFile);
+        if (configFiles.size() > 1 && !merge) {
+            displayUsageAndExit();            
+        }
+        
+        new Japex().run(configFiles);
         
         System.exit(exitCode);
     }
 
     private static void displayUsageAndExit() {
         System.err.println(
-            "Usage: japex [-verbose] [-nohtml] [-line] japex-config-file\n" +
+            "Usage: japex [-verbose] [-nohtml] [-line] [-test] [-merge] japex-config-file(s)\n" +
             "   -verbose: Display additional information about the benchmark's execution\n" +
             "   -nohtml : Do not generate HTML report (only XML report)\n" +
             "   -line   : Insert additional newlines to separate test case results\n" +
-            "   -test   : Test configuration file without producing any output reports");
+            "   -test   : Test configuration file without producing any output reports\n" +
+            "   -merge  : Merge japex-config-files\n" +
+            "             An error will result if this option is absent and more than one\n" +
+            "             japex-config-file is present"
+                );
         System.exit(1);        
     }
     
-    public void run(String configFile) {  
+    public void run(List<String> configFiles) {  
         try {            
             // Create testsuite object from configuration file
-            TestSuiteImpl testSuite = new Engine().start(configFile);
+            TestSuiteImpl testSuite = new Engine().start(configFiles);
             
             // If running in test mode, just return
             if (test) return;
@@ -149,19 +165,12 @@ public class Japex {
             osw.write(report.toString());
             osw.close();
             
-            // Copy config to outputDir expanding includes/entities
-            File configInput = new File(configFile);
-            File configOutput = new File(outputDir + fileSep + configInput.getName());
-            TransformerFactory tf = TransformerFactory.newInstance();  
-            XMLReader xmlReader = Util.getXIncludeXMLReader();
+            // Marshall the test suite
+            TestSuiteElement testSuiteElement = testSuite.getTestSuiteElement();
+            Marshaller m = ConfigFileLoader.context.createMarshaller();
+            File configOutput = new File(outputDir + fileSep + testSuite.getParam(Constants.CONFIG_FILE));
+            m.marshal(testSuite.getTestSuiteElement(), new FileOutputStream(configOutput));
             
-            // Note that built-in identity transform does not expand entities
-            Transformer id = tf.newTransformer(
-                new StreamSource(new StringReader(identityTx)));
-            SAXSource source = new SAXSource(Util.getXIncludeXMLReader(),
-                new InputSource(configInput.toURL().toString()));
-            id.transform(source, new StreamResult(configOutput));
-
             // Return if no HTML needs to be output
             if (!html) return;
             
@@ -189,6 +198,7 @@ public class Japex {
             // Generate HTML report
             URL stylesheet = getClass().getResource("/resources/report.xsl");
             if (stylesheet != null) {
+                TransformerFactory tf = TransformerFactory.newInstance();  
                 Transformer transformer = tf.newTransformer(
                     new StreamSource(stylesheet.toExternalForm()));
 

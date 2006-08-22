@@ -40,44 +40,34 @@
 package com.sun.japex;
 
 import java.io.*;
-import java.util.ArrayList;
 import javax.xml.bind.*;
 import com.sun.japex.testsuite.*;
-import javax.xml.parsers.*;
+import java.net.URI;
 import javax.xml.transform.sax.SAXSource;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 public class ConfigFileLoader {
+    public static final JAXBContext context = getJABXContext();
+    
+    private static JAXBContext getJABXContext() {
+        try {
+            return JAXBContext.newInstance("com.sun.japex.testsuite");
+        } catch(Exception e) {
+            throw new RuntimeException("Japex cannot create JAXB context", e);
+        }
+    }
     
     TestSuiteImpl _testSuite;
     
+    protected ConfigFileLoader() { }
+
+    
     public ConfigFileLoader(String fileName) throws ConfigFileException {
         try {
-            System.out.println("Reading configuration file '" + fileName + "' ...");
+            TestSuiteElement testSuiteElement = (TestSuiteElement)loadFile(fileName);
             
-            // Run config file through conditional processor
-            ConditionalProcessor processor = new ConditionalProcessor();
-            Reader config = processor.process(new FileReader(fileName));
-            
-            // Get an XInclude aware XML reader
-            XMLReader reader = Util.getXIncludeXMLReader();
-            
-            // Create a JAXB unmarshaller
-            JAXBContext ctx = JAXBContext.newInstance("com.sun.japex.testsuite");
-            Unmarshaller u = ctx.createUnmarshaller();
-
-            // Unmarshall using SAXSource to pass XInclude SAX parser
-            InputSource is = new InputSource(config);
-            is.setSystemId(fileName);       // Needed for XInclude to get base
-            SAXSource saxSource = new SAXSource(reader, is);
-            TestSuiteElement testsuite = (TestSuiteElement) u.unmarshal(saxSource);
-            
-            // Map JAXB object model to internal object model
-            _testSuite = new TestSuiteImpl(testsuite);         
-            
-            // Defined japex.configFile here
-            _testSuite.setParam(Constants.CONFIG_FILE, new File(fileName).getName());
+            _testSuite = createTestSuite(testSuiteElement, new File(fileName).getName());
         }
         catch (Exception e) {
             throw new RuntimeException(e);
@@ -88,4 +78,29 @@ public class ConfigFileLoader {
         return _testSuite;        
     }
     
+    protected Object loadFile(String fileName) throws Exception {
+        System.out.println("Reading configuration file '" + fileName + "' ...");
+
+        // Run config file through conditional processor
+        ConditionalProcessor processor = new ConditionalProcessor();
+        Reader config = processor.process(new FileReader(fileName));
+
+        // Get an XInclude aware XML reader
+        XMLReader reader = Util.getXIncludeXMLReader();
+
+        // Unmarshall using SAXSource to pass XInclude SAX parser
+        Unmarshaller u = context.createUnmarshaller();
+        InputSource is = new InputSource(config);
+        is.setSystemId(fileName);       // Needed for XInclude to get base
+        return u.unmarshal(new SAXSource(reader, is));
+    }
+    
+    protected TestSuiteImpl createTestSuite(TestSuiteElement tse, String name) {
+        // Map JAXB object model to internal object model
+        TestSuiteImpl testSuite = new TestSuiteImpl(tse);         
+
+        // Defined japex.configFile here
+        testSuite.setParam(Constants.CONFIG_FILE, name);
+        return testSuite;
+    }
 }

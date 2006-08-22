@@ -16,78 +16,90 @@
                 </jxb:nameXmlTransform> 
             </jxb:schemaBindings>
         </xsd:appinfo>
-    </xsd:annotation>    
+    </xsd:annotation>
 
     <!-- Parameter and parameter groups -->
-    <xsd:complexType name="ParamType">
-        <xsd:complexContent>
-            <xsd:restriction base="xsd:anyType">
-                <xsd:attribute name="name"  type="xsd:string" use="required"/>
-                <xsd:attribute name="value" type="xsd:string" use="required"/>
-            </xsd:restriction>
-        </xsd:complexContent>
-    </xsd:complexType>
+    <xsd:element name="param">
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:restriction base="xsd:anyType">
+                    <xsd:attribute name="name"  type="xsd:string" use="required"/>
+                    <xsd:attribute name="value" type="xsd:string" use="required"/>
+                </xsd:restriction>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
 
-    <xsd:complexType name="ParamOrParamGroupType">
-        <xsd:choice minOccurs="1" maxOccurs="unbounded">
-            <xsd:element name="param" type="tns:ParamType"/> 
-            <xsd:element name="paramGroup" type="tns:ParamOrParamGroupType"/>
-        </xsd:choice>
-        <xsd:attribute name="name" type="xsd:string" use="required"/>
-    </xsd:complexType>
+    <xsd:element name="paramGroup">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:group ref="tns:ParamOrParamGroup" minOccurs="1" maxOccurs="unbounded"/>
+            </xsd:sequence>
+            <xsd:attribute name="name" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
     
     <xsd:group id="ParamOrParamGroup" name="ParamOrParamGroup">
         <xsd:choice>
-            <xsd:element name="param" type="tns:ParamType"/>
-            <xsd:element name="paramGroup" type="tns:ParamOrParamGroupType"/>
+            <xsd:element ref="tns:param"/>
+            <xsd:element ref="tns:paramGroup"/>
         </xsd:choice>         
     </xsd:group>
     
     <!-- Test cases and test case groups -->
-    <xsd:complexType name="TestCaseType">
-        <xsd:sequence>
-            <xsd:group ref="tns:ParamOrParamGroup" minOccurs="0" maxOccurs="unbounded"/>
-        </xsd:sequence>
-        <xsd:attribute name="name" type="xsd:string" use="required"/>
-    </xsd:complexType>
-  
-    <xsd:complexType name="TestCaseGroupType">
-        <xsd:sequence>
-            <xsd:group ref="tns:ParamOrParamGroup" minOccurs="0" maxOccurs="unbounded"/>
-            <xsd:group ref="tns:TestCaseOrTestCaseGroup" minOccurs="1" maxOccurs="unbounded"/>
-        </xsd:sequence>
-        <xsd:attribute name="name" type="xsd:string" use="required"/>
-    </xsd:complexType>
-    
+    <xsd:element name="testCase">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:group ref="tns:ParamOrParamGroup" minOccurs="0"
+                    maxOccurs="unbounded"/>
+            </xsd:sequence>
+            <xsd:attribute name="name" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="testCaseGroup">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:group ref="tns:ParamOrParamGroup" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:group ref="tns:TestCaseOrTestCaseGroup" minOccurs="1" maxOccurs="unbounded"/>
+            </xsd:sequence>
+            <xsd:attribute name="name" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
+
     <xsd:group id="TestCaseOrTestCaseGroup" name="TestCaseOrTestCaseGroup">
         <xsd:choice>
-            <xsd:element name="testCase" type="tns:TestCaseType"/> 
-            <xsd:element name="testCaseGroup" type="tns:TestCaseGroupType"/>
-        </xsd:choice>         
-    </xsd:group>
-    
-    <!-- Drivers and driver groups -->
-    <xsd:complexType name="DriverType">
-        <xsd:sequence>
-            <xsd:group ref="tns:ParamOrParamGroup" minOccurs="0" maxOccurs="unbounded"/>
-        </xsd:sequence>
-        <xsd:attribute name="name" type="xsd:string" use="required"/>
-        <xsd:attribute name="normal" type="xsd:boolean" default="false"/>
-        <xsd:attribute name="extends" type="xsd:string" use="optional"/>
-    </xsd:complexType>
+            <xsd:element ref="tns:testCase"/>
+            <xsd:element ref="tns:testCaseGroup"/>
+        </xsd:choice>
+    </xsd:group> 
         
-    <xsd:complexType name="DriverGroupType">
-        <xsd:sequence>
-            <xsd:group ref="tns:ParamOrParamGroup" minOccurs="0" maxOccurs="unbounded"/>
-            <xsd:group ref="tns:DriverOrDriverGroup" minOccurs="1" maxOccurs="unbounded"/>
-        </xsd:sequence>
-        <xsd:attribute name="name" type="xsd:string" use="required"/>
-    </xsd:complexType>
+    <!-- Drivers and driver groups -->
+    <xsd:element name="driver">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:group ref="tns:ParamOrParamGroup" minOccurs="0" maxOccurs="unbounded"/>
+            </xsd:sequence>
+            <xsd:attribute name="name" type="xsd:string" use="required"/>
+            <xsd:attribute name="normal" type="xsd:boolean" default="false"/>
+            <xsd:attribute name="extends" type="xsd:string" use="optional"/>
+        </xsd:complexType>
+    </xsd:element>
+        
+    <xsd:element name="driverGroup">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:group ref="tns:ParamOrParamGroup" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:group ref="tns:DriverOrDriverGroup" minOccurs="1" maxOccurs="unbounded"/>
+            </xsd:sequence>
+            <xsd:attribute name="name" type="xsd:string" use="required"/>
+        </xsd:complexType>
+    </xsd:element>
     
     <xsd:group id="DriverOrDriverGroup" name="DriverOrDriverGroup">
         <xsd:choice>
-            <xsd:element name="driver" type="tns:DriverType"/> 
-            <xsd:element name="driverGroup" type="tns:DriverGroupType"/>
+            <xsd:element ref="tns:driver"/> 
+            <xsd:element ref="tns:driverGroup"/>
         </xsd:choice>         
     </xsd:group>
     
