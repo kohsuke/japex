@@ -39,15 +39,14 @@
 
 package com.sun.japex;
 
-import com.sun.corba.se.impl.orbutil.closure.Constant;
 import com.sun.japex.testsuite.TestSuiteElement;
 import java.io.*;
 import java.text.*;
 import java.util.Date;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.transform.*;
 import javax.xml.transform.stream.*;
@@ -134,6 +133,10 @@ public class Japex {
             "             japex-config-file is present"
                 );
         System.exit(1);        
+    }
+    
+    public void run(String configFile) {  
+        run(Collections.singletonList(configFile));
     }
     
     public void run(List<String> configFiles) {  
