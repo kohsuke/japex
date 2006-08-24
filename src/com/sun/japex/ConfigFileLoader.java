@@ -83,7 +83,7 @@ public class ConfigFileLoader {
 
         // Run config file through conditional processor
         ConditionalProcessor processor = new ConditionalProcessor();
-        Reader config = processor.process(new FileReader(fileName));
+        Reader config = processor.process(fileName);
 
         // Get an XInclude aware XML reader
         XMLReader reader = Util.getXIncludeXMLReader();

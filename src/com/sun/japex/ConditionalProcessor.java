@@ -72,7 +72,7 @@ public class ConditionalProcessor {
     public ConditionalProcessor() {
     }
   
-    public Reader process(Reader config) {
+    public Reader process(String fileName) {
         try {
             // Convert the system props to the string " name1 name2 ... nameN "
             StringBuffer propertyList = new StringBuffer();
@@ -94,7 +94,9 @@ public class ConditionalProcessor {
             
             StringWriter writer = new StringWriter(2 * 1024);
             StreamResult result = new StreamResult(writer);
-            transformer.transform(new StreamSource(config), result);
+            StreamSource source = new StreamSource(new FileReader(fileName));
+            source.setSystemId(fileName);
+            transformer.transform(source, result);
             
             return new StringReader(writer.getBuffer().toString());
         } 
