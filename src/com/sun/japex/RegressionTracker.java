@@ -51,6 +51,7 @@ import java.util.Date;
 import javax.xml.xpath.*;
 import javax.xml.namespace.NamespaceContext;
 import org.xml.sax.InputSource;
+import java.util.Arrays;
 
 public class RegressionTracker {
     
@@ -162,6 +163,9 @@ public class RegressionTracker {
                         + "' to generate regression report");
                 System.exit(1);
             }
+            
+            // Sort directories to ensure proper ordering
+            Arrays.sort(files);
             
             String outputReportXml = null;
             String outputReportHtml = null;
