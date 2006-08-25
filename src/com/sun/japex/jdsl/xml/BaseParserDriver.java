@@ -67,17 +67,19 @@ public abstract class BaseParserDriver extends JapexDriverBase {
     protected SerializerVocabulary _initialVocabulary;
     protected HashMap _externalVocabularyMap;
     protected DocumentBuilder _builder;
+    
+    protected String _xmlFile;
             
     public void prepare(TestCase testCase) {
-        String xmlFile = TestCaseUtil.getXmlFile(testCase);
+        _xmlFile = TestCaseUtil.getXmlFile(testCase);
 
         try {
-            FileInputStream fis = new FileInputStream(new File(xmlFile));
+            FileInputStream fis = new FileInputStream(new File(_xmlFile));
             _outputStream = new ByteArrayOutputStream();
             
             if (this instanceof FastInfosetParserDriver) {
                 ByteArrayInputStream bais = new ByteArrayInputStream(com.sun.japex.Util.streamToByteArray(fis));
-                prepareFI(bais, xmlFile);
+                prepareFI(bais, _xmlFile);
             } else {
                 BufferedInputStream bis = new BufferedInputStream(fis);
                 prepareXML(bis);

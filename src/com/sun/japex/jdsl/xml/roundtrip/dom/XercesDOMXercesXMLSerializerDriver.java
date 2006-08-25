@@ -56,7 +56,7 @@ public class XercesDOMXercesXMLSerializerDriver extends BaseJAXPDOMDriver {
     public void run(TestCase testCase) {
         try {
             _inputStream.reset();
-            _d = _builder.parse(_inputStream);
+            _d = _builder.parse(_inputStream, _xmlFile);
             _outputStream.reset();
             _xmlSerializer.serialize(_d);
         } 

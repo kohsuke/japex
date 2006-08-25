@@ -60,7 +60,7 @@ public class JAXPStAXDriver extends BaseParserDriver {
     public void run(TestCase testCase) {
         try {
             _inputStream.reset();
-            _reader = _factory.createXMLStreamReader(_inputStream);
+            _reader = _factory.createXMLStreamReader(_xmlFile, _inputStream);
             
             char[] text;
             int acount, ncount;

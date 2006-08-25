@@ -75,7 +75,7 @@ public class JAXPDOMDriver extends BaseParserDriver {
     public void run(TestCase testCase) {
         try {
             _inputStream.reset();
-            _d = _builder.parse(_inputStream);
+            _d = _builder.parse(_inputStream, _xmlFile);
             if (_traverseNodes) {
                 traverse(_d);
             }

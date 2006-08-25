@@ -60,11 +60,11 @@ public class JAXPSAXDriver extends BaseParserDriver {
     protected SAXParserFactory createSAXParserFactory() {
         return SAXParserFactory.newInstance();
     }
-    
+        
     public void run(TestCase testCase) {
         try {
             _inputStream.reset();
-            _parser.parse(_inputStream, _defaultHandler);
+            _parser.parse(_inputStream, _defaultHandler, _xmlFile);
         } catch (Exception e) {
             e.printStackTrace();
         }

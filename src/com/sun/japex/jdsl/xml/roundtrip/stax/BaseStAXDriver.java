@@ -84,7 +84,7 @@ public abstract class BaseStAXDriver extends BaseParserDriver {
         try {
             _inputStream.reset();
             XMLStreamReader reader = 
-                _xmlInputFactory.createXMLStreamReader(_inputStream);
+                _xmlInputFactory.createXMLStreamReader(_xmlFile, _inputStream);
             
             _outputStream.reset();
             XMLStreamWriter writer = 
