@@ -1,24 +1,24 @@
 /*
  * Japex ver. 0.1 software ("Software")
- * 
+ *
  * Copyright, 2004-2005 Sun Microsystems, Inc. All Rights Reserved.
- * 
+ *
  * This Software is distributed under the following terms:
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, is permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice,
  * this list of conditions and the following disclaimer.
- * 
+ *
  * Redistribution in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the
  * documentation and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of Sun Microsystems, Inc., 'Java', 'Java'-based names,
  * nor the names of contributors may be used to endorse or promote products
  * derived from this Software without specific prior written permission.
- * 
+ *
  * The Software is provided "AS IS," without a warranty of any kind. ALL
  * EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND WARRANTIES, INCLUDING
  * ANY IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
@@ -31,7 +31,7 @@
  * AND REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT OF THE USE OF OR
  * INABILITY TO USE SOFTWARE, EVEN IF SUN HAS BEEN ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGES.
- * 
+ *
  * You acknowledge that the Software is not designed, licensed or intended
  * for use in the design, construction, operation or maintenance of any
  * nuclear facility.
@@ -74,7 +74,7 @@ public class Util {
     static public ByteArrayInputStream streamToByteArrayInputStream(InputStream is) {
         return new ByteArrayInputStream(streamToByteArray(is));
     }
-        
+    
     public static long parseDuration(String duration) {
         try {
             int length = duration.length();
@@ -83,35 +83,34 @@ public class Util {
                 case 2:
                     // S?S
                     return Integer.parseInt(duration.substring(0, length))
-                           * 1000;    
+                    * 1000;
                 case 5:
-                    if (duration.charAt(2) == ':') { 
+                    if (duration.charAt(2) == ':') {
                         // MM:SS
                         return Integer.parseInt(duration.substring(0, 2))
-                               * 60 * 1000 +
-                               Integer.parseInt(duration.substring(3, 5))
-                               * 1000;    
+                        * 60 * 1000 +
+                                Integer.parseInt(duration.substring(3, 5))
+                                * 1000;
                     }
                     break;
                 case 8:
                     // HH:MM:SS
-                    if (duration.charAt(2) == ':' && duration.charAt(5) == ':') { 
-                        return Integer.parseInt(duration.substring(0, 2)) 
-                               * 60 * 60 * 1000 +
-                               Integer.parseInt(duration.substring(3, 5))
-                               * 60 * 1000 +
-                               Integer.parseInt(duration.substring(6, 8))
-                               * 1000;    
+                    if (duration.charAt(2) == ':' && duration.charAt(5) == ':') {
+                        return Integer.parseInt(duration.substring(0, 2))
+                        * 60 * 60 * 1000 +
+                                Integer.parseInt(duration.substring(3, 5))
+                                * 60 * 1000 +
+                                Integer.parseInt(duration.substring(6, 8))
+                                * 1000;
                     }
                     break;
             }
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             // Falls through
         }
-        throw new RuntimeException("Duration '" + duration 
-            + "' does not conform to pattern '((HH:)?MM:)?S?S'");
-    }        
+        throw new RuntimeException("Duration '" + duration
+                + "' does not conform to pattern '((HH:)?MM:)?S?S'");
+    }
     
     public static long currentTimeNanos() {
         return System.nanoTime();
@@ -147,7 +146,7 @@ public class Util {
     
     public static double standardDev(double[] sample, int start) {
         double mean = arithmeticMean(sample, start);
-
+        
         // Compute biased variance
         double variance = 0.0;
         for (int i = start; i < sample.length; i++) {
@@ -158,22 +157,22 @@ public class Util {
         // Return standard deviation
         return Math.sqrt(variance);
     }
-
+    
     /**
      * Create an instance of <code>DecimalFormat</code> to format numbers
      * as xsd:decimal. That is, using '.' as decimal separator and without
-     * using ',' for grouping. 
+     * using ',' for grouping.
      */
-    static DecimalFormat _decimalFormat;    
+    static DecimalFormat _decimalFormat;
     static {
         DecimalFormatSymbols dfs = new DecimalFormatSymbols(Locale.US);
         dfs.setDecimalSeparator('.');   // should be redundant
         _decimalFormat = new DecimalFormat("0.000", dfs);
-        _decimalFormat.setGroupingSize(Byte.MAX_VALUE);        
+        _decimalFormat.setGroupingSize(Byte.MAX_VALUE);
     }
     
     public static String formatDouble(double value) {
-        return Double.isNaN(value) ? "NaN" : _decimalFormat.format(value);   
+        return Double.isNaN(value) ? "NaN" : _decimalFormat.format(value);
     }
     
     public static String getManifestAsString(URLClassLoader cl, String jarBaseName) {
@@ -197,15 +196,14 @@ public class Util {
                 }
             }
             return "";
-        } 
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-
+    
     
     /**
-     * Calculate group sizes for tests to avoid a very small final group. 
+     * Calculate group sizes for tests to avoid a very small final group.
      * For example, calculateGroupSizes(21, 5) return { 5,5,5,3,3 } instead
      * of { 5,5,5,5,1 }.
      */
@@ -214,8 +212,8 @@ public class Util {
             return new int[] { nOfTests };
         }
         
-        int[] result = new int[nOfTests / maxGroupSize + 
-                               ((nOfTests % maxGroupSize > 0) ? 1 : 0)];
+        int[] result = new int[nOfTests / maxGroupSize +
+                ((nOfTests % maxGroupSize > 0) ? 1 : 0)];
         
         // Var m1 represents the number of groups of size maxGroupSize
         int m1 = (nOfTests - maxGroupSize) / maxGroupSize;
@@ -227,10 +225,9 @@ public class Util {
         int m2 = nOfTests - m1 * maxGroupSize;
         if (m2 <= maxGroupSize) {
             result[result.length - 1] = m2;
-        }
-        else {
+        } else {
             // Allocate last two groups
-            result[result.length - 2] = (int) Math.ceil(m2 / 2.0);            
+            result[result.length - 2] = (int) Math.ceil(m2 / 2.0);
             result[result.length - 1] = m2 - result[result.length - 2];
         }
         return result;
@@ -248,7 +245,7 @@ public class Util {
                     i++;
                 }
             } else if (achar == 47 || achar == 92 || achar == 32) { // / \ and space
-                filename.append("_");                
+                filename.append("_");
             } else {
                 filename.append(achar);
             }
@@ -263,15 +260,69 @@ public class Util {
         saxParserFactory.setNamespaceAware(true);
         try {
             saxParserFactory.setXIncludeAware(true);
-        }
-        catch (UnsupportedOperationException e) {
+        } catch (UnsupportedOperationException e) {
             System.err.print("Warning: Available SAX parser factory does not support XInclude");
         }
     }
-        
+    
     public static XMLReader getXIncludeXMLReader() {
         try {
             return saxParserFactory.newSAXParser().getXMLReader();
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public static void copyFile(File src, File dst) throws IOException {
+        InputStream in = new FileInputStream(src);
+        OutputStream out = new FileOutputStream(dst);
+        
+        int len;
+        byte[] buf = new byte[1024];
+        while ((len = in.read(buf)) > 0) {
+            out.write(buf, 0, len);
+        }
+        in.close();
+        out.close();
+    }
+    
+    public static void copyDirectory(File srcDir, File dstDir) throws IOException {
+        if (srcDir.isDirectory()) {
+            if (!dstDir.exists()) {
+                dstDir.mkdir();
+            }
+            
+            String[] children = srcDir.list();
+            for (int i = 0; i < children.length; i++) {
+                copyDirectory(new File(srcDir, children[i]),
+                              new File(dstDir, children[i]));
+            }
+        } 
+        else {
+            copyFile(srcDir, dstDir);
+        }
+    }
+    
+    public static void copyResource(String basename, String outputDir, String fileSep) {
+        InputStream is;
+        OutputStream os;
+        
+        try {
+            int c;
+            URL css = Util.class.getResource("/resources/" + basename);
+            if (css != null) {
+                is = css.openStream();
+                os = new BufferedOutputStream(new FileOutputStream(
+                        new File(outputDir + fileSep + basename)));
+
+                while ((c = is.read()) != -1) {
+                    os.write(c);
+                }
+                is.close();
+                os.close();                    
+            }    
         }
         catch (RuntimeException e) {
             throw e;
@@ -279,5 +330,6 @@ public class Util {
         catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
+    }    
+        
 }

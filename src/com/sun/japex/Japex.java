@@ -57,6 +57,7 @@ public class Japex {
     public static boolean verbose = false;
     public static boolean resultPerLine = false;
     public static boolean test = false;
+    public static boolean last = false;
     
     public static int exitCode = 0;
     
@@ -100,6 +101,9 @@ public class Japex {
             else if (args[i].equals("-test")) {
                 test = true;
             }
+            else if (args[i].equals("-last")) {
+                last = true;
+            }
             else if (args[i].equals("-merge")) {
                 merge = true;
             }
@@ -128,6 +132,7 @@ public class Japex {
             "   -nohtml : Do not generate HTML report (only XML report)\n" +
             "   -line   : Insert additional newlines to separate test case results\n" +
             "   -test   : Test configuration file without producing any output reports\n" +
+            "   -last   : Copy the report directory into a directory named 'last'\n" +
             "   -merge  : Merge japex-config-files\n" +
             "             An error will result if this option is absent and more than one\n" +
             "             japex-config-file is present"
@@ -151,7 +156,9 @@ public class Japex {
             String fileSep = System.getProperty("file.separator");
             DateFormat df = new SimpleDateFormat("yyyy_MM_dd_HH_mm");
             String outputDir = testSuite.getParam(Constants.REPORTS_DIRECTORY) 
-                + fileSep + df.format(TODAY);            
+                + fileSep + df.format(TODAY);          
+            String lastDir = testSuite.getParam(Constants.REPORTS_DIRECTORY) 
+                + fileSep + "last";          
 
             // Generate report to string buffer
             StringBuffer report = new StringBuffer();
@@ -175,7 +182,12 @@ public class Japex {
             m.marshal(testSuite.getTestSuiteElement(), new FileOutputStream(configOutput));
             
             // Return if no HTML needs to be output
-            if (!html) return;
+            if (!html) {
+                if (last) {
+                    Util.copyDirectory(new File(outputDir), new File(lastDir));
+                }
+                return;
+            }
             
             // Generate charts
             final String resultChart = "result.jpg";
@@ -225,8 +237,13 @@ public class Japex {
                 os.close();                    
               
                 // Copy some resources to output directory
-                copyResource("report.css", outputDir, fileSep);
-                copyResource("small_japex.gif", outputDir, fileSep);
+                Util.copyResource("report.css", outputDir, fileSep);
+                Util.copyResource("small_japex.gif", outputDir, fileSep);
+                
+                // Copy report to 'last' if option specified
+                if (last) {
+                    Util.copyDirectory(new File(outputDir), new File(lastDir));
+                }
             }
         }
         catch (RuntimeException e) {
@@ -237,30 +254,4 @@ public class Japex {
         }
     }
     
-    private void copyResource(String basename, String outputDir, String fileSep) {
-        InputStream is;
-        OutputStream os;
-        
-        try {
-            int c;
-            URL css = getClass().getResource("/resources/" + basename);
-            if (css != null) {
-                is = css.openStream();
-                os = new BufferedOutputStream(new FileOutputStream(
-                        new File(outputDir + fileSep + basename)));
-
-                while ((c = is.read()) != -1) {
-                    os.write(c);
-                }
-                is.close();
-                os.close();                    
-            }    
-        }
-        catch (RuntimeException e) {
-            throw e;
-        }
-        catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 }
