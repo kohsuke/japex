@@ -36,21 +36,27 @@
 
 package com.sun.japex.jdsl.xml.parsing.stax;
 
-import com.sun.japex.TestCase;
-import com.sun.japex.jdsl.xml.BaseParserDriver;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
+import com.sun.japex.TestCase;
+import com.sun.japex.jdsl.xml.BaseParserDriver;
+import com.sun.japex.jdsl.xml.DriverConstants;
 
 public class JAXPStAXDriver extends BaseParserDriver {    
-    XMLInputFactory _factory;
-    XMLStreamReader _reader;
+    protected XMLInputFactory _factory;
+    protected XMLStreamReader _reader;
+    
+    protected boolean _nextOnly = false;
     
     public void initializeDriver() {
         super.initializeDriver();
         
         try {
             _factory = XMLInputFactory.newInstance();
+            if (hasParam(DriverConstants.STAX_NEXTONLY)) {
+                _nextOnly = this.getBooleanParam(DriverConstants.STAX_NEXTONLY);
+            }
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -68,6 +74,10 @@ public class JAXPStAXDriver extends BaseParserDriver {
             
             while (_reader.hasNext()) {
                 int event = _reader.next();
+                
+                // If nextOnly set, don't call any getters
+                if (_nextOnly) continue;
+                
                 _reader.getEventType();
                 switch (event) {
                     case XMLStreamReader.START_ELEMENT:
@@ -93,7 +103,7 @@ public class JAXPStAXDriver extends BaseParserDriver {
             _reader.close();
         }
         catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }    
 }

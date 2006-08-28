@@ -55,4 +55,6 @@ public final class DriverConstants {
     public static final String TRAVERSE_NODES = "jdsl.traverseNode";
     
     public static final String GZIP_PROPERTY = "jdsl.GZIP";
+    
+    public static final String STAX_NEXTONLY = "jdsl.stax.nextOnly";
 }
