@@ -206,6 +206,14 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
             System.getProperty("java.vm.version"));
         setIntParam(Constants.NUMBER_OF_CPUS, 
             Runtime.getRuntime().availableProcessors());
+        String hostName = "<unknown>";
+        try {
+            hostName = java.net.InetAddress.getLocalHost().getHostName();            
+        }
+        catch (java.net.UnknownHostException e) {
+            // falls through
+        }
+        setParam(Constants.HOST_NAME, hostName);
                 
         // Create and populate list of drivers and base drivers used
         _driverList = createDriverList(ts.getDriverOrDriverGroup(), this);

@@ -60,6 +60,7 @@ public class Constants {
     public static final String VM_INFO         = "japex.vmInfo";
     public static final String CONFIG_FILE     = "japex.configFile";
     public static final String NUMBER_OF_CPUS  = "japex.numberOfCpus";
+    public static final String HOST_NAME       = "japex.hostName";
     
     // Driver input parameters        
     public static final String DRIVER_CLASS       = "japex.driverClass";
