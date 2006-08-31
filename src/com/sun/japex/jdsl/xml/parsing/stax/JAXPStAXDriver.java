@@ -38,15 +38,15 @@ package com.sun.japex.jdsl.xml.parsing.stax;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamException;
 
 import com.sun.japex.TestCase;
 import com.sun.japex.jdsl.xml.BaseParserDriver;
 import com.sun.japex.jdsl.xml.DriverConstants;
 
 public class JAXPStAXDriver extends BaseParserDriver {    
-    protected XMLInputFactory _factory;
-    protected XMLStreamReader _reader;
     
+    protected XMLInputFactory _factory;    
     protected boolean _nextOnly = false;
     
     public void initializeDriver() {
@@ -66,44 +66,53 @@ public class JAXPStAXDriver extends BaseParserDriver {
     public void run(TestCase testCase) {
         try {
             _inputStream.reset();
-            _reader = _factory.createXMLStreamReader(_xmlFile, _inputStream);
+            XMLStreamReader reader = getXMLStreamReader();
             
             char[] text;
             int acount, ncount;
             String local, prefix, uri;
             
-            while (_reader.hasNext()) {
-                int event = _reader.next();
+            while (reader.hasNext()) {
+                int event = reader.next();
                 
                 // If nextOnly set, don't call any getters
                 if (_nextOnly) continue;
                 
-                _reader.getEventType();
+                reader.getEventType();
                 switch (event) {
                     case XMLStreamReader.START_ELEMENT:
-                        local = _reader.getLocalName();
-                        prefix = _reader.getPrefix();
-                        uri = _reader.getNamespaceURI();
-                        acount = _reader.getAttributeCount();
-                        ncount = _reader.getNamespaceCount();
+                        local = reader.getLocalName();
+                        prefix = reader.getPrefix();
+                        uri = reader.getNamespaceURI();
+                        acount = reader.getAttributeCount();
+                        ncount = reader.getNamespaceCount();
                         break;
                     case XMLStreamReader.END_ELEMENT:
-                        local = _reader.getLocalName();
-                        prefix = _reader.getPrefix();
-                        uri = _reader.getNamespaceURI();
+                        local = reader.getLocalName();
+                        prefix = reader.getPrefix();
+                        uri = reader.getNamespaceURI();
                         break;
                     case XMLStreamReader.CHARACTERS:
                     case XMLStreamReader.SPACE:
-                        text = _reader.getTextCharacters();
+                        text = reader.getTextCharacters();
                         break;
                     default:
                         break;
                 }
             }
-            _reader.close();
+            reader.close();
         }
         catch (Exception e) {
             throw new RuntimeException(e);
         }
     }    
+
+    /**
+     * This method may be overriden by a subclass to provide a more
+     * efficient way of allocating new parsers.
+     */
+    public XMLStreamReader getXMLStreamReader() throws XMLStreamException {
+        return _factory.createXMLStreamReader(_xmlFile, _inputStream);        
+    }
+        
 }
