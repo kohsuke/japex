@@ -39,24 +39,26 @@
 
 package com.sun.japex.report;
 
+import static com.sun.japex.Constants.DEFAULT_DATE_TIME_FORMAT;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
-import java.util.Map;
-import java.util.List;
-import java.util.HashMap;
-import java.util.ArrayList;
 import java.io.IOException;
-import java.util.Date;
-import java.util.Calendar;
-import java.util.Locale;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-
-import javax.xml.parsers.*;
-import org.xml.sax.SAXException;
-import org.w3c.dom.*;
-
-import static com.sun.japex.Constants.DATE_TIME;
-import static com.sun.japex.Constants.DEFAULT_DATE_TIME_FORMAT;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * Representation of a test suite report.
@@ -83,7 +85,7 @@ public class TestSuiteReport implements Comparable<TestSuiteReport> {
     Calendar _date = Calendar.getInstance();
     
     /**
-     * Parse a {@link TestReport} from a file.
+     * Parse a {@link TestSuiteReport} from a file.
      */
     public TestSuiteReport(File src) throws SAXException, IOException {
         if (!src.exists()) {
