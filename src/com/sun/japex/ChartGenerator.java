@@ -54,7 +54,6 @@ import org.jfree.data.general.SeriesException;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 
 public class ChartGenerator {
     
@@ -133,12 +132,10 @@ public class ChartGenerator {
             DefaultCategoryDataset dataset = new DefaultCategoryDataset();           
             
             // Find first normalizer driver (if any) and adjust unit            
-            DriverImpl normalizerDriver = null;            
-            Iterator jdi = _testSuite.getDriverInfoList().iterator();
-            while (jdi.hasNext()) {
-                DriverImpl di = (DriverImpl) jdi.next();       
-                if (di.isNormal()) {
-                    normalizerDriver = di; 
+            DriverImpl normalizerDriver = null;
+            for (DriverImpl driver : _testSuite.getDriverInfoList()) {
+                if (driver.isNormal()) {
+                    normalizerDriver = driver;
                     break;
                 }
             }
@@ -159,41 +156,37 @@ public class ChartGenerator {
             }
             
             // Generate charts
-            jdi = _testSuite.getDriverInfoList().iterator();
-            while (jdi.hasNext()) {
-                DriverImpl di = (DriverImpl) jdi.next();
-                              
+            for (DriverImpl di : _testSuite.getDriverInfoList()) {
                 if (normalizerDriver != null) {
                     dataset.addValue(
                         normalizerDriver == di ? 100.0 :
-                        (100.0 * di.getDoubleParamNoNaN(Constants.RESULT_ARIT_MEAN) /
-                            normalizerDriver.getDoubleParamNoNaN(Constants.RESULT_ARIT_MEAN)),
+                            (100.0 * di.getDoubleParamNoNaN(Constants.RESULT_ARIT_MEAN) /
+                                normalizerDriver.getDoubleParamNoNaN(Constants.RESULT_ARIT_MEAN)),
                         di.getName(),
                         "Arithmetic Mean");
                     dataset.addValue(
                         normalizerDriver == di ? 100.0 :
-                        (100.0 * di.getDoubleParamNoNaN(Constants.RESULT_GEOM_MEAN) /
-                            normalizerDriver.getDoubleParamNoNaN(Constants.RESULT_GEOM_MEAN)),
+                            (100.0 * di.getDoubleParamNoNaN(Constants.RESULT_GEOM_MEAN) /
+                                normalizerDriver.getDoubleParamNoNaN(Constants.RESULT_GEOM_MEAN)),
                         di.getName(),
                         "Geometric Mean");
                     dataset.addValue(
                         normalizerDriver == di ? 100.0 :
-                        (100.0 * di.getDoubleParamNoNaN(Constants.RESULT_HARM_MEAN) /
-                            normalizerDriver.getDoubleParamNoNaN(Constants.RESULT_HARM_MEAN)),
+                            (100.0 * di.getDoubleParamNoNaN(Constants.RESULT_HARM_MEAN) /
+                                normalizerDriver.getDoubleParamNoNaN(Constants.RESULT_HARM_MEAN)),
                         di.getName(),
-                        "Harmonic Mean");                    
-                }
-                else {
+                        "Harmonic Mean");
+                } else {
                     dataset.addValue(
-                        di.getDoubleParamNoNaN(Constants.RESULT_ARIT_MEAN), 
+                        di.getDoubleParamNoNaN(Constants.RESULT_ARIT_MEAN),
                         di.getName(),
                         "Arithmetic Mean");
                     dataset.addValue(
-                        di.getDoubleParamNoNaN(Constants.RESULT_GEOM_MEAN), 
+                        di.getDoubleParamNoNaN(Constants.RESULT_GEOM_MEAN),
                         di.getName(),
                         "Geometric Mean");
                     dataset.addValue(
-                        di.getDoubleParamNoNaN(Constants.RESULT_HARM_MEAN), 
+                        di.getDoubleParamNoNaN(Constants.RESULT_HARM_MEAN),
                         di.getName(),
                         "Harmonic Mean");
                 }
@@ -219,23 +212,20 @@ public class ChartGenerator {
             DefaultTableXYDataset xyDataset = new DefaultTableXYDataset();
                         
             // Generate charts
-            Iterator jdi = _testSuite.getDriverInfoList().iterator();
-            for (int i = 0; jdi.hasNext(); i++) {
-                DriverImpl di = (DriverImpl) jdi.next();
-                
+            for (DriverImpl di : _testSuite.getDriverInfoList()) {
                 if (!di.hasParam(Constants.RESULT_ARIT_MEAN_X)) {
                     System.out.println("Error: Driver '" + di.getName() + "' does not define"
-                            + " any values for the X axis needed to generate a scatter chart");
+                        + " any values for the X axis needed to generate a scatter chart");
                     System.exit(1);
                 }
-                                          
+
                 XYSeries xySeries = new XYSeries(di.getName(), true, false);
                 xySeries.add(di.getDoubleParamNoNaN(Constants.RESULT_ARIT_MEAN_X),
-                             di.getDoubleParamNoNaN(Constants.RESULT_ARIT_MEAN));
+                    di.getDoubleParamNoNaN(Constants.RESULT_ARIT_MEAN));
                 xySeries.add(di.getDoubleParamNoNaN(Constants.RESULT_GEOM_MEAN_X),
-                             di.getDoubleParamNoNaN(Constants.RESULT_GEOM_MEAN));
+                    di.getDoubleParamNoNaN(Constants.RESULT_GEOM_MEAN));
                 xySeries.add(di.getDoubleParamNoNaN(Constants.RESULT_HARM_MEAN_X),
-                             di.getDoubleParamNoNaN(Constants.RESULT_HARM_MEAN));   
+                    di.getDoubleParamNoNaN(Constants.RESULT_HARM_MEAN));
                 xyDataset.addSeries(xySeries);
             }
                         
@@ -276,20 +266,17 @@ public class ChartGenerator {
             DefaultCategoryDataset dataset = new DefaultCategoryDataset();           
                        
             // Generate charts
-            Iterator jdi = _testSuite.getDriverInfoList().iterator();
-            while (jdi.hasNext()) {
-                DriverImpl di = (DriverImpl) jdi.next();
-                              
+            for (DriverImpl di : _testSuite.getDriverInfoList()) {
                 dataset.addValue(
-                    di.getDoubleParamNoNaN(Constants.RESULT_ARIT_MEAN), 
-                    "Arithmetic Mean", 
+                    di.getDoubleParamNoNaN(Constants.RESULT_ARIT_MEAN),
+                    "Arithmetic Mean",
                     di.getName());
                 dataset.addValue(
-                    di.getDoubleParamNoNaN(Constants.RESULT_GEOM_MEAN), 
+                    di.getDoubleParamNoNaN(Constants.RESULT_GEOM_MEAN),
                     "Geometric Mean",
                     di.getName());
                 dataset.addValue(
-                    di.getDoubleParamNoNaN(Constants.RESULT_HARM_MEAN), 
+                    di.getDoubleParamNoNaN(Constants.RESULT_HARM_MEAN),
                     "Harmonic Mean",
                     di.getName());
             }
@@ -331,11 +318,11 @@ public class ChartGenerator {
     
     private int generateTestCaseBarCharts(String baseName, String extension) {
         int nOfFiles = 0;
-        List driverInfoList = _testSuite.getDriverInfoList();
+        List<DriverImpl> driverInfoList = _testSuite.getDriverInfoList();
         
         // Get number of tests from first driver
         final int nOfTests = 
-            ((DriverImpl) driverInfoList.get(0)).getAggregateTestCases().size();
+            driverInfoList.get(0).getAggregateTestCases().size();
             
         int groupSizesIndex = 0;
         int[] groupSizes = calculateGroupSizes(nOfTests, _plotGroupSize);
@@ -345,12 +332,10 @@ public class ChartGenerator {
             
             // Find first normalizer driver (if any)
             DriverImpl normalizerDriver = null;
-            
-            Iterator jdi = driverInfoList.iterator();
-            while (jdi.hasNext()) {
-                DriverImpl di = (DriverImpl) jdi.next();       
+
+            for (DriverImpl di : driverInfoList) {
                 if (di.isNormal()) {
-                    normalizerDriver = di; 
+                    normalizerDriver = di;
                     break;
                 }
             }
@@ -373,29 +358,26 @@ public class ChartGenerator {
             
             int i = 0, thisGroupSize = 0;
             for (; i < nOfTests; i++) {
-                jdi = driverInfoList.iterator();
-                
-                while (jdi.hasNext()) {
-                    DriverImpl di = (DriverImpl) jdi.next();
+
+                for (DriverImpl di : driverInfoList) {
                     TestCaseImpl tc = (TestCaseImpl) di.getAggregateTestCases().get(i);
-            
+
                     // User normalizer driver if defined
                     if (normalizerDriver != null) {
-                        TestCaseImpl normalTc = 
+                        TestCaseImpl normalTc =
                             (TestCaseImpl) normalizerDriver.getAggregateTestCases().get(i);
                         dataset.addValue(normalizerDriver == di ? 100.0 :
-                                (100.0 * tc.getDoubleParamNoNaN(Constants.RESULT_VALUE) /
-                                 normalTc.getDoubleParamNoNaN(Constants.RESULT_VALUE)),
-                                _plotDrivers ? tc.getName() : di.getName(),
-                                _plotDrivers ? di.getName() : tc.getName());                                                
-                    }
-                    else {
+                            (100.0 * tc.getDoubleParamNoNaN(Constants.RESULT_VALUE) /
+                                normalTc.getDoubleParamNoNaN(Constants.RESULT_VALUE)),
+                            _plotDrivers ? tc.getName() : di.getName(),
+                            _plotDrivers ? di.getName() : tc.getName());
+                    } else {
                         dataset.addValue(
-                            tc.getDoubleParamNoNaN(Constants.RESULT_VALUE), 
-                                _plotDrivers ? tc.getName() : di.getName(),
-                                _plotDrivers ? di.getName() : tc.getName());                                                
+                            tc.getDoubleParamNoNaN(Constants.RESULT_VALUE),
+                            _plotDrivers ? tc.getName() : di.getName(),
+                            _plotDrivers ? di.getName() : tc.getName());
                     }
-                }             
+                }
                 
                 thisGroupSize++;
                         
@@ -433,11 +415,11 @@ public class ChartGenerator {
     
     private int generateTestCaseLineCharts(String baseName, String extension) {
         int nOfFiles = 0;
-        List driverInfoList = _testSuite.getDriverInfoList();
+        List<DriverImpl> driverInfoList = _testSuite.getDriverInfoList();
         
         // Get number of tests from first driver
         final int nOfTests = 
-            ((DriverImpl) driverInfoList.get(0)).getAggregateTestCases().size();
+            driverInfoList.get(0).getAggregateTestCases().size();
             
         int groupSizesIndex = 0;
         int[] groupSizes = calculateGroupSizes(nOfTests, _plotGroupSize);
@@ -450,17 +432,15 @@ public class ChartGenerator {
             
             int i = 0, thisGroupSize = 0;
             for (; i < nOfTests; i++) {
-                Iterator jdi = driverInfoList.iterator();
-                
-                while (jdi.hasNext()) {
-                    DriverImpl di = (DriverImpl) jdi.next();
+
+                for (DriverImpl di : driverInfoList) {
                     TestCaseImpl tc = (TestCaseImpl) di.getAggregateTestCases().get(i);
-            
+
                     dataset.addValue(
-                        tc.getDoubleParamNoNaN(Constants.RESULT_VALUE), 
+                        tc.getDoubleParamNoNaN(Constants.RESULT_VALUE),
                         _plotDrivers ? di.getName() : tc.getName(),
-                        _plotDrivers ? tc.getName() : di.getName());                                                
-                }             
+                        _plotDrivers ? tc.getName() : di.getName());
+                }
                 
                 thisGroupSize++;
                         
@@ -500,32 +480,29 @@ public class ChartGenerator {
     
     private int generateTestCaseScatterCharts(String baseName, String extension) {        
         int nOfFiles = 0;
-        List driverInfoList = _testSuite.getDriverInfoList();
+        List<DriverImpl> driverInfoList = _testSuite.getDriverInfoList();
             
         try {            
             // Get number of tests from first driver
             final int nOfTests = 
-                ((DriverImpl) driverInfoList.get(0)).getAggregateTestCases().size();            
+                driverInfoList.get(0).getAggregateTestCases().size();
             
             DefaultTableXYDataset xyDataset = new DefaultTableXYDataset();
 
             // Generate charts
-            Iterator jdi = driverInfoList.iterator();
-            for (int i = 0; jdi.hasNext(); i++) {
-                DriverImpl di = (DriverImpl) jdi.next();
-
+            for (DriverImpl di : driverInfoList) {
                 XYSeries xySeries = new XYSeries(di.getName(), true, false);
                 for (int j = 0; j < nOfTests; j++) {
                     TestCaseImpl tc = (TestCaseImpl) di.getAggregateTestCases().get(j);
                     try {
                         xySeries.add(tc.getDoubleParamNoNaN(Constants.RESULT_VALUE_X),
-                                     tc.getDoubleParamNoNaN(Constants.RESULT_VALUE));
+                            tc.getDoubleParamNoNaN(Constants.RESULT_VALUE));
                     }
                     catch (SeriesException e) {
                         // Ignore duplicate x-valued points
                     }
 
-                }                    
+                }
                 xyDataset.addSeries(xySeries);
             }
 
