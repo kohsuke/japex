@@ -1,8 +1,9 @@
 <?xml version='1.0'?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
     xmlns:rep="http://www.sun.com/japex/testSuiteReport"
+    xmlns:suite="http://www.sun.com/japex/testSuite"    
     xmlns:extrep="http://www.sun.com/japex/extendedTestSuiteReport"
-    version='1.0'>
+    exclude-result-prefixes="xi" version='1.0' >
 
     <xsl:output method="xml" indent="yes"/>
      
@@ -21,6 +22,12 @@
                         <td valign="middle"><h1>Japex Report: <xsl:value-of select="@name"/></h1></td>  
                     </tr>
                 </table>
+                
+                <!-- Generate description in its own section -->
+                <xsl:if test="suite:description">
+                    <h2>Description</h2>
+                    <xsl:copy-of select="suite:description/*"/>
+                </xsl:if>
    
                 <h2>Global Parameters</h2>
                 <ul>
@@ -29,7 +36,7 @@
                     <a href="{rep:configFile}"><xsl:value-of select="rep:configFile"/></a>
                     </li>
                     <!-- Use not(@name) to omit sibling drivers -->
-                    <xsl:for-each select="*[not(@name) and local-name() != 'configFile']">
+                    <xsl:for-each select="*[not(@name) and local-name() != 'configFile' and namespace-uri() = 'http://www.sun.com/japex/testSuiteReport']">
                         <li><xsl:value-of select="name()"/>
                         <xsl:text>: </xsl:text>
                         <xsl:value-of select="."/></li>
@@ -85,7 +92,7 @@
         <table width="80%" border="1">
             <thead>
                 <tr><th width="15%"><b>driver</b></th>
-                    <xsl:for-each select="rep:driver[1]/*[not(@name) and namespace-uri(.)!='']">
+                    <xsl:for-each select="rep:driver[1]/*[not(@name) and namespace-uri() = 'http://www.sun.com/japex/testSuiteReport']">
                         <!-- Ignore classPath and driverClass here to keep the table narrow -->
                         <xsl:if test="name() != 'classPath' and name() != 'driverClass'">
                             <th><b><xsl:value-of select="name()"/></b></th>
@@ -96,7 +103,7 @@
             <tbody>
                 <xsl:for-each select="rep:driver">
                     <tr><td align="right"><xsl:value-of select="@name"/></td>
-                        <xsl:for-each select="*[not(@name) and namespace-uri(.)!='']">
+                        <xsl:for-each select="*[not(@name) and namespace-uri() = 'http://www.sun.com/japex/testSuiteReport']">
                             <!-- Ignore classPath and driverClass here to keep the table narrow -->
                             <xsl:if test="name() != 'classPath' and name() != 'driverClass'">
                                 <td align="right">
@@ -122,6 +129,13 @@
 
     <xsl:template name="resultsPerDriver">
         <h2>Driver: <xsl:value-of select="@name"/></h2>
+        
+        <!-- Generate description before list of params -->
+        <xsl:if test="suite:description">
+            <p>
+                <xsl:copy-of select="suite:description/*"/>
+            </p>
+        </xsl:if>        
     
         <!-- List classPath, driverClass and any user-define parameter here -->
         <p>

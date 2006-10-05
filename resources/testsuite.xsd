@@ -18,6 +18,20 @@
         </xsd:appinfo>
     </xsd:annotation>
 
+    <!-- Description element - typically HTML content -->
+    <xsd:element name="description">
+        <xsd:complexType mixed="true">
+            <xsd:complexContent>
+                <xsd:restriction base="xsd:anyType">
+                    <xsd:sequence>
+                        <xsd:any processContents="skip" minOccurs="0" 
+                            maxOccurs="unbounded" namespace="##other"/>
+                    </xsd:sequence>
+                </xsd:restriction>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+    
     <!-- Parameter and parameter groups -->
     <xsd:element name="param">
         <xsd:complexType>
@@ -78,6 +92,8 @@
     <xsd:element name="driver">
         <xsd:complexType>
             <xsd:sequence>
+                <!-- Optional description for the driver -->
+                <xsd:element ref="tns:description" minOccurs="0"/>
                 <xsd:group ref="tns:ParamOrParamGroup" minOccurs="0" maxOccurs="unbounded"/>
             </xsd:sequence>
             <xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -107,6 +123,9 @@
     <xsd:element name="testSuite">
         <xsd:complexType>
             <xsd:sequence>
+                <!-- Optional description for the testsuite -->
+                <xsd:element ref="tns:description" minOccurs="0"/>
+                
                 <!-- Zero or more params groups or params -->
                 <xsd:group ref="tns:ParamOrParamGroup" minOccurs="0" maxOccurs="unbounded"/>
 

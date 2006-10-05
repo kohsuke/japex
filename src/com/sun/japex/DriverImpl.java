@@ -80,6 +80,11 @@ public class DriverImpl extends ParamsImpl implements Driver, Cloneable {
      */
     TestCaseArrayList _aggregateTestCases;
     
+    /**
+     * Store serialized description for this driver.
+     */
+    String _description;
+    
     public DriverImpl(String name, boolean isNormal, ParamsImpl params) {
         super(params);
         _name = name;
@@ -88,6 +93,10 @@ public class DriverImpl extends ParamsImpl implements Driver, Cloneable {
     
     public Object clone() {
         return super.clone();
+    }
+    
+    public void setDescription(String description) {
+        _description = description;
     }
     
     public void setTestCases(TestCaseArrayList testCases) {
@@ -298,6 +307,11 @@ public class DriverImpl extends ParamsImpl implements Driver, Cloneable {
             + "<driver name=\"" + _name + "\""
             + (_isNormal ? " normal=\"true\">\n" : ">\n"));
 
+        // Serialize description
+        if (_description != null) {
+            report.append(_description);
+        }
+                
         // Called before serializing driver params
         List aggregateTestCases = getAggregateTestCases();
        

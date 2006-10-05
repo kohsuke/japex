@@ -41,13 +41,22 @@ package com.sun.japex;
 
 import java.util.*;
 import java.text.*;
+import java.io.StringWriter;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 
 import com.sun.japex.testsuite.*;
+
+import static com.sun.japex.ConfigFileLoader.context;
 
 public class TestSuiteImpl extends ParamsImpl implements TestSuite {
 
     final static String PATH_SEPARATOR = System.getProperty("path.separator");
 
+    /**
+     * The JAXB test suite element bean from which this class
+     * is created.
+     */
     TestSuiteElement _testSuiteElement;
 
     /**
@@ -68,6 +77,8 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
     * be removed from <code>_driverList</code>.
     */
     List<DriverImpl> _baseDriversUsed = new ArrayList<DriverImpl>();
+    
+    String _description;
 
     /**
      * Creates a new instance of TestSuiteImpl from a JAXB-generated
@@ -77,9 +88,12 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
      */
     public TestSuiteImpl(TestSuiteElement ts) {
         _testSuiteElement = ts;
-
+        
         _name = ts.getName();
 
+        // Serialize description and store in variable
+        _description = marshalDescription(_testSuiteElement.getDescription());
+        
         // Set global properties by traversing JAXB's model
         List<ParamElement> params = createParamList(ts.getParamOrParamGroup());
 
@@ -397,6 +411,9 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
             // Create new DriverImpl
             driverInfo = new DriverImpl(dt.getName(), dt.isNormal(), inScope);
         }
+        
+         // Serialize description and store in driver
+        driverInfo.setDescription(marshalDescription(dt.getDescription()));
 
         // Copy params from JAXB object to Japex object
         for (ParamElement pt : createParamList(dt.getParamOrParamGroup())) {
@@ -489,7 +506,12 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
     public void serialize(StringBuffer report) {
         report.append("<testSuiteReport name=\"" + _name
             + "\" xmlns=\"http://www.sun.com/japex/testSuiteReport\">\n");
-
+        
+        // Serialize description
+        if (_description != null) {
+            report.append(_description);
+        }
+        
         // Serialize global parameters
         serialize(report, 2);
 
@@ -516,6 +538,24 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
         }
 
         report.append("</testSuiteReport>\n");
+    }
+    
+    private String marshalDescription(DescriptionElement desc) {
+        if (desc != null) {
+            try {
+                StringWriter writer = new StringWriter();
+                Marshaller m = context.createMarshaller();
+                m.setProperty("jaxb.fragment", Boolean.TRUE);
+                m.setProperty("jaxb.formatted.output", Boolean.TRUE);
+                m.marshal(desc, writer);
+                return writer.toString();
+            } 
+            catch (JAXBException e) {
+                System.err.println("Warning: Unable to serialize 'description' element - ignoring.");
+                
+            }
+        }       
+        return null;
     }
 
 }
