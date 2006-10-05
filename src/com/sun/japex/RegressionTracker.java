@@ -136,7 +136,7 @@ public class RegressionTracker {
             File outputReportHtml = new File(outputDirectory,"report.html");
             System.out.println("\t" + outputReportHtml.toURL());
 
-            detector.generateHtmlReport(new StreamSource(outputReportXml),outputReportHtml);
+            detector.generateHtmlReport(outputReportXml,outputReportHtml);
 
             // Copy some resources to output directory
             copyResource("report.css", outputDirectory);

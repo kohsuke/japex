@@ -46,6 +46,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.Result;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -187,11 +188,18 @@ public class RegressionDetector {
     /**
      * Generates an HTML report from an XML report.
      */
-    public void generateHtmlReport(Source xmlReport, File htmlReport) throws IOException {
+    public void generateHtmlReport(File xmlReport, File htmlReport) throws IOException {
+        generateHtmlReport(new StreamSource(xmlReport),new StreamResult(htmlReport));
+    }
+
+    /**
+     * Generates an HTML report from an XML report.
+     */
+    public void generateHtmlReport(Source xmlReport, Result htmlReport) throws IOException {
         try {
             Transformer transformer = REGRESSION_REPORT_HTML.newTransformer();
 
-            transformer.transform( xmlReport, new StreamResult(htmlReport));
+            transformer.transform( xmlReport, htmlReport);
         } catch (TransformerException e) {
             throw new RuntimeException(e);
         }
