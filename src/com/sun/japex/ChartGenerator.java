@@ -56,56 +56,56 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 
 public class ChartGenerator {
-    
+
     /**
      * Test suite for which chart will be generated.
      */
     TestSuiteImpl _testSuite;
-    
+
     /**
      * Chart width and height as a function of the number of
      * drivers in the test suite.
      */
     final int _chartWidth, _chartHeight;
-    
+
     /**
      * Suggested group size to use when plotting test cases. This
      * is a maximum value. The actual number of tests per plot may
      * vary but will not exceed this number.
      */
     int _plotGroupSize;
-    
+
     /**
      * By default, test cases are plotted over the list of drivers.
      * By setting this flag, drivers are plotted over the list of
      * test cases instead.
      */
     boolean _plotDrivers;
-    
+
     public ChartGenerator(TestSuiteImpl testSuite) {
-        _testSuite = testSuite;      
-        
+        _testSuite = testSuite;
+
         _plotGroupSize = testSuite.getIntParam(Constants.PLOT_GROUP_SIZE);
         _plotDrivers = testSuite.getBooleanParam(Constants.PLOT_DRIVERS);
-        
+
         // Calculate charts width and height (min = 750, max = 1500)
-        List driverInfoList = _testSuite.getDriverInfoList();
+        List<DriverImpl> driverInfoList = _testSuite.getDriverInfoList();
         int n = !_plotDrivers ? driverInfoList.size() :
             ((DriverImpl) driverInfoList.get(0)).getAggregateTestCases().size();
         _chartWidth = Math.min(Math.max(n * 80, 750), 1500);
-        _chartHeight = (int) Math.round(_chartWidth * 0.6);    
+        _chartHeight = (int) Math.round(_chartWidth * 0.6);
     }
-    
+
     public void generateDriverChart(String fileName) {
         try {
             JFreeChart chart = null;
             String chartType = _testSuite.getParam(Constants.CHART_TYPE);
-            
+
             if (chartType.equalsIgnoreCase("barchart")) {
-                chart = generateDriverBarChart();                
+                chart = generateDriverBarChart();
             }
             else if (chartType.equalsIgnoreCase("scatterchart")) {
-                chart = generateDriverScatterChart();                
+                chart = generateDriverScatterChart();
             }
             else if (chartType.equalsIgnoreCase("linechart")) {
                 chart = generateDriverLineChart();
@@ -113,24 +113,24 @@ public class ChartGenerator {
             else {
                 assert false;
             }
-            
-            chart.setAntiAlias(true);            
-            ChartUtilities.saveChartAsJPEG(new File(fileName), chart, 
-                _chartWidth, _chartHeight);       
+
+            chart.setAntiAlias(true);
+            ChartUtilities.saveChartAsJPEG(new File(fileName), chart,
+                _chartWidth, _chartHeight);
         }
         catch (RuntimeException e) {
             throw e;
         }
         catch (Exception e) {
             throw new RuntimeException(e);
-        }        
+        }
     }
-    
+
     private JFreeChart generateDriverBarChart() {
         try {
             String resultUnit = _testSuite.getParam(Constants.RESULT_UNIT);
-            DefaultCategoryDataset dataset = new DefaultCategoryDataset();           
-            
+            DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
             // Find first normalizer driver (if any) and adjust unit            
             DriverImpl normalizerDriver = null;
             for (DriverImpl driver : _testSuite.getDriverInfoList()) {
@@ -139,22 +139,22 @@ public class ChartGenerator {
                     break;
                 }
             }
-            
+
             // Check if normalizer driver can be used as such
             if (normalizerDriver != null) {
                 if (normalizerDriver.getDoubleParamNoNaN(Constants.RESULT_ARIT_MEAN) == 0.0
                     || normalizerDriver.getDoubleParamNoNaN(Constants.RESULT_GEOM_MEAN) == 0.0
-                    || normalizerDriver.getDoubleParamNoNaN(Constants.RESULT_HARM_MEAN) == 0.0) 
+                    || normalizerDriver.getDoubleParamNoNaN(Constants.RESULT_HARM_MEAN) == 0.0)
                 {
-                    System.out.println("Warning: Driver '" + normalizerDriver.getName() + 
+                    System.out.println("Warning: Driver '" + normalizerDriver.getName() +
                             "' cannot be used to normalize results");
                     normalizerDriver = null;
                 }
                 else {
-                    resultUnit = "% of " + resultUnit;                    
+                    resultUnit = "% of " + resultUnit;
                 }
             }
-            
+
             // Generate charts
             for (DriverImpl di : _testSuite.getDriverInfoList()) {
                 if (normalizerDriver != null) {
@@ -191,10 +191,10 @@ public class ChartGenerator {
                         "Harmonic Mean");
                 }
             }
-                        
+
             return ChartFactory.createBarChart3D(
-                "Result Summary (" + resultUnit + ")", 
-                "", resultUnit, 
+                "Result Summary (" + resultUnit + ")",
+                "", resultUnit,
                 dataset,
                 PlotOrientation.VERTICAL,
                 true, true, false);
@@ -204,13 +204,13 @@ public class ChartGenerator {
         }
         catch (Exception e) {
             throw new RuntimeException(e);
-        }        
-    }   
-    
+        }
+    }
+
     private JFreeChart generateDriverScatterChart() {
         try {
             DefaultTableXYDataset xyDataset = new DefaultTableXYDataset();
-                        
+
             // Generate charts
             for (DriverImpl di : _testSuite.getDriverInfoList()) {
                 if (!di.hasParam(Constants.RESULT_ARIT_MEAN_X)) {
@@ -228,28 +228,28 @@ public class ChartGenerator {
                     di.getDoubleParamNoNaN(Constants.RESULT_HARM_MEAN));
                 xyDataset.addSeries(xySeries);
             }
-                        
+
             String resultUnit = _testSuite.getParam(Constants.RESULT_UNIT);
             String resultUnitX = _testSuite.getParam(Constants.RESULT_UNIT_X);
-            
-            JFreeChart chart = ChartFactory.createScatterPlot("Result Summary", 
-                resultUnitX, resultUnit, 
-                xyDataset, PlotOrientation.VERTICAL, 
+
+            JFreeChart chart = ChartFactory.createScatterPlot("Result Summary",
+                resultUnitX, resultUnit,
+                xyDataset, PlotOrientation.VERTICAL,
                 true, true, false);
-            
+
             // Set log scale depending on japex.resultAxis[_X]
             XYPlot plot = chart.getXYPlot();
             if (_testSuite.getParam(Constants.RESULT_AXIS_X).equalsIgnoreCase("logarithmic")) {
                 LogarithmicAxis logAxisX = new LogarithmicAxis(resultUnitX);
                 logAxisX.setAllowNegativesFlag(true);
-                plot.setDomainAxis(logAxisX);   
+                plot.setDomainAxis(logAxisX);
             }
-            if (_testSuite.getParam(Constants.RESULT_AXIS).equalsIgnoreCase("logarithmic")) {          
+            if (_testSuite.getParam(Constants.RESULT_AXIS).equalsIgnoreCase("logarithmic")) {
                 LogarithmicAxis logAxis = new LogarithmicAxis(resultUnit);
                 logAxis.setAllowNegativesFlag(true);
-                plot.setRangeAxis(logAxis);   
-            }            
-            
+                plot.setRangeAxis(logAxis);
+            }
+
             return chart;
         }
         catch (RuntimeException e) {
@@ -257,14 +257,14 @@ public class ChartGenerator {
         }
         catch (Exception e) {
             throw new RuntimeException(e);
-        }                
+        }
     }
-    
+
     private JFreeChart generateDriverLineChart() {
         try {
             String resultUnit = _testSuite.getParam(Constants.RESULT_UNIT);
-            DefaultCategoryDataset dataset = new DefaultCategoryDataset();           
-                       
+            DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
             // Generate charts
             for (DriverImpl di : _testSuite.getDriverInfoList()) {
                 dataset.addValue(
@@ -280,15 +280,15 @@ public class ChartGenerator {
                     "Harmonic Mean",
                     di.getName());
             }
-            
+
             JFreeChart chart = ChartFactory.createLineChart(
-                "Result Summary (" + resultUnit + ")", 
-                "", resultUnit, 
+                "Result Summary (" + resultUnit + ")",
+                "", resultUnit,
                 dataset,
                 PlotOrientation.VERTICAL,
                 true, true, false);
-            
-            configureLineChart(chart);            
+
+            configureLineChart(chart);
             return chart;
         }
         catch (RuntimeException e) {
@@ -296,40 +296,40 @@ public class ChartGenerator {
         }
         catch (Exception e) {
             throw new RuntimeException(e);
-        }        
-    }    
+        }
+    }
 
     public int generateTestCaseCharts(String baseName, String extension) {
         String chartType = _testSuite.getParam(Constants.CHART_TYPE);
         if (chartType.equalsIgnoreCase("barchart")) {
-            return generateTestCaseBarCharts(baseName, extension);                
+            return generateTestCaseBarCharts(baseName, extension);
         }
         else if (chartType.equalsIgnoreCase("scatterchart")) {
-            return generateTestCaseScatterCharts(baseName, extension);                
+            return generateTestCaseScatterCharts(baseName, extension);
         }
         else if (chartType.equalsIgnoreCase("linechart")) {
-            return generateTestCaseLineCharts(baseName, extension);                
+            return generateTestCaseLineCharts(baseName, extension);
         }
         else {
             assert false;
         }
         return 0;
     }
-    
+
     private int generateTestCaseBarCharts(String baseName, String extension) {
         int nOfFiles = 0;
         List<DriverImpl> driverInfoList = _testSuite.getDriverInfoList();
-        
+
         // Get number of tests from first driver
-        final int nOfTests = 
+        final int nOfTests =
             driverInfoList.get(0).getAggregateTestCases().size();
-            
+
         int groupSizesIndex = 0;
         int[] groupSizes = calculateGroupSizes(nOfTests, _plotGroupSize);
-        
-        try {            
+
+        try {
             String resultUnit = _testSuite.getParam(Constants.RESULT_UNIT);
-            
+
             // Find first normalizer driver (if any)
             DriverImpl normalizerDriver = null;
 
@@ -339,23 +339,23 @@ public class ChartGenerator {
                     break;
                 }
             }
-            
+
             // Check if normalizer driver can be used as such
             if (normalizerDriver != null) {
                 if (normalizerDriver.getDoubleParamNoNaN(Constants.RESULT_ARIT_MEAN) == 0.0
                     || normalizerDriver.getDoubleParamNoNaN(Constants.RESULT_GEOM_MEAN) == 0.0
-                    || normalizerDriver.getDoubleParamNoNaN(Constants.RESULT_HARM_MEAN) == 0.0) 
+                    || normalizerDriver.getDoubleParamNoNaN(Constants.RESULT_HARM_MEAN) == 0.0)
                 {
                     normalizerDriver = null;
                 }
                 else {
-                    resultUnit = "% of " + resultUnit;                    
+                    resultUnit = "% of " + resultUnit;
                 }
             }
-            
+
             // Generate charts 
             DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-            
+
             int i = 0, thisGroupSize = 0;
             for (; i < nOfTests; i++) {
 
@@ -378,58 +378,58 @@ public class ChartGenerator {
                             _plotDrivers ? di.getName() : tc.getName());
                     }
                 }
-                
+
                 thisGroupSize++;
-                        
+
                 // Generate chart for this group if complete
                 if (thisGroupSize == groupSizes[groupSizesIndex]) {
                     JFreeChart chart = ChartFactory.createBarChart3D(
-                        (_plotDrivers ? "Results per Driver (" : "Results per Test (") 
-                            + resultUnit + ")", 
-                        "", resultUnit, 
+                        (_plotDrivers ? "Results per Driver (" : "Results per Test (")
+                            + resultUnit + ")",
+                        "", resultUnit,
                         dataset,
                         PlotOrientation.VERTICAL,
                         true, true, false);
-                    
+
                     chart.setAntiAlias(true);
                     ChartUtilities.saveChartAsJPEG(
                         new File(baseName + Integer.toString(nOfFiles) + extension),
                         chart, _chartWidth, _chartHeight);
-                    
+
                     nOfFiles++;
                     groupSizesIndex++;
                     thisGroupSize = 0;
                     dataset = new DefaultCategoryDataset();
                 }
-            }            
+            }
         }
         catch (RuntimeException e) {
             throw e;
         }
         catch (Exception e) {
             e.printStackTrace();
-        }        
-        
+        }
+
         return nOfFiles;
     }
-    
+
     private int generateTestCaseLineCharts(String baseName, String extension) {
         int nOfFiles = 0;
         List<DriverImpl> driverInfoList = _testSuite.getDriverInfoList();
-        
+
         // Get number of tests from first driver
-        final int nOfTests = 
+        final int nOfTests =
             driverInfoList.get(0).getAggregateTestCases().size();
-            
+
         int groupSizesIndex = 0;
         int[] groupSizes = calculateGroupSizes(nOfTests, _plotGroupSize);
-        
-        try {            
+
+        try {
             String resultUnit = _testSuite.getParam(Constants.RESULT_UNIT);
-            
+
             // Generate charts 
             DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-            
+
             int i = 0, thisGroupSize = 0;
             for (; i < nOfTests; i++) {
 
@@ -441,52 +441,52 @@ public class ChartGenerator {
                         _plotDrivers ? di.getName() : tc.getName(),
                         _plotDrivers ? tc.getName() : di.getName());
                 }
-                
+
                 thisGroupSize++;
-                        
+
                 // Generate chart for this group if complete
                 if (thisGroupSize == groupSizes[groupSizesIndex]) {
                     JFreeChart chart = ChartFactory.createLineChart(
-                        (_plotDrivers ? "Results per Driver (" : "Results per Test (") 
-                            + resultUnit + ")", 
-                        "", resultUnit, 
+                        (_plotDrivers ? "Results per Driver (" : "Results per Test (")
+                            + resultUnit + ")",
+                        "", resultUnit,
                         dataset,
                         PlotOrientation.VERTICAL,
                         true, true, false);
 
                     configureLineChart(chart);
-                
+
                     chart.setAntiAlias(true);
                     ChartUtilities.saveChartAsJPEG(
                         new File(baseName + Integer.toString(nOfFiles) + extension),
                         chart, _chartWidth, _chartHeight);
-                    
+
                     nOfFiles++;
                     groupSizesIndex++;
                     thisGroupSize = 0;
                     dataset = new DefaultCategoryDataset();
                 }
-            }            
+            }
         }
         catch (RuntimeException e) {
             throw e;
         }
         catch (Exception e) {
             e.printStackTrace();
-        }        
-        
+        }
+
         return nOfFiles;
     }
-    
-    private int generateTestCaseScatterCharts(String baseName, String extension) {        
+
+    private int generateTestCaseScatterCharts(String baseName, String extension) {
         int nOfFiles = 0;
         List<DriverImpl> driverInfoList = _testSuite.getDriverInfoList();
-            
-        try {            
+
+        try {
             // Get number of tests from first driver
-            final int nOfTests = 
+            final int nOfTests =
                 driverInfoList.get(0).getAggregateTestCases().size();
-            
+
             DefaultTableXYDataset xyDataset = new DefaultTableXYDataset();
 
             // Generate charts
@@ -508,24 +508,24 @@ public class ChartGenerator {
 
             String resultUnit = _testSuite.getParam(Constants.RESULT_UNIT);
             String resultUnitX = _testSuite.getParam(Constants.RESULT_UNIT_X);
-            
-            JFreeChart chart = ChartFactory.createScatterPlot("Results Per Test", 
-                resultUnitX, resultUnit, 
-                xyDataset, PlotOrientation.VERTICAL, 
+
+            JFreeChart chart = ChartFactory.createScatterPlot("Results Per Test",
+                resultUnitX, resultUnit,
+                xyDataset, PlotOrientation.VERTICAL,
                 true, true, false);
-            
+
             // Set log scale depending on japex.resultAxis[_X]
             XYPlot plot = chart.getXYPlot();
             if (_testSuite.getParam(Constants.RESULT_AXIS_X).equalsIgnoreCase("logarithmic")) {
                 LogarithmicAxis logAxisX = new LogarithmicAxis(resultUnitX);
                 logAxisX.setAllowNegativesFlag(true);
-                plot.setDomainAxis(logAxisX);   
+                plot.setDomainAxis(logAxisX);
             }
-            if (_testSuite.getParam(Constants.RESULT_AXIS).equalsIgnoreCase("logarithmic")) {          
+            if (_testSuite.getParam(Constants.RESULT_AXIS).equalsIgnoreCase("logarithmic")) {
                 LogarithmicAxis logAxis = new LogarithmicAxis(resultUnit);
                 logAxis.setAllowNegativesFlag(true);
-                plot.setRangeAxis(logAxis);   
-            }            
+                plot.setRangeAxis(logAxis);
+            }
 
             chart.setAntiAlias(true);
             ChartUtilities.saveChartAsJPEG(
@@ -538,32 +538,32 @@ public class ChartGenerator {
         }
         catch (Exception e) {
             e.printStackTrace();
-        }        
-        
+        }
+
         return nOfFiles;
     }
-    
+
     static private void configureLineChart(JFreeChart chart) {
         CategoryPlot plot = chart.getCategoryPlot();
-        
+
         final DrawingSupplier supplier = new DefaultDrawingSupplier(
             DefaultDrawingSupplier.DEFAULT_PAINT_SEQUENCE,
             DefaultDrawingSupplier.DEFAULT_OUTLINE_PAINT_SEQUENCE,
             DefaultDrawingSupplier.DEFAULT_STROKE_SEQUENCE,
             DefaultDrawingSupplier.DEFAULT_OUTLINE_STROKE_SEQUENCE,
             // Draw a small diamond 
-            new Shape[] { new Polygon(new int[] {3, 0, -3, 0}, 
+            new Shape[] { new Polygon(new int[] {3, 0, -3, 0},
                                       new int[] {0, 3, 0, -3}, 4) }
         );
         plot.setDomainGridlinePaint(Color.black);
         plot.setRangeGridlinePaint(Color.black);
         plot.setDrawingSupplier(supplier);
-        
+
         LineAndShapeRenderer renderer = (LineAndShapeRenderer) plot.getRenderer();
         renderer.setShapesVisible(true);
-        renderer.setStroke(new BasicStroke(2.0f));        
+        renderer.setStroke(new BasicStroke(2.0f));
     }
-        
+
     /**
      * Calculate group sizes for tests to avoid a very small final group. 
      * For example, calculateGroupSizes(21, 5) return { 5,5,5,3,3 } instead
@@ -573,16 +573,16 @@ public class ChartGenerator {
         if (nOfTests <= maxGroupSize) {
             return new int[] { nOfTests };
         }
-        
-        int[] result = new int[nOfTests / maxGroupSize + 
+
+        int[] result = new int[nOfTests / maxGroupSize +
                                ((nOfTests % maxGroupSize > 0) ? 1 : 0)];
-        
+
         // Var m1 represents the number of groups of size maxGroupSize
         int m1 = (nOfTests - maxGroupSize) / maxGroupSize;
         for (int i = 0; i < m1; i++) {
             result[i] = maxGroupSize;
         }
-        
+
         // Var m2 represents the number of tests not allocated into groups
         int m2 = nOfTests - m1 * maxGroupSize;
         if (m2 <= maxGroupSize) {
@@ -590,7 +590,7 @@ public class ChartGenerator {
         }
         else {
             // Allocate last two groups
-            result[result.length - 2] = (int) Math.ceil(m2 / 2.0);            
+            result[result.length - 2] = (int) Math.ceil(m2 / 2.0);
             result[result.length - 1] = m2 - result[result.length - 2];
         }
         return result;
