@@ -26,7 +26,9 @@
                 <!-- Generate description in its own section -->
                 <xsl:if test="suite:description">
                     <h2>Description</h2>
-                    <xsl:copy-of select="suite:description/*"/>
+                    <div class="description">
+                        <xsl:copy-of select="suite:description/*"/>
+                    </div>
                 </xsl:if>
    
                 <h2>Global Parameters</h2>
@@ -132,9 +134,9 @@
         
         <!-- Generate description before list of params -->
         <xsl:if test="suite:description">
-            <p>
+            <div class="description">
                 <xsl:copy-of select="suite:description/*"/>
-            </p>
+            </div>
         </xsl:if>        
     
         <!-- List classPath, driverClass and any user-define parameter here -->

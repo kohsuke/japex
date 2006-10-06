@@ -70,3 +70,4 @@ ul.toc {
   pre { speak-punctuation: code } 
 }
 
+.description { border: 2px solid; padding: 2px; background-color: aqua; }
