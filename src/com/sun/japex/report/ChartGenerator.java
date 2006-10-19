@@ -147,9 +147,11 @@ public class ChartGenerator {
             for (TestSuiteReport.Driver driver : drivers) {
                 TestSuiteReport.TestCase testCase = driver.getTestCase(testCaseName);
                 if (testCase != null) {
-                    dataset.addValue(testCase.getResult(),
-                            driver.getName(), 
-                            formatter.format(report.getDate().getTime()));                    
+                    double value = testCase.getResult();
+                    if (!Double.isNaN(value)) {
+                        dataset.addValue(value, driver.getName(), 
+                               formatter.format(report.getDate().getTime()));                    
+                    }
                 }
             }            
         }
