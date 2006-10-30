@@ -8,7 +8,7 @@
     <artheader>
         <title>Japex</title>
         <subtitle>
-            <subscript>Version 1.0.10 - Updated April 25, 2006</subscript>
+            <subscript>Version 1.0.26 - Updated November 30, 2006</subscript>
         </subtitle>
         <author>
             <firstname>Santiago</firstname>
@@ -316,8 +316,8 @@
                 <token>japex.classPath</token> as defined for each driver. This ensures drivers to
             be completely isolated from each other and it also allows to test mutiple versions of
             the same library (using similarly named Java packages) simultaneously. Moreover, it
-            avoids conflicts between libraries in use by the Japex engine itself and those used
-            by the drivers.</para>
+            avoids conflicts between libraries in use by the Japex engine itself and those used by
+            the drivers.</para>
     </sect1>
     <sect1>
         <title>Parameter Values</title>
@@ -365,12 +365,12 @@
                 <tbody>
                     <row>
                         <entry>japex.reportsDirectory</entry>
-                        <entry> The directory to write timestamped XML and HTML reports. DEFAULT:
+                        <entry>The directory to write timestamped XML and HTML reports. DEFAULT:
                             'reports', TYPE: input.</entry>
                     </row>
                     <row>
                         <entry>japex.chartType</entry>
-                        <entry> The type of chart selected for the output report. Possible values
+                        <entry>The type of chart selected for the output report. Possible values
                             are 'barchart', 'linechart' and 'scatterchart'. Scatter charts are the
                             only types of charts with two axes: japex.resultValue will be used for
                             the Y axis and japex.resultValueX for the X axis in this case. DEFAULT:
@@ -378,7 +378,7 @@
                     </row>
                     <row>
                         <entry>japex.plotGroupSize</entry>
-                        <entry> The number of test cases to plot in the same chart. To avoid very
+                        <entry>The number of test cases to plot in the same chart. To avoid very
                             small groups, a simple algorithm is used to compute the size of the last
                             two groups. For example, if this parameter is set to 5 and there are 21
                             test cases, to avoid having a group of size 1, Japex will create groups
@@ -390,7 +390,7 @@
                     </row>
                     <row>
                         <entry>japex.plotDrivers</entry>
-                        <entry> This parameter is particularly useful when japex.chartType is set to
+                        <entry>This parameter is particularly useful when japex.chartType is set to
                             'linechart'. By default, Japex will draw a line for each test case
                             across the set of drivers. By setting this parameter to true, a line is
                             drawn for each driver instead each test case. This is particularly
@@ -398,8 +398,8 @@
                             DEFAULT: false, TYPE: input.</entry>
                     </row>
                     <row>
-                        <entry> japex.resultUnit[X]</entry>
-                        <entry> The unit of japex.resultValue. Unit values are case insensitive.
+                        <entry>japex.resultUnit[X]</entry>
+                        <entry>The unit of japex.resultValue. Unit values are case insensitive.
                             There are number of reserved units that are understood by Japex. These
                             are 'tps', 'ms' and 'mbps'. The first, 'tps' stands for Transactions Per
                             Second and is the default. The second, 'ms' or Milliseconds can be used
@@ -413,40 +413,40 @@
                             'tps', TYPE: input/output. See also japex.chartType.</entry>
                     </row>
                     <row>
-                        <entry> japex.resultAxis[X]</entry>
-                        <entry> Set to either 'normal' or 'logarithmic' to indicate the desired type
+                        <entry>japex.resultAxis[X]</entry>
+                        <entry>Set to either 'normal' or 'logarithmic' to indicate the desired type
                             of axis in the output charts. DEFAULT: undefined, TYPE: input. See also
                             japex.resultUnit.</entry>
                     </row>
                     <row>
-                        <entry> japex.version</entry>
-                        <entry> Version of Japex used in the run. TYPE: output.</entry>
+                        <entry>japex.version</entry>
+                        <entry>Version of Japex used in the run. TYPE: output.</entry>
                     </row>
                     <row>
-                        <entry> japex.osName</entry>
-                        <entry> Name of the operating system. TYPE: output.</entry>
+                        <entry>japex.osName</entry>
+                        <entry>Name of the operating system. TYPE: output.</entry>
                     </row>
                     <row>
-                        <entry> japex.osArchitecture</entry>
-                        <entry> Name of the operating system architecture. TYPE: output.</entry>
+                        <entry>japex.osArchitecture</entry>
+                        <entry>Name of the operating system architecture. TYPE: output.</entry>
                     </row>
                     <row>
-                        <entry> japex.vmInfo</entry>
-                        <entry> Virtual machine information. TYPE: output.</entry>
+                        <entry>japex.vmInfo</entry>
+                        <entry>Virtual machine information. TYPE: output.</entry>
                     </row>
                     <row>
-                        <entry> japex.dateTime</entry>
-                        <entry> Timestamp of the run. This value is also used to create a unique
+                        <entry>japex.dateTime</entry>
+                        <entry>Timestamp of the run. This value is also used to create a unique
                             directory in which the reports are stored. TYPE: output.</entry>
                     </row>
                     <row>
-                        <entry> japex.configFile</entry>
-                        <entry> Name of the configuration file used for this run. TYPE:
+                        <entry>japex.configFile</entry>
+                        <entry>Name of the configuration file used for this run. TYPE:
                         output.</entry>
                     </row>
                     <row>
-                        <entry> japex.numberOfCpus</entry>
-                        <entry> Number of physical CPUs or processors detected by Japex. TYPE:
+                        <entry>japex.numberOfCpus</entry>
+                        <entry>Number of physical CPUs or processors detected by Japex. TYPE:
                             output.</entry>
                     </row>
                 </tbody>
@@ -463,18 +463,18 @@
                 </thead>
                 <tbody>
                     <row>
-                        <entry> japex.driverClass</entry>
-                        <entry> Name of the Java class that implements a driver. If absent, the
+                        <entry>japex.driverClass</entry>
+                        <entry>Name of the Java class that implements a driver. If absent, the
                             driver's name is used instead. DEFAULT: undefined, TYPE: input. </entry>
                     </row>
                     <row>
-                        <entry> japex.numberOfThreads</entry>
-                        <entry> Number of threads to use during the warmup and run phases of a
+                        <entry>japex.numberOfThreads</entry>
+                        <entry>Number of threads to use during the warmup and run phases of a
                             driver. DEFAULT: 1, TYPE: input. </entry>
                     </row>
                     <row>
-                        <entry> japex.classPath</entry>
-                        <entry> Runtime class path needed to load drivers and related libraries. Can
+                        <entry>japex.classPath</entry>
+                        <entry>Runtime class path needed to load drivers and related libraries. Can
                             be defined multiple times, with each new definition taken as an addition
                             to the runtime class path. Thus, only a single class path entry is
                             allowed per definition (i.e., path separators are not allowed). It is
@@ -483,8 +483,8 @@
                             input.</entry>
                     </row>
                     <row>
-                        <entry> japex.runsPerDriver</entry>
-                        <entry> Number of complete runs per driver. By default Japex will carry out
+                        <entry>japex.runsPerDriver</entry>
+                        <entry>Number of complete runs per driver. By default Japex will carry out
                             a single run per driver. A run includes a result for each test as well
                             as <emphasis>horizontal</emphasis> means for the run. It is also
                             possible to compute <emphasis>vertical</emphasis> means by setting this
@@ -494,47 +494,47 @@
                             DEFAULT: 1, TYPE: input. See also japex.includeWarmupRun.</entry>
                     </row>
                     <row>
-                        <entry> japex.warmupsPerDriver</entry>
-                        <entry> Number of complete warmup runs per driver. By default Japex will
+                        <entry>japex.warmupsPerDriver</entry>
+                        <entry>Number of complete warmup runs per driver. By default Japex will
                             carry out a warmup run per driver whenever japex.runsPerDriver is
                             greater than 1. This parameter can be used to set the number of driver
                             warmup runs independently of japex.runsPerDriver.DEFAULT: 1 if
                             japex.runsPerDriver is greater than 1, 0 otherwise, TYPE: input.</entry>
                     </row>
                     <row>
-                        <entry> japex.includeWarmupRun</entry>
-                        <entry> This parameter is deprecated. See japex.warmupsPerDriver.</entry>
+                        <entry>japex.includeWarmupRun</entry>
+                        <entry>This parameter is deprecated. See japex.warmupsPerDriver.</entry>
                     </row>
                     <row>
-                        <entry> japex.resultAritMean[X]</entry>
-                        <entry> Arithmetic mean (average) for all test case results estimated for
+                        <entry>japex.resultAritMean[X]</entry>
+                        <entry>Arithmetic mean (average) for all test case results estimated for
                             this driver. TYPE: output. </entry>
                     </row>
                     <row>
-                        <entry> japex.resultGeomMean[X]</entry>
-                        <entry> Geometric mean of all test case results estimated for this driver.
+                        <entry>japex.resultGeomMean[X]</entry>
+                        <entry>Geometric mean of all test case results estimated for this driver.
                             TYPE: output. </entry>
                     </row>
                     <row>
-                        <entry> japex.resultHarmMean[X]</entry>
-                        <entry> Harmonic mean of all test case results estimated for this driver.
+                        <entry>japex.resultHarmMean[X]</entry>
+                        <entry>Harmonic mean of all test case results estimated for this driver.
                             TYPE: output. </entry>
                     </row>
                     <row>
-                        <entry> japex.resultAritMean[X]Stddev</entry>
-                        <entry> Standard deviation for the arithmetic means computed for each driver
+                        <entry>japex.resultAritMean[X]Stddev</entry>
+                        <entry>Standard deviation for the arithmetic means computed for each driver
                             run. It only applies if there is more than one driver run. TYPE: output.
                         </entry>
                     </row>
                     <row>
-                        <entry> japex.resultGeomMean[X]Stddev</entry>
-                        <entry> Standard deviation for the geometric means computed for each driver
+                        <entry>japex.resultGeomMean[X]Stddev</entry>
+                        <entry>Standard deviation for the geometric means computed for each driver
                             run. It only applies if there is more than one driver run. TYPE: output.
                         </entry>
                     </row>
                     <row>
-                        <entry> japex.resultHarmMean[X]Stddev</entry>
-                        <entry> Standard deviation for the harmonic means computed for each driver
+                        <entry>japex.resultHarmMean[X]Stddev</entry>
+                        <entry>Standard deviation for the harmonic means computed for each driver
                             run. It only applies if there is more than one driver run. TYPE: output.
                         </entry>
                     </row>
@@ -552,8 +552,8 @@
                 </thead>
                 <tbody>
                     <row>
-                        <entry> japex.warmupTime</entry>
-                        <entry> Number of hours, minutes and seconds to warm up the VM prior to
+                        <entry>japex.warmupTime</entry>
+                        <entry>Number of hours, minutes and seconds to warm up the VM prior to
                             executing each test. Specified as a string in the format
                             '((HH:)?MM:)?S?S'. Examples are '10' for 10 seconds and '02:00' for 120
                             seconds. Takes precedence over japex.warumpIterations if both are
@@ -561,7 +561,7 @@
                     </row>
                     <row>
                         <entry>japex.runTime</entry>
-                        <entry> Number of hours, minutes and seconds to execute each test. Specified
+                        <entry>Number of hours, minutes and seconds to execute each test. Specified
                             as a string in the format '((HH:)?MM:)S?S'. Examples are '10' for 10
                             seconds and '02:00' for 120 seconds. Takes precedence over
                             japex.runIterations if both are specified. UNIT: second, DEFAULT:
@@ -573,61 +573,76 @@
                             test. DEFAULT: 300, TYPE: input. </entry>
                     </row>
                     <row>
+                        <entry>japex.inputFile</entry>
+                        <entry>A path to the input file used in this test. This parameter is
+                            primarily used by Japex whenever japex.resultUnit is 'mbps'. Determining
+                            the size of the input is required to compute the test's throughput in
+                            Megabits Per Second. TYPE: input/output.</entry>
+                    </row>                    
+                    <row>
                         <entry>japex.runIterations</entry>
                         <entry>Number of iterations used to execute each test. DEFAULT: 300, TYPE:
                             input. </entry>
                     </row>
                     <row>
-                        <entry> japex.resultValue[X]</entry>
+                        <entry>japex.resultValue[X]</entry>
                         <entry>The value of the output result for this test. If not specified, Japex
                             will compute this value based on japex.resultUnit[X]. UNIT:
                             japex.resultUnit[X], TYPE: output.</entry>
                     </row>
                     <row>
-                        <entry> japex.resultValue[X]Stddev</entry>
-                        <entry> Standard deviation for the result values computed for a test on each
+                        <entry>japex.resultValue[X]Stddev</entry>
+                        <entry>Standard deviation for the result values computed for a test on each
                             driver run. It only applies if there is more than one driver run. TYPE:
                             output. TYPE: output.</entry>
                     </row>
                     <row>
-                        <entry> japex.actualPrepareTime</entry>
-                        <entry> Actual number of milliseconds spent during the prepare phase for
-                            this test. UNIT: millisecond, TYPE: output.</entry>
+                        <entry>japex.resultIterations</entry>
+                        <entry>The number of times this test was executed. If the
+                            japex.numberOfThreads is greater than 1, the value of this parameter
+                            will be a sum of all the iterations across all threads. If
+                            japex.runsPerDriver is greater than 1, the value of this parameter will
+                            be an average of the number of iterations across all runs. TYPE:
+                        output.</entry>
                     </row>
                     <row>
-                        <entry> japex.actualWarmupTime</entry>
-                        <entry> Actual number of milliseconds spent during the warmup phase for this
+                        <entry>japex.resultTime</entry>
+                        <entry>The exact period of time used to compute the result for this test. If
+                            japex.runsPerDriver is greater than 1, the value of this parameter will
+                            be an average of the periods across all runs. TYPE: output.</entry>
+                    </row>
+                    <row>
+                        <entry>japex.actualPrepareTime</entry>
+                        <entry>Actual number of milliseconds spent during the prepare phase for
+                            this test. UNIT: millisecond, TYPE: output, not serialized.</entry>
+                    </row>
+                    <row>
+                        <entry>japex.actualWarmupTime</entry>
+                        <entry>Actual number of milliseconds spent during the warmup phase for this
                             test. Whenever japex.numberOfThreads is greater than 1, this value will
                             correspond to that of the last thread that updated this parameter. UNIT:
-                            millisecond, TYPE: output.</entry>
+                            millisecond, TYPE: output, not serialized.</entry>
                     </row>
                     <row>
-                        <entry> japex.actualRunTime</entry>
-                        <entry> Actual number of milliseconds spent during the run phase for this
+                        <entry>japex.actualRunTime</entry>
+                        <entry>Actual number of milliseconds spent during the run phase for this
                             test. Whenever japex.numberOfThreads is greater than 1, this value will
                             correspond to that of the last thread that updated this parameter. UNIT:
-                            millisecond, TYPE: output.</entry>
+                            millisecond, TYPE: output, not serialized.</entry>
                     </row>
                     <row>
-                        <entry> japex.actualWarmupIterations</entry>
-                        <entry> Actual number of iterations carried out during the warmup phase for
+                        <entry>japex.actualWarmupIterations</entry>
+                        <entry>Actual number of iterations carried out during the warmup phase for
                             this test. Whenever japex.numberOfThreads is greater than 1, this value
                             will correspond to that of the last thread that updated this parameter.
-                            UNIT: iteration, TYPE: output.</entry>
+                            UNIT: iteration, TYPE: output, not serialized.</entry>
                     </row>
                     <row>
-                        <entry> japex.actualRunIterations</entry>
-                        <entry> Actual number of iterations carried out during the run phase for
+                        <entry>japex.actualRunIterations</entry>
+                        <entry>Actual number of iterations carried out during the run phase for
                             this test. Whenever japex.numberOfThreads is greater than 1, this value
                             will correspond to that of the last thread that updated this parameter.
-                            UNIT: iteration, TYPE: output.</entry>
-                    </row>
-                    <row>
-                        <entry>japex.inputFile</entry>
-                        <entry> A path to the input file used in this test. This parameter is
-                            primarily used by Japex whenever japex.resultUnit is 'mbps'. Determining
-                            the size of the input is required to compute the test's throughput in
-                            Megabits Per Second. TYPE: input/output.</entry>
+                            UNIT: iteration, TYPE: output, not serialized.</entry>
                     </row>
                 </tbody>
             </tgroup>
