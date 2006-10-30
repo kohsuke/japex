@@ -1,5 +1,5 @@
 /*
- * Japex ver. 0.1 software ("Software")
+ * Japex ver. 1.0 software ("Software")
  * 
  * Copyright, 2004-2005 Sun Microsystems, Inc. All Rights Reserved.
  * 
@@ -40,6 +40,8 @@
 package com.sun.japex;
 
 import java.util.*;
+
+import static com.sun.japex.Constants.*;
 
 public class DriverImpl extends ParamsImpl implements Driver, Cloneable {
     
@@ -100,8 +102,8 @@ public class DriverImpl extends ParamsImpl implements Driver, Cloneable {
     }
     
     public void setTestCases(TestCaseArrayList testCases) {
-        int runsPerDriver = getIntParam(Constants.RUNS_PER_DRIVER);
-        int warmupsPerDriver = getIntParam(Constants.WARMUPS_PER_DRIVER);
+        int runsPerDriver = getIntParam(RUNS_PER_DRIVER);
+        int warmupsPerDriver = getIntParam(WARMUPS_PER_DRIVER);
         
         int actualRuns = runsPerDriver + warmupsPerDriver;
         _testCases = new TestCaseArrayList[actualRuns];
@@ -112,8 +114,8 @@ public class DriverImpl extends ParamsImpl implements Driver, Cloneable {
     }
         
     private void computeMeans() {
-        int runsPerDriver = getIntParam(Constants.RUNS_PER_DRIVER);        
-        int warmupsPerDriver = getIntParam(Constants.WARMUPS_PER_DRIVER);        
+        int runsPerDriver = getIntParam(RUNS_PER_DRIVER);        
+        int warmupsPerDriver = getIntParam(WARMUPS_PER_DRIVER);        
                 
         // Define start run and actual runs 
         int startRun = warmupsPerDriver;    // skip warmups
@@ -128,33 +130,41 @@ public class DriverImpl extends ParamsImpl implements Driver, Cloneable {
 
                 double[] results = new double[actualRuns];
                 double[] resultsX = new double[actualRuns];
+                long[] resultIterations = new long[actualRuns];
+                double[] resultTime = new double[actualRuns];
                 
                 // Set hasResultValueX - should be the same for all runs
                 TestCaseImpl startRunTc = (TestCaseImpl) _testCases[startRun].get(n);
-                boolean hasResultValueX = startRunTc.hasParam(Constants.RESULT_VALUE_X);
+                boolean hasResultValueX = startRunTc.hasParam(RESULT_VALUE_X);
                 
-                //Collect vertical results for this test. Note that
+                // Collect vertical results for this test
                 for (int i = startRun; i < actualRuns; i++) {            
                     TestCaseImpl tc = (TestCaseImpl) _testCases[i].get(n);
-                    results[i] = tc.getDoubleParam(Constants.RESULT_VALUE);
+                    results[i] = tc.getDoubleParam(RESULT_VALUE);
+                    resultTime[i] = tc.getDoubleParam(ACTUAL_RUN_TIME);
+                    resultIterations[i] = tc.getLongParam(RUN_ITERATIONS_SUM);
                     if (hasResultValueX) {
-                        resultsX[i] = tc.getDoubleParam(Constants.RESULT_VALUE_X);
+                        resultsX[i] = tc.getDoubleParam(RESULT_VALUE_X);
                     }
                 }
                 
                 // Compute vertical average and stddev for this test
                 TestCaseImpl tc = (TestCaseImpl) _aggregateTestCases.get(n);
-                tc.setDoubleParam(Constants.RESULT_VALUE, 
+                tc.setDoubleParam(RESULT_VALUE, 
                                   Util.arithmeticMean(results, startRun));
+                tc.setDoubleParam(RESULT_TIME, 
+                                  Util.arithmeticMean(resultTime, startRun) / 1000);
+                tc.setDoubleParam(RESULT_ITERATIONS,
+                                  Util.arithmeticMean(resultIterations, startRun));
                 if (hasResultValueX) {
-                    tc.setDoubleParam(Constants.RESULT_VALUE_X, 
+                    tc.setDoubleParam(RESULT_VALUE_X, 
                                       Util.arithmeticMean(resultsX, startRun));                    
                 }                
                 if (actualRuns - startRun > 1) {
-                    tc.setDoubleParam(Constants.RESULT_VALUE_STDDEV, 
+                    tc.setDoubleParam(RESULT_VALUE_STDDEV, 
                                       Util.standardDev(results, startRun));
                     if (hasResultValueX) {
-                        tc.setDoubleParam(Constants.RESULT_VALUE_X_STDDEV, 
+                        tc.setDoubleParam(RESULT_VALUE_X_STDDEV, 
                                           Util.standardDev(resultsX, startRun));                        
                     }
                 }
@@ -182,12 +192,12 @@ public class DriverImpl extends ParamsImpl implements Driver, Cloneable {
                 TestCaseImpl tc = (TestCaseImpl) tci.next();       
                 
                 // Compute running means 
-                double result = tc.getDoubleParam(Constants.RESULT_VALUE);
+                double result = tc.getDoubleParam(RESULT_VALUE);
                 aritMeanresult += result / nOfTests;
                 geomMeanresult *= Math.pow(result, 1.0 / nOfTests);
                 harmMeanresultInverse += 1.0 / (nOfTests * result);                
-                if (tc.hasParam(Constants.RESULT_VALUE_X)) {
-                    double resultX = tc.getDoubleParam(Constants.RESULT_VALUE_X);
+                if (tc.hasParam(RESULT_VALUE_X)) {
+                    double resultX = tc.getDoubleParam(RESULT_VALUE_X);
                     aritMeanresultX += resultX / nOfTests;
                     geomMeanresultX *= Math.pow(resultX, 1.0 / nOfTests);
                     harmMeanresultXInverse += 1.0 / (nOfTests * resultX);
@@ -196,13 +206,13 @@ public class DriverImpl extends ParamsImpl implements Driver, Cloneable {
             }
             
             // Set driver-specific params
-            setDoubleParam(Constants.RESULT_ARIT_MEAN, aritMeanresult);
-            setDoubleParam(Constants.RESULT_GEOM_MEAN, geomMeanresult);
-            setDoubleParam(Constants.RESULT_HARM_MEAN, 1.0 / harmMeanresultInverse);      
+            setDoubleParam(RESULT_ARIT_MEAN, aritMeanresult);
+            setDoubleParam(RESULT_GEOM_MEAN, geomMeanresult);
+            setDoubleParam(RESULT_HARM_MEAN, 1.0 / harmMeanresultInverse);      
             if (setMeansAxisX) {
-                setDoubleParam(Constants.RESULT_ARIT_MEAN_X, aritMeanresultX);
-                setDoubleParam(Constants.RESULT_GEOM_MEAN_X, geomMeanresultX);
-                setDoubleParam(Constants.RESULT_HARM_MEAN_X, 1.0 / harmMeanresultXInverse);                      
+                setDoubleParam(RESULT_ARIT_MEAN_X, aritMeanresultX);
+                setDoubleParam(RESULT_GEOM_MEAN_X, geomMeanresultX);
+                setDoubleParam(RESULT_HARM_MEAN_X, 1.0 / harmMeanresultXInverse);                      
             }
             
             // Avoid re-computing these means
@@ -235,12 +245,12 @@ public class DriverImpl extends ParamsImpl implements Driver, Cloneable {
                 TestCaseImpl tc = (TestCaseImpl) tci.next();       
                 
                 // Compute running means 
-                double result = tc.getDoubleParam(Constants.RESULT_VALUE_STDDEV);
+                double result = tc.getDoubleParam(RESULT_VALUE_STDDEV);
                 aritMeanresult += result / nOfTests;
                 geomMeanresult *= Math.pow(result, 1.0 / nOfTests);
                 harmMeanresultInverse += 1.0 / (nOfTests * result);
-                if (tc.hasParam(Constants.RESULT_VALUE_X_STDDEV)) {
-                    double resultX = tc.getDoubleParam(Constants.RESULT_VALUE_X_STDDEV);
+                if (tc.hasParam(RESULT_VALUE_X_STDDEV)) {
+                    double resultX = tc.getDoubleParam(RESULT_VALUE_X_STDDEV);
                     aritMeanresultX += resultX / nOfTests;
                     geomMeanresultX *= Math.pow(resultX, 1.0 / nOfTests);
                     harmMeanresultXInverse += 1.0 / (nOfTests * resultX);
@@ -249,13 +259,13 @@ public class DriverImpl extends ParamsImpl implements Driver, Cloneable {
             }
             
             // Set driver-specific params
-            setDoubleParam(Constants.RESULT_ARIT_MEAN_STDDEV, aritMeanresult);
-            setDoubleParam(Constants.RESULT_GEOM_MEAN_STDDEV, geomMeanresult);
-            setDoubleParam(Constants.RESULT_HARM_MEAN_STDDEV, 1.0 / harmMeanresultInverse);            
+            setDoubleParam(RESULT_ARIT_MEAN_STDDEV, aritMeanresult);
+            setDoubleParam(RESULT_GEOM_MEAN_STDDEV, geomMeanresult);
+            setDoubleParam(RESULT_HARM_MEAN_STDDEV, 1.0 / harmMeanresultInverse);            
             if (setStddevsAxisX) {
-                setDoubleParam(Constants.RESULT_ARIT_MEAN_X_STDDEV, aritMeanresultX);
-                setDoubleParam(Constants.RESULT_GEOM_MEAN_X_STDDEV, geomMeanresultX);
-                setDoubleParam(Constants.RESULT_HARM_MEAN_X_STDDEV, 1.0 / harmMeanresultXInverse);                        
+                setDoubleParam(RESULT_ARIT_MEAN_X_STDDEV, aritMeanresultX);
+                setDoubleParam(RESULT_GEOM_MEAN_X_STDDEV, geomMeanresultX);
+                setDoubleParam(RESULT_HARM_MEAN_X_STDDEV, 1.0 / harmMeanresultXInverse);                        
             }
         }        
     }

@@ -158,6 +158,36 @@ public class Util {
         return Math.sqrt(variance);
     }
     
+    public static double arithmeticMean(long[] sample) {
+        return arithmeticMean(sample, 0);
+    }
+    
+    public static double arithmeticMean(long[] sample, int start) {
+        double mean = 0.0;
+        for (int i = start; i < sample.length; i++) {
+            mean += sample[i];
+        }
+        return (mean / (sample.length - start));
+    }
+    
+    public static double standardDev(long[] sample) {
+        return standardDev(sample, 0);
+    }
+    
+    public static double standardDev(long[] sample, int start) {
+        double mean = arithmeticMean(sample, start);
+        
+        // Compute biased variance
+        double variance = 0.0;
+        for (int i = start; i < sample.length; i++) {
+            variance += (sample[i] - mean) * (sample[i] - mean);
+        }
+        variance /= (sample.length - start);
+        
+        // Return standard deviation
+        return Math.sqrt(variance);
+    }
+    
     /**
      * Create an instance of <code>DecimalFormat</code> to format numbers
      * as xsd:decimal. That is, using '.' as decimal separator and without

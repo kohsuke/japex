@@ -53,7 +53,7 @@ public class Constants {
     
     // Global output parameters
     public static final String VERSION         = "japex.version";
-    public static final String VERSION_VALUE   = "1.0.25";
+    public static final String VERSION_VALUE   = "1.0.26";
     public static final String OS_NAME         = "japex.osName";
     public static final String OS_ARCHITECTURE = "japex.osArchitecture";
     public static final String DATE_TIME       = "japex.dateTime";
@@ -101,6 +101,8 @@ public class Constants {
     public static final String ACTUAL_WARMUP_TIME    = "japex.actualWarmupTime";
     public static final String ACTUAL_PREPARE_TIME   = "japex.actualPrepareTime";        
     public static final String RESULT_VALUE          = "japex.resultValue";
+    public static final String RESULT_ITERATIONS     = "japex.resultIterations";
+    public static final String RESULT_TIME           = "japex.resultTime";    
     public static final String RESULT_VALUE_STDDEV   = "japex.resultValueStddev";
     public static final String RESULT_VALUE_X        = "japex.resultValueX";
     public static final String RESULT_VALUE_X_STDDEV = "japex.resultValueXStddev";

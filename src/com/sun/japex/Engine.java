@@ -1,5 +1,5 @@
 /*
- * Japex ver. 0.1 software ("Software")
+ * Japex ver. 1.0 software ("Software")
  * 
  * Copyright, 2004-2005 Sun Microsystems, Inc. All Rights Reserved.
  * 
@@ -43,6 +43,8 @@ import java.util.*;
 import java.io.File;
 import java.util.concurrent.*;
 import java.lang.management.*;
+
+import static com.sun.japex.Constants.*;
 
 public class Engine {
     
@@ -121,8 +123,8 @@ public class Engine {
             }
 
             // Print estimated running time
-            if (_testSuite.hasParam(Constants.WARMUP_TIME) && 
-                    _testSuite.hasParam(Constants.RUN_TIME)) 
+            if (_testSuite.hasParam(WARMUP_TIME) && 
+                    _testSuite.hasParam(RUN_TIME)) 
             {
                 int[] hms = estimateRunningTime(_testSuite);
                 System.out.println("Estimated warmup time + run time is " +
@@ -151,14 +153,14 @@ public class Engine {
             for (int k = 0; k < driverList.size(); k++) {
                 _driverImpl = driverList.get(k);
 
-                int nOfCpus = _driverImpl.getIntParam(Constants.NUMBER_OF_CPUS);
-                int nOfThreads = _driverImpl.getIntParam(Constants.NUMBER_OF_THREADS);
-                int runsPerDriver = _driverImpl.getIntParam(Constants.RUNS_PER_DRIVER);
-                int warmupsPerDriver = _driverImpl.getIntParam(Constants.WARMUPS_PER_DRIVER);
+                int nOfCpus = _driverImpl.getIntParam(NUMBER_OF_CPUS);
+                int nOfThreads = _driverImpl.getIntParam(NUMBER_OF_THREADS);
+                int runsPerDriver = _driverImpl.getIntParam(RUNS_PER_DRIVER);
+                int warmupsPerDriver = _driverImpl.getIntParam(WARMUPS_PER_DRIVER);
 
                 // Create a Japex class loader for this driver
                 JapexClassLoader jcLoader = 
-                    new JapexClassLoader(_driverImpl.getParam(Constants.CLASS_PATH));
+                    new JapexClassLoader(_driverImpl.getParam(CLASS_PATH));
 		Thread.currentThread().setContextClassLoader(jcLoader);
  
                 System.out.print("  " + _driverImpl.getName() + " using " 
@@ -172,7 +174,7 @@ public class Engine {
                         for (int j = 0; j < actualRuns; j++) {
                             _drivers[i][j] = 
                                 jcLoader.getJapexDriver(
-                                    _driverImpl.getParam(Constants.DRIVER_CLASS));   // returns fresh copy
+                                    _driverImpl.getParam(DRIVER_CLASS));   // returns fresh copy
                             _drivers[i][j].setDriver(_driverImpl);
                             _drivers[i][j].setTestSuite(_testSuite);
                             _drivers[i][j].initializeDriver();
@@ -209,10 +211,10 @@ public class Engine {
                 forEachRun();
                 
                 // Set memory usage param and display info
-                if (_driverImpl.getBooleanParam(Constants.REPORT_PEAK_HEAP_USAGE)) {
+                if (_driverImpl.getBooleanParam(REPORT_PEAK_HEAP_USAGE)) {
                     setPeakMemoryUsage(_driverImpl);
                     System.out.println("    Peak heap usage: "
-                        + _driverImpl.getParam(Constants.PEAK_HEAP_USAGE)
+                        + _driverImpl.getParam(PEAK_HEAP_USAGE)
                         + " KB");
                 }
                 
@@ -239,8 +241,8 @@ public class Engine {
     
     private void forEachRun() {
         try {
-            int runsPerDriver = _driverImpl.getIntParam(Constants.RUNS_PER_DRIVER);
-            int warmupsPerDriver = _driverImpl.getIntParam(Constants.WARMUPS_PER_DRIVER);
+            int runsPerDriver = _driverImpl.getIntParam(RUNS_PER_DRIVER);
+            int warmupsPerDriver = _driverImpl.getIntParam(WARMUPS_PER_DRIVER);
 
             int actualRuns = warmupsPerDriver + runsPerDriver;
             for (_driverRun = 0; _driverRun < actualRuns; _driverRun++) {
@@ -286,16 +288,16 @@ public class Engine {
                     TestCaseImpl tc = (TestCaseImpl) tci.next();
                     System.out.print(tc.getName() + ",");                        
                     System.out.print(
-                        Util.formatDouble(tc.getDoubleParam(Constants.RESULT_VALUE)) 
+                        Util.formatDouble(tc.getDoubleParam(RESULT_VALUE)) 
                         + ",");
                 }
                 System.out.print(
                     "aritmean," +
-                    _driverImpl.getParam(Constants.RESULT_ARIT_MEAN) + 
+                    _driverImpl.getParam(RESULT_ARIT_MEAN) + 
                     ",geommean," +
-                    _driverImpl.getParam(Constants.RESULT_GEOM_MEAN) + 
+                    _driverImpl.getParam(RESULT_GEOM_MEAN) + 
                     ",harmmean," +
-                    _driverImpl.getParam(Constants.RESULT_HARM_MEAN));   
+                    _driverImpl.getParam(RESULT_HARM_MEAN));   
 
                 // Print standardDevs for all runs
                 System.out.print("\n    Stdev: ");
@@ -304,16 +306,16 @@ public class Engine {
                     TestCaseImpl tc = (TestCaseImpl) tci.next();
                     System.out.print(tc.getName() + ",");                        
                     System.out.print(
-                        Util.formatDouble(tc.getDoubleParam(Constants.RESULT_VALUE_STDDEV)) 
+                        Util.formatDouble(tc.getDoubleParam(RESULT_VALUE_STDDEV)) 
                         + ",");
                 }
                 System.out.println(
                     "aritmean," +
-                    _driverImpl.getParam(Constants.RESULT_ARIT_MEAN_STDDEV) + 
+                    _driverImpl.getParam(RESULT_ARIT_MEAN_STDDEV) + 
                     ",geommean," +
-                    _driverImpl.getParam(Constants.RESULT_GEOM_MEAN_STDDEV) + 
+                    _driverImpl.getParam(RESULT_GEOM_MEAN_STDDEV) + 
                     ",harmmean," +
-                    _driverImpl.getParam(Constants.RESULT_HARM_MEAN_STDDEV));   
+                    _driverImpl.getParam(RESULT_HARM_MEAN_STDDEV));   
             }
             else {
                 System.out.println("");
@@ -330,8 +332,8 @@ public class Engine {
     private void forEachTestCase() {
         try {
             double endTime;
-            int nOfCpus = _driverImpl.getIntParam(Constants.NUMBER_OF_CPUS);
-            int nOfThreads = _driverImpl.getIntParam(Constants.NUMBER_OF_THREADS);
+            int nOfCpus = _driverImpl.getIntParam(NUMBER_OF_CPUS);
+            int nOfThreads = _driverImpl.getIntParam(NUMBER_OF_THREADS);
             
             // Get list of tests
             List tcList = _driverImpl.getTestCases(_driverRun);
@@ -366,23 +368,23 @@ public class Engine {
                         
                         // -- Warmup phase ---------------------------------------
                         
-                        endTime = tc.hasParam(Constants.WARMUP_TIME) ?
+                        endTime = tc.hasParam(WARMUP_TIME) ?
                             Util.currentTimeMillis() +
-                                Util.parseDuration(tc.getParam(Constants.WARMUP_TIME)) : 0L;
+                                Util.parseDuration(tc.getParam(WARMUP_TIME)) : 0L;
                         
                         // First time call does warmup
                         _drivers[0][_driverRun].setEndTime(endTime);
                         _drivers[0][_driverRun].call();
                         
                         // Set actual warmup time using sum if just one thread
-                        tc.setDoubleParam(Constants.ACTUAL_WARMUP_TIME,
-                            tc.getDoubleParam(Constants.WARMUP_TIME_SUM));
+                        tc.setDoubleParam(ACTUAL_WARMUP_TIME,
+                            tc.getDoubleParam(WARMUP_TIME_SUM));
                         
                         // -- Run phase -------------------------------------------
                         
-                        endTime = tc.hasParam(Constants.RUN_TIME) ?
+                        endTime = tc.hasParam(RUN_TIME) ?
                             Util.currentTimeMillis() +
-                                Util.parseDuration(tc.getParam(Constants.RUN_TIME)) : 0L;
+                                Util.parseDuration(tc.getParam(RUN_TIME)) : 0L;
  
                         // Run GC and reset GC start times
                         System.gc();                       
@@ -393,8 +395,8 @@ public class Engine {
                         _drivers[0][_driverRun].call();
                         
                         // Set actual run time using sum if there's one thread
-                        tc.setDoubleParam(Constants.ACTUAL_RUN_TIME,
-                            tc.getDoubleParam(Constants.RUN_TIME_SUM));
+                        tc.setDoubleParam(ACTUAL_RUN_TIME,
+                            tc.getDoubleParam(RUN_TIME_SUM));
                     } 
                     else {  // nOfThreads > 1
                         
@@ -411,9 +413,9 @@ public class Engine {
                         // Fork all threads -- first time drivers will warmup
                         futures = new Future<?>[nOfThreads];
                         
-                        endTime = tc.hasParam(Constants.WARMUP_TIME) ?
+                        endTime = tc.hasParam(WARMUP_TIME) ?
                             Util.currentTimeMillis() +
-                                Util.parseDuration(tc.getParam(Constants.WARMUP_TIME)) : 0L;
+                                Util.parseDuration(tc.getParam(WARMUP_TIME)) : 0L;
                         
                         for (int i = 0; i < nOfThreads; i++) {
                             _drivers[i][_driverRun].setEndTime(endTime);
@@ -426,14 +428,14 @@ public class Engine {
                         }
                         
                         // Set actual warmup time using average over threads
-                        tc.setDoubleParam(Constants.ACTUAL_WARMUP_TIME,
-                            tc.getDoubleParam(Constants.WARMUP_TIME_SUM) / nOfThreads);
+                        tc.setDoubleParam(ACTUAL_WARMUP_TIME,
+                            tc.getDoubleParam(WARMUP_TIME_SUM) / nOfThreads);
                         
                         // -- Run phase -------------------------------------------
                         
-                        endTime = tc.hasParam(Constants.RUN_TIME) ?
+                        endTime = tc.hasParam(RUN_TIME) ?
                             Util.currentTimeMillis() +
-                                Util.parseDuration(tc.getParam(Constants.RUN_TIME)) : 0L;
+                                Util.parseDuration(tc.getParam(RUN_TIME)) : 0L;
                         
                         // Run GC and reset GC start times
                         System.gc();                       
@@ -451,8 +453,8 @@ public class Engine {
                         }
                         
                         // Set actual run time using average over threads
-                        tc.setDoubleParam(Constants.ACTUAL_RUN_TIME,
-                            tc.getDoubleParam(Constants.RUN_TIME_SUM) / nOfThreads);                        
+                        tc.setDoubleParam(ACTUAL_RUN_TIME,
+                            tc.getDoubleParam(RUN_TIME_SUM) / nOfThreads);                        
                     }
                     
                     // Get the total time take for GC over the measurement period
@@ -465,7 +467,7 @@ public class Engine {
                 } 
                 catch (Exception e) {
                     // Set japex.resultValue to Not-A-Number
-                    tc.setDoubleParam(Constants.RESULT_VALUE, Double.NaN);
+                    tc.setDoubleParam(RESULT_VALUE, Double.NaN);
                     
                     // Print stack trace if verbose mode enabled
                     if (Japex.verbose) {
@@ -485,12 +487,12 @@ public class Engine {
                 }
                 
                 double result;
-                if (tc.hasParam(Constants.RESULT_VALUE)) {
-                    result = tc.getDoubleParam(Constants.RESULT_VALUE);
+                if (tc.hasParam(RESULT_VALUE)) {
+                    result = tc.getDoubleParam(RESULT_VALUE);
                 } 
                 else {
                     result = computeResultValue(tc, nOfThreads, nOfCpus);
-                    tc.setDoubleParam(Constants.RESULT_VALUE, result);
+                    tc.setDoubleParam(RESULT_VALUE, result);
                 }
                 
                 // Compute running means
@@ -500,14 +502,14 @@ public class Engine {
                 
                 // Display results for this test
                 if (Japex.verbose) {
-                    System.out.println("           " + tc.getParam(Constants.RESULT_VALUE));
+                    System.out.println("           " + tc.getParam(RESULT_VALUE));
                     System.out.print("           ");
                 } 
                 else if (Japex.resultPerLine) {
-                    System.out.println(tc.getParam(Constants.RESULT_VALUE) + ",");
+                    System.out.println(tc.getParam(RESULT_VALUE) + ",");
                 }
                 else {
-                    System.out.print(tc.getParam(Constants.RESULT_VALUE) + ",");
+                    System.out.print(tc.getParam(RESULT_VALUE) + ",");
                     System.out.flush();
                 }
             }
@@ -552,7 +554,7 @@ public class Engine {
         }
 
         // Set output parameter
-        driver.setDoubleParam(Constants.PEAK_HEAP_USAGE,
+        driver.setDoubleParam(PEAK_HEAP_USAGE,
                 (afterHeapMemoryUsage - _beforeHeapMemoryUsage) / 1024.0);
     }
     
@@ -582,24 +584,24 @@ public class Engine {
      * I = number of iterations
      */        
     private double computeResultValue(TestCase tc, int nOfThreads, int nOfCpus) {
-        String resultUnit = _testSuite.getParam(Constants.RESULT_UNIT);
+        String resultUnit = _testSuite.getParam(RESULT_UNIT);
         
         if (Japex.verbose) {
             System.out.println("             " + 
                 Thread.currentThread().getName() + 
                     " japex.runIterationsSum = " +
-                        tc.getLongParam(Constants.RUN_ITERATIONS_SUM)); 
+                        tc.getLongParam(RUN_ITERATIONS_SUM)); 
             System.out.println("             " + 
                 Thread.currentThread().getName() + 
                     " japex.runTimeSum (ms) = " +
-                        tc.getDoubleParam(Constants.RUN_TIME_SUM));
+                        tc.getDoubleParam(RUN_TIME_SUM));
         }
 
         // Get actual run time
-        double actualTime = tc.getDoubleParam(Constants.ACTUAL_RUN_TIME);
+        double actualTime = tc.getDoubleParam(ACTUAL_RUN_TIME);
 
         // Tx = sum(I_k) / T for k in 1..N
-        double tps = tc.getLongParam(Constants.RUN_ITERATIONS_SUM) /
+        double tps = tc.getLongParam(RUN_ITERATIONS_SUM) /
               (actualTime / 1000.0);
         
         // Compute latency as L = (min(C, N) / Tx) * 1000
@@ -614,7 +616,7 @@ public class Engine {
         // Mbps = size-in-mbits * Tx 
         else if (resultUnit.equalsIgnoreCase("mbps")) {
             // Check if japex.inputFile was defined
-            String inputFile = tc.getParam(Constants.INPUT_FILE);            
+            String inputFile = tc.getParam(INPUT_FILE);            
             if (inputFile == null) {
                 throw new RuntimeException("Unable to compute japex.resultValue " + 
                     " because japex.inputFile is not defined or refers to an illegal path.");
@@ -626,8 +628,8 @@ public class Engine {
             double gctime = (_gCTime / actualTime) * 100.0;
             
             // Report latency on the X axis
-            _testSuite.setParam(Constants.RESULT_UNIT_X, "ms");
-            tc.setDoubleParam(Constants.RESULT_VALUE_X, l);
+            _testSuite.setParam(RESULT_UNIT_X, "ms");
+            tc.setDoubleParam(RESULT_VALUE_X, l);
             return gctime;
         }
         else {
@@ -645,10 +647,10 @@ public class Engine {
         int nOfDrivers = testSuite.getDriverInfoList().size();
         int nOfTests = ((DriverImpl) testSuite.getDriverInfoList().get(0)).getTestCases(0).size();
     
-        String runTime = testSuite.getParam(Constants.RUN_TIME);
-        String warmupTime = testSuite.getParam(Constants.WARMUP_TIME);
-        int actualRuns = testSuite.getIntParam(Constants.RUNS_PER_DRIVER) +
-            testSuite.getIntParam(Constants.WARMUPS_PER_DRIVER);
+        String runTime = testSuite.getParam(RUN_TIME);
+        String warmupTime = testSuite.getParam(WARMUP_TIME);
+        int actualRuns = testSuite.getIntParam(RUNS_PER_DRIVER) +
+            testSuite.getIntParam(WARMUPS_PER_DRIVER);
         
         long seconds = (long)
             (nOfDrivers * nOfTests * (Util.parseDuration(warmupTime) / 1000.0) +
