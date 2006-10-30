@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.sun.japex</groupId>
   <artifactId>japex</artifactId>
-  <version>1.0.25</version>
+  <version>1.0.26</version>
   <dependencies>
     <dependency>
       <groupId>javax.xml.bind</groupId>
