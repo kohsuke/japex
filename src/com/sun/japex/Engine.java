@@ -124,7 +124,7 @@ public class Engine {
                     || driverList.get(0).getTestCases(0).size() == 0) 
             {
                 System.err.println("Error: A Japex test suite must contain at " +
-                        "least one driver and at least test case");
+                        "least one driver and at least one test case");
                 System.exit(1);                
             }
             
