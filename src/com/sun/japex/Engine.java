@@ -205,7 +205,7 @@ public class Engine {
                     
                     continue;                    
                 }
-
+                
 		// Created thread pool of nOfThreads size and pre-start threads                
 		if (nOfThreads > 1) {
 		    _threadPool = new ThreadPoolExecutor(nOfThreads, nOfThreads, 0L,
@@ -240,6 +240,14 @@ public class Engine {
 		    _threadPool.shutdown();
                 }                
             }   
+
+            // If number drives is zero, abort as no drivers were loaded
+            if (_testSuite.getDriverInfoList().size() == 0) {
+                System.err.println("Error: Unable to load any of the " +
+                        "drivers in the test suite");
+                System.exit(1);
+            }
+
         }
         catch (RuntimeException e) {
             throw e;
