@@ -118,6 +118,16 @@ public class Engine {
             ConfigFileLoader cfl = new ConfigFileMerger(configFiles);
             _testSuite = cfl.getTestSuite();
             
+            // Ensure result of merge is well formed
+            List<DriverImpl> driverList = _testSuite.getDriverInfoList();
+            if (driverList.size() == 0 
+                    || driverList.get(0).getTestCases(0).size() == 0) 
+            {
+                System.err.println("Error: A Japex test suite must contain at " +
+                        "least one driver and at least test case");
+                System.exit(1);                
+            }
+            
             if (Japex.test) {
                 System.out.println("Running in test mode without generating reports ...");
             }
