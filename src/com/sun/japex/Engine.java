@@ -513,6 +513,13 @@ public class Engine {
                     tc.setDoubleParam(RESULT_VALUE, result);
                 }
                 
+                // If japex.resultUnitX is set and the driver has not computed
+                // a value for japex.resultValueX, then compute it
+                if (tc.hasParam(RESULT_UNIT_X) && !tc.hasParam(RESULT_VALUE_X)) {
+                    result = computeResultValue(tc, nOfThreads, nOfCpus);
+                    tc.setDoubleParam(RESULT_VALUE_X, result);
+                }
+                
                 // Compute running means
                 _aritMeanresult += result / nOfTests;
                 _geomMeanresult *= Math.pow(result, 1.0 / nOfTests);
@@ -641,14 +648,9 @@ public class Engine {
             }            
             return new File(inputFile).length() * 0.000008d * tps;
         }     
-        else if (resultUnit.equalsIgnoreCase("%GCTIME")) {      // EXPERIMENTAL
+        else if (resultUnit.equalsIgnoreCase("%GCTIME")) {
             // Calculate % of GC relative to the run time
-            double gctime = (_gCTime / actualTime) * 100.0;
-            
-            // Report latency on the X axis
-            _testSuite.setParam(RESULT_UNIT_X, "ms");
-            tc.setDoubleParam(RESULT_VALUE_X, l);
-            return gctime;
+            return (_gCTime / actualTime) * 100.0;
         }
         else {
             throw new RuntimeException("Unknown value '" + 
