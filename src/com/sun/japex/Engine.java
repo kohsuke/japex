@@ -484,13 +484,14 @@ public class Engine {
                     }
                 } 
                 catch (Exception e) {
-                    // Set japex.resultValue to Not-A-Number
+                    // Set output parameters for computeResultValue()
                     tc.setDoubleParam(RESULT_VALUE, Double.NaN);
-                    
-                    // Print stack trace if verbose mode enabled
-                    if (Japex.verbose) {
-                        e.printStackTrace();
-                    }
+                    tc.setLongParam(RUN_ITERATIONS_SUM, 0L);
+                    tc.setDoubleParam(RUN_TIME_SUM, Double.NaN);
+                    tc.setDoubleParam(ACTUAL_RUN_TIME, Double.NaN);
+
+                    // Print stack trace
+                    e.printStackTrace();
                     
                     // Increment Japex exit code as a counter for errors
                     Japex.exitCode++;
