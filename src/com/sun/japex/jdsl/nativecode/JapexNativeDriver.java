@@ -46,6 +46,7 @@ import com.sun.japex.JapexDriverBase;
 import com.sun.japex.TestCase;
 import com.sun.japex.TestCaseImpl;
 import com.sun.japex.Util;
+import java.io.File;
 
 /**
  *
@@ -57,12 +58,26 @@ public class JapexNativeDriver extends JapexDriverBase {
     public void setDriver(Driver driver) {
         super.setDriver(driver);
         
+        String path = driver.getParam("libraryPath");
         String library = driver.getParam("libraryName");
-        if (library != null) {
+
+        if (library == null) {
+            throw new RuntimeException("JavaNativeDriver requires setting " +
+                    "parameter 'libraryName'");            
+        }
+        
+        /*
+         * If no library path specified, use loadLibrary() which in 
+         * turn uses the system property java.library.path. Otherwise
+         * map name and load library from a file.
+         */
+        if (path == null) {       
             System.loadLibrary(library);
         }
         else {
-            throw new RuntimeException("JavaNativeDriver requires setting parameter 'libraryName'");
+            File file = new File(path + File.separator
+                    + System.mapLibraryName(library));
+            System.load(file.getAbsolutePath());
         }
     }
     
