@@ -11,12 +11,14 @@
         <param name="japex.driverClass" value="com.sun.japex.jdsl.nativecode.JapexNativeDriver"/>
         <param name="description" value="Japex Native Driver One"/>
         <param name="libraryName" value="JapexNativeDriverOne"/>
+        <param name="libraryPath" value="dist/lib"/>
     </driver>
 
     <driver name="JapexNativeDriverTwo">
         <param name="japex.driverClass" value="com.sun.japex.jdsl.nativecode.JapexNativeDriver"/>
         <param name="description" value="Japex Native Driver Two"/>
         <param name="libraryName" value="JapexNativeDriverTwo"/>
+        <param name="libraryPath" value="dist/lib"/>
     </driver>
 
     <testCase name="foo">

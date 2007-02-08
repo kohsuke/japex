@@ -1,7 +1,7 @@
 <project name="Japex Native Sample" default="run"  basedir=".">
     <property environment="env"/>
     
-    <property file="properties.macos"/>
+    <property file="properties.solaris"/>
 
     <property name="config" value="native-config.xml"/>
 
@@ -63,7 +63,6 @@
     <target name="run" depends="dist">
         <java dir="." fork="true" classname="com.sun.japex.Japex">
             <classpath refid="class.path"/>
-            <jvmarg value="-Djava.library.path=./dist/lib"/>
             <arg line="${config}/"/>
         </java>
     </target>
