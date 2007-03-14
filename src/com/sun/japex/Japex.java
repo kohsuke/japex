@@ -55,6 +55,7 @@ public class Japex {
     
     public static boolean html = true;
     public static boolean verbose = false;
+    public static boolean silent = false;
     public static boolean resultPerLine = false;
     public static boolean test = false;
     public static boolean last = false;
@@ -95,6 +96,9 @@ public class Japex {
             else if (args[i].equals("-verbose")) {
                 verbose = true;
             }
+            else if (args[i].equals("-silent")) {
+                silent = true;
+            }
             else if (args[i].equals("-line")) {
                 resultPerLine = true;
             }
@@ -127,8 +131,9 @@ public class Japex {
 
     private static void displayUsageAndExit() {
         System.err.println(
-            "Usage: japex [-verbose] [-nohtml] [-line] [-test] [-merge] japex-config-file(s)\n" +
+            "Usage: japex [-verbose] [-silent] [-nohtml] [-line] [-test] [-merge] japex-config-file(s)\n" +
             "   -verbose: Display additional information about the benchmark's execution\n" +
+            "   -silent : Do not display exceptions thrown by a driver\n" +
             "   -nohtml : Do not generate HTML report (only XML report)\n" +
             "   -line   : Insert additional newlines to separate test case results\n" +
             "   -test   : Test configuration file without producing any output reports\n" +

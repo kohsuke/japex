@@ -490,8 +490,10 @@ public class Engine {
                     tc.setDoubleParam(RUN_TIME_SUM, Double.NaN);
                     tc.setDoubleParam(ACTUAL_RUN_TIME, Double.NaN);
 
-                    // Print stack trace
-                    e.printStackTrace();
+                    // Print stack trace unless in silent mode
+                    if (!Japex.silent) {
+                        e.printStackTrace();
+                    }
                     
                     // Increment Japex exit code as a counter for errors
                     Japex.exitCode++;
