@@ -156,7 +156,7 @@ public abstract class BaseParserDriver extends JapexDriverBase {
         if (getBooleanParam(DriverConstants.DO_NOT_REPORT_SIZE) == false) {
             testCase.setDoubleParam(Constants.RESULT_VALUE_X,
                                     _inputStream.available() / 1024.0);
-            getTestSuite().setParam(Constants.RESULT_UNIT_X, "kbs");
+            getTestSuite().setParam(Constants.RESULT_UNIT_X, "KBytes");
         }
     }
 
