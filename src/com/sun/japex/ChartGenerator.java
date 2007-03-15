@@ -44,15 +44,20 @@ import java.awt.Shape;
 import java.awt.BasicStroke;
 import java.awt.Polygon;
 import java.awt.Color;
+import java.awt.Font;
 import java.io.File;
 
 import org.jfree.chart.*;
 import org.jfree.chart.plot.*;
 import org.jfree.data.xy.*;
 import org.jfree.chart.axis.LogarithmicAxis;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
 import org.jfree.data.general.SeriesException;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.BarRenderer3D;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 
 public class ChartGenerator {
@@ -66,7 +71,7 @@ public class ChartGenerator {
      * Chart width and height as a function of the number of
      * drivers in the test suite.
      */
-    final int _chartWidth, _chartHeight;
+    int _chartWidth, _chartHeight;
 
     /**
      * Suggested group size to use when plotting test cases. This
@@ -129,7 +134,15 @@ public class ChartGenerator {
     private JFreeChart generateDriverBarChart() {
         try {
             String resultUnit = _testSuite.getParam(Constants.RESULT_UNIT);
+            String resultUnitX = _testSuite.getParam(Constants.RESULT_UNIT_X);
+            
+            // Ensure japex.resultUnitX is not null
+            if (resultUnitX == null) {
+                resultUnitX = "";
+            }
+            
             DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+            DefaultCategoryDataset datasetX = new DefaultCategoryDataset();
 
             // Find first normalizer driver (if any) and adjust unit            
             DriverImpl normalizerDriver = null;
@@ -152,8 +165,13 @@ public class ChartGenerator {
                 }
                 else {
                     resultUnit = "% of " + resultUnit;
+                    if (resultUnitX != null) {
+                        resultUnitX = "% of " + resultUnitX;
+                    }
                 }
             }
+            
+            boolean hasValueX = false;
 
             // Generate charts
             for (DriverImpl di : _testSuite.getDriverInfoList()) {
@@ -176,7 +194,29 @@ public class ChartGenerator {
                                 normalizerDriver.getDoubleParamNoNaN(Constants.RESULT_HARM_MEAN)),
                         di.getName(),
                         "Harmonic Mean");
-                } else {
+                    
+                    if (di.hasParam(Constants.RESULT_ARIT_MEAN_X)) {
+                        datasetX.addValue(
+                        normalizerDriver == di ? 100.0 :
+                            (100.0 * di.getDoubleParamNoNaN(Constants.RESULT_ARIT_MEAN_X) /
+                                normalizerDriver.getDoubleParamNoNaN(Constants.RESULT_ARIT_MEAN_X)),
+                            di.getName(),
+                            "Arithmetic Mean");
+                        datasetX.addValue(
+                        normalizerDriver == di ? 100.0 :
+                            (100.0 * di.getDoubleParamNoNaN(Constants.RESULT_GEOM_MEAN_X) /
+                                normalizerDriver.getDoubleParamNoNaN(Constants.RESULT_GEOM_MEAN_X)),
+                            di.getName(),
+                            "Geometric Mean");
+                        datasetX.addValue(
+                            (100.0 * di.getDoubleParamNoNaN(Constants.RESULT_HARM_MEAN_X) /
+                                normalizerDriver.getDoubleParamNoNaN(Constants.RESULT_HARM_MEAN_X)),
+                            di.getName(),
+                            "Harmonic Mean");                    
+                        hasValueX = true;
+                    }
+                } 
+                else {
                     dataset.addValue(
                         di.getDoubleParamNoNaN(Constants.RESULT_ARIT_MEAN),
                         di.getName(),
@@ -189,15 +229,63 @@ public class ChartGenerator {
                         di.getDoubleParamNoNaN(Constants.RESULT_HARM_MEAN),
                         di.getName(),
                         "Harmonic Mean");
+                    
+                    if (di.hasParam(Constants.RESULT_ARIT_MEAN_X)) {
+                        datasetX.addValue(
+                            di.getDoubleParamNoNaN(Constants.RESULT_ARIT_MEAN_X),
+                            di.getName(),
+                            "Arithmetic Mean");
+                        datasetX.addValue(
+                            di.getDoubleParamNoNaN(Constants.RESULT_GEOM_MEAN_X),
+                            di.getName(),
+                            "Geometric Mean");
+                        datasetX.addValue(
+                            di.getDoubleParamNoNaN(Constants.RESULT_HARM_MEAN_X),
+                            di.getName(),
+                            "Harmonic Mean");                    
+                        hasValueX = true;
+                    }                    
                 }
+                
+
             }
 
-            return ChartFactory.createBarChart3D(
-                "Result Summary (" + resultUnit + ")",
-                "", resultUnit,
-                dataset,
-                PlotOrientation.VERTICAL,
-                true, true, false);
+            int nextPlotIndex = 1;
+            CombinedDomainCategoryPlot plot = new CombinedDomainCategoryPlot();
+            
+            // Bar chart for secondary data set based on japex.resultValueX
+            if (hasValueX) {
+                NumberAxis rangeAxisX = new NumberAxis(resultUnitX);
+                BarRenderer3D rendererX = new BarRenderer3D();
+                rendererX.setToolTipGenerator(new StandardCategoryToolTipGenerator());
+                CategoryPlot subplotX = new CategoryPlot(datasetX, null, rangeAxisX,
+                        rendererX);
+                
+                // Set transparency and clear legend for this plot
+                subplotX.setForegroundAlpha(0.75f);
+                subplotX.setFixedLegendItems(new LegendItemCollection());
+                
+                plot.add(subplotX, nextPlotIndex++);
+                _chartHeight += 50;    // Adjust chart height
+            }
+            
+            // Bar chart for main data set based on japex.resultValue
+            NumberAxis rangeAxis = new NumberAxis(resultUnit);
+            BarRenderer3D renderer = new BarRenderer3D();
+            renderer.setToolTipGenerator(new StandardCategoryToolTipGenerator());
+            CategoryPlot subplot = new CategoryPlot(dataset, null, rangeAxis,
+                    renderer);
+            subplot.setForegroundAlpha(0.75f);      // transparency
+            plot.add(subplot, nextPlotIndex);
+            
+            // Create chart and save it as JPEG
+            String chartTitle = "Result Summary";
+            JFreeChart chart = new JFreeChart(
+                    hasValueX ? chartTitle : (chartTitle + "(" + resultUnit + ")"),
+                    new Font("SansSerif", Font.BOLD, 14),
+                    plot, true);
+            chart.setAntiAlias(true);
+            return chart;
         }
         catch (RuntimeException e) {
             throw e;
@@ -329,10 +417,15 @@ public class ChartGenerator {
 
         try {
             String resultUnit = _testSuite.getParam(Constants.RESULT_UNIT);
+            String resultUnitX = _testSuite.getParam(Constants.RESULT_UNIT_X);
+            
+            // Ensure japex.resultUnitX is not null
+            if (resultUnitX == null) {
+                resultUnitX = "";
+            }
 
             // Find first normalizer driver (if any)
             DriverImpl normalizerDriver = null;
-
             for (DriverImpl di : driverInfoList) {
                 if (di.isNormal()) {
                     normalizerDriver = di;
@@ -350,11 +443,17 @@ public class ChartGenerator {
                 }
                 else {
                     resultUnit = "% of " + resultUnit;
+                    if (resultUnitX != null) {
+                        resultUnitX = "% of " + resultUnitX;
+                    }
                 }
             }
 
             // Generate charts 
             DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+            DefaultCategoryDataset datasetX = new DefaultCategoryDataset();
+            
+            boolean hasValueX = false;
 
             int i = 0, thisGroupSize = 0;
             for (; i < nOfTests; i++) {
@@ -366,31 +465,78 @@ public class ChartGenerator {
                     if (normalizerDriver != null) {
                         TestCaseImpl normalTc =
                             (TestCaseImpl) normalizerDriver.getAggregateTestCases().get(i);
+                        
                         dataset.addValue(normalizerDriver == di ? 100.0 :
                             (100.0 * tc.getDoubleParamNoNaN(Constants.RESULT_VALUE) /
                                 normalTc.getDoubleParamNoNaN(Constants.RESULT_VALUE)),
                             _plotDrivers ? tc.getName() : di.getName(),
                             _plotDrivers ? di.getName() : tc.getName());
-                    } else {
+                        
+                        if (tc.hasParam(Constants.RESULT_VALUE_X)) {
+                            datasetX.addValue(
+                                (100.0 * tc.getDoubleParamNoNaN(Constants.RESULT_VALUE_X) /
+                                    normalTc.getDoubleParamNoNaN(Constants.RESULT_VALUE_X)),
+                                _plotDrivers ? tc.getName() : di.getName(),
+                                _plotDrivers ? di.getName() : tc.getName());
+                            hasValueX = true;
+                        }
+                    } 
+                    else {
                         dataset.addValue(
                             tc.getDoubleParamNoNaN(Constants.RESULT_VALUE),
                             _plotDrivers ? tc.getName() : di.getName(),
                             _plotDrivers ? di.getName() : tc.getName());
+                        
+                        if (tc.hasParam(Constants.RESULT_VALUE_X)) {
+                            datasetX.addValue(
+                            tc.getDoubleParamNoNaN(Constants.RESULT_VALUE_X),
+                                _plotDrivers ? tc.getName() : di.getName(),
+                                _plotDrivers ? di.getName() : tc.getName());
+                            hasValueX = true;
+                        }
                     }
+                    
                 }
-
+                
                 thisGroupSize++;
 
                 // Generate chart for this group if complete
                 if (thisGroupSize == groupSizes[groupSizesIndex]) {
-                    JFreeChart chart = ChartFactory.createBarChart3D(
-                        (_plotDrivers ? "Results per Driver (" : "Results per Test (")
-                            + resultUnit + ")",
-                        "", resultUnit,
-                        dataset,
-                        PlotOrientation.VERTICAL,
-                        true, true, false);
+                    int nextPlotIndex = 1;
+                    CombinedDomainCategoryPlot plot = new CombinedDomainCategoryPlot();
+                    
+                    // Bar chart for secondary data set based on japex.resultValueX
+                    if (hasValueX) {                        
+                        NumberAxis rangeAxisX = new NumberAxis(resultUnitX);
+                        BarRenderer3D rendererX = new BarRenderer3D();
+                        rendererX.setToolTipGenerator(new StandardCategoryToolTipGenerator());
+                        CategoryPlot subplotX = new CategoryPlot(datasetX, null, rangeAxisX,
+                            rendererX);
+                        
+                        // Set transparency and clear legend for this plot
+                        subplotX.setForegroundAlpha(0.75f);
+                        subplotX.setFixedLegendItems(new LegendItemCollection());
+                        
+                        plot.add(subplotX, nextPlotIndex++);                        
+                        _chartHeight += 50;    // Adjust chart height
+                    }
+                    
+                    // Bar chart for main data set based on japex.resultValue
+                    NumberAxis rangeAxis = new NumberAxis(resultUnit);
+                    BarRenderer3D renderer = new BarRenderer3D();
+                    renderer.setToolTipGenerator(new StandardCategoryToolTipGenerator());
+                    CategoryPlot subplot = new CategoryPlot(dataset, null, rangeAxis,
+                            renderer);
+                    subplot.setForegroundAlpha(0.75f);      // transparency
+                    plot.add(subplot, nextPlotIndex);
 
+                    // Create chart and save it as JPEG
+                    String chartTitle = _plotDrivers ? "Results per Driver" 
+                            : "Results per Test";                       
+                    JFreeChart chart = new JFreeChart(
+                        hasValueX ? chartTitle : (chartTitle + "(" + resultUnit + ")"),
+                        new Font("SansSerif", Font.BOLD, 14),
+                        plot, true);                                        
                     chart.setAntiAlias(true);
                     ChartUtilities.saveChartAsJPEG(
                         new File(baseName + Integer.toString(nOfFiles) + extension),
@@ -399,7 +545,10 @@ public class ChartGenerator {
                     nOfFiles++;
                     groupSizesIndex++;
                     thisGroupSize = 0;
+                    
+                    // Create fresh data sets
                     dataset = new DefaultCategoryDataset();
+                    datasetX = new DefaultCategoryDataset();
                 }
             }
         }
