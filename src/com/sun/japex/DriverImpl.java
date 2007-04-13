@@ -332,7 +332,8 @@ public class DriverImpl extends ParamsImpl implements Driver, Cloneable {
         Iterator tci = aggregateTestCases.iterator();
         Set<String> paramsClosure = new HashSet<String>();
         while (tci.hasNext()) {
-            Set<String> testCaseParams = ((TestCaseImpl) tci.next()).nameSet();
+            Set<String> testCaseParams = 
+                    ((TestCaseImpl) tci.next()).getLocalParams();
             for (String name : testCaseParams) {
                 paramsClosure.add(name);
             }

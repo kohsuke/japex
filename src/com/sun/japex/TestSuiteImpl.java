@@ -390,7 +390,7 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
                     }
 
                     // Copy in-scope params not defined in original driver
-                    for (String name : inScope.nameSet()) {
+                    for (String name : inScope.getLocalParams()) {
                         if (!driverInfo.hasParam(name)) {
                             driverInfo.setParam(name, inScope.getParam(name));
                         }
@@ -518,7 +518,7 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
         // Compute a parameter closure for all drivers
         Set<String> paramsClosure = new HashSet<String>();
         for (DriverImpl di : _driverList) {
-            for (String name : di.nameSet()) {
+            for (String name : di.getLocalParams()) {
                 paramsClosure.add(name);
             }
         }

@@ -124,12 +124,22 @@ public class ParamsImpl implements Params {
         }
     }
 
-    /** 
-     * Returns the set of parameter names defined in this class
-     * ignoring params defined in <code>_defaults</code>.
+    /**
+     * Returns a set of all locally defined params. A param is local
+     * if it is defined in this set or in any enclosing set that is 
+     * not global. In particular, for <code>TestCaseImpl</code> and
+     * <code>DriverTestImpl</code> any group params will be local.
      */
-    public Set<String> nameSet() {
-        return _mapping.keySet();
+    public Set<String> getLocalParams() {
+        Set<String> result = new HashSet<String>();
+        ParamsImpl params = this;        
+        
+        do {
+            result.addAll(params._mapping.keySet());
+            params = params._defaults;
+        } while (!params.isGlobal()); 
+        
+        return result;
     }
     
     private Object getParamOrDefault(String name) {
