@@ -197,7 +197,7 @@ public class Util {
     static {
         DecimalFormatSymbols dfs = new DecimalFormatSymbols(Locale.US);
         dfs.setDecimalSeparator('.');   // should be redundant
-        _decimalFormat = new DecimalFormat("0.000", dfs);
+        _decimalFormat = new DecimalFormat("0.###", dfs);
         _decimalFormat.setGroupingSize(Byte.MAX_VALUE);
     }
     
