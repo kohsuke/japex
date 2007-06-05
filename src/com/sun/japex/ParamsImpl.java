@@ -233,12 +233,7 @@ public class ParamsImpl implements Params {
             return ((Double) value).intValue();
         }
         else {
-            try {
-                return Integer.parseInt((String) value);
-            }
-            catch (NumberFormatException e) {
-                throw new RuntimeException(e);
-            }
+            return Integer.parseInt((String) value);
         }
     }
     
@@ -276,7 +271,12 @@ public class ParamsImpl implements Params {
             return ((Double) value).doubleValue();
         }
         else {
-            return Double.parseDouble((String) value);
+            try {
+                return Double.parseDouble((String) value);
+            }
+            catch (NumberFormatException e) {
+                return Double.NaN;
+            }
         }
     }
 
