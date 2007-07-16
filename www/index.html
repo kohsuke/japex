@@ -6,20 +6,9 @@
         <META NAME="GENERATOR" CONTENT="NeoOffice/J 1.1  (Unix)">
         <META NAME="CREATED" CONTENT="20051209;13525700">
         <META NAME="CHANGED" CONTENT="20051221;10380700">
-        <SCRIPT>
-// kill "description" h3 bar
-ld = document.getElementById("longdescription");
-for( n=ld.firstChild; n!=null; n=n.nextSibling ) {
-  if(n.nodeType==1 && n.innerHTML=="Description" ) {
-    n.parentNode.removeChild(n);
-    break;
-  }
-}
-ld = document.getElementById("projecthome");
-ld.parentNode.removeChild(ld);
-        </SCRIPT>
     </HEAD>
     <BODY LANG="en-US" DIR="LTR">
+        <SCRIPT>document.getElementById("projecthome").style.display="none";</SCRIPT>
         <H3><A NAME="Introduction"></A><font face="Verdana, Arial, Helvetica, sans-serif">Introduction</font></H3>
         <P><font face="Verdana, Arial, Helvetica, sans-serif">Profiling is an art, an art that it is very hard to master.
                 Writing micro-benchmarks is one of the many tools available to
