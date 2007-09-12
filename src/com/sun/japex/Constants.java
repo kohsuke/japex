@@ -53,7 +53,7 @@ public class Constants {
     
     // Global output parameters
     public static final String VERSION         = "japex.version";
-    public static final String VERSION_VALUE   = "1.1.2";
+    public static final String VERSION_VALUE   = "1.1.3";
     public static final String OS_NAME         = "japex.osName";
     public static final String OS_ARCHITECTURE = "japex.osArchitecture";
     public static final String DATE_TIME       = "japex.dateTime";
@@ -93,6 +93,7 @@ public class Constants {
     public static final String WARMUP_TIME       = "japex.warmupTime";
     public static final String RUN_TIME          = "japex.runTime";
     public static final String INPUT_FILE        = "japex.inputFile";
+    public static final String RUN_ITERATION_DELAY = "japex.runIterationDelay";
     
     // Testcase output parameters
     public static final String ACTUAL_RUN_ITERATIONS = "japex.actualRunIterations";
@@ -115,6 +116,7 @@ public class Constants {
     // Default values
     public static final String DEFAULT_WARMUP_ITERATIONS  = "300";
     public static final String DEFAULT_RUN_ITERATIONS     = "300";
+    public static final String DEFAULT_RUN_ITERATION_DELAY = "0";
     public static final String DEFAULT_NUMBER_OF_THREADS  = "1";
     public static final String DEFAULT_RUNS_PER_DRIVER    = "1";
     public static final String DEFAULT_REPORTS_DIRECTORY  = "reports";

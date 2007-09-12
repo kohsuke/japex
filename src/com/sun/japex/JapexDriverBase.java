@@ -193,20 +193,44 @@ public class JapexDriverBase implements JapexDriver, Params {
 
         TestCaseImpl tc = _testCase;
         
+        double millis, startTime, duration, delayedEndTime;
+        
+        // Initialize iteration delay and iterations
         long runIterations = 0;
-        double millis, startTime, duration;
+        long runIterationDelay = tc.hasParam(Constants.RUN_ITERATION_DELAY) ?
+            tc.getLongParam(Constants.RUN_ITERATION_DELAY) : 0L;
         
         if (tc.hasParam(Constants.RUN_TIME)) {
             startTime = Util.currentTimeMillis();
             
             // Run phase
             do {
-                run(tc);      // Call run
-                runIterations++;
+                // Sleep for japex.runIterationDelay
+                if (runIterationDelay > 0) {
+                    try {
+                        if (Japex.verbose) {
+                            System.out.println("               " + 
+                                Thread.currentThread().getName() + " sleeping for " +
+                                    runIterationDelay + " ms"); 
+                        }
+                        Thread.currentThread().sleep(runIterationDelay);
+                    }
+                    catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                
+                // Call run() in driver and get current time
+                run(tc);
                 millis = Util.currentTimeMillis();
-            } while (_endTime >= millis);
+                
+                // Update iterations and calculate delayed end time
+                runIterations++;
+                delayedEndTime = _endTime + runIterations * runIterationDelay;
+            } while (delayedEndTime >= millis);
             
-            duration = millis - startTime;            
+            // Calculate duration excluding delayed time
+            duration = millis - startTime - runIterations * runIterationDelay;            
         }
         else {
             runIterations = tc.getLongParam(Constants.RUN_ITERATIONS);
@@ -214,10 +238,28 @@ public class JapexDriverBase implements JapexDriver, Params {
             // Run phase
             startTime = Util.currentTimeMillis();
             for (long i = 0; i < runIterations; i++) {
-                run(tc);      // Call run
+                // Sleep for japex.runIterationDelay
+                if (runIterationDelay > 0) {
+                    try {
+                        if (Japex.verbose) {
+                            System.out.println("               " + 
+                                Thread.currentThread().getName() + " sleeping for " +
+                                    runIterationDelay + " ms"); 
+                        }
+                        Thread.currentThread().sleep(runIterationDelay);
+                    }
+                    catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                
+                // Call run() in driver
+                run(tc);
             }
             
-            duration = Util.currentTimeMillis() - startTime;            
+            // Calculate duration excluding delayed time
+            duration = Util.currentTimeMillis() - startTime 
+                - runIterations * runIterationDelay;            
         }
         
         // Accumulate number of iterations and duration
