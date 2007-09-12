@@ -8,7 +8,7 @@
     <artheader>
         <title>Japex</title>
         <subtitle>
-            <subscript>Version 1.0.26 - Updated November 30, 2006</subscript>
+            <subscript>Version 1.1.3 - Updated September 12, 2007</subscript>
         </subtitle>
         <author>
             <firstname>Santiago</firstname>
@@ -573,17 +573,24 @@
                             test. DEFAULT: 300, TYPE: input. </entry>
                     </row>
                     <row>
+                        <entry>japex.runIterations</entry>
+                        <entry>Number of iterations used to execute each test. DEFAULT: 300, TYPE:
+                            input. </entry>
+                    </row>
+                    <row>
+                        <entry>japex.runIterationDelay</entry>
+                        <entry>Number of milliseconds to pause between iterations. If this value is
+                        greater than 0, the running thread will sleep for the specified number of
+                        milliseconds between calls to a driver's <token>run()</token> method.                    
+                        DEFAULT: 0, TYPE: input. </entry>
+                    </row>
+                    <row>
                         <entry>japex.inputFile</entry>
                         <entry>A path to the input file used in this test. This parameter is
                             primarily used by Japex whenever japex.resultUnit is 'mbps'. Determining
                             the size of the input is required to compute the test's throughput in
                             Megabits Per Second. TYPE: input/output.</entry>
                     </row>                    
-                    <row>
-                        <entry>japex.runIterations</entry>
-                        <entry>Number of iterations used to execute each test. DEFAULT: 300, TYPE:
-                            input. </entry>
-                    </row>
                     <row>
                         <entry>japex.resultValue[X]</entry>
                         <entry>The value of the output result for this test. If not specified, Japex
