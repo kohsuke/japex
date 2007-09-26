@@ -125,11 +125,11 @@ class JapexClassLoader extends URLClassLoader {
                         });
                         
                     for (String c : children) {
-                        addURL(new File(path + fileSep + c).toURL());
+                        addURL(new File(path + fileSep + c).toURI().toURL());
                     }
                 }
                 else {
-                    addURL(file.toURL());
+                    addURL(file.toURI().toURL());
                 }
             }
             catch (MalformedURLException e) {

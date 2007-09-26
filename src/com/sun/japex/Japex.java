@@ -173,7 +173,7 @@ public class Japex {
             new File(outputDir).mkdirs();
             System.out.println("Generating reports ...");
             System.out.println("  " + 
-                new File(outputDir + "/" + "report.xml").toURL());
+                new File(outputDir + "/" + "report.xml").toURI().toURL());
             OutputStreamWriter osw = new OutputStreamWriter(
                 new FileOutputStream(
                     new File(outputDir + fileSep + "report.xml")));
@@ -223,7 +223,7 @@ public class Japex {
                     new StreamSource(stylesheet.toExternalForm()));
 
                 System.out.println("  " + 
-                    new File(outputDir + "/" + "report.html").toURL());
+                    new File(outputDir + "/" + "report.html").toURI().toURL());
                 
                 File htmlReport = new File(outputDir + fileSep + "report.html");
                 transformer.transform(

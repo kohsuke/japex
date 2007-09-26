@@ -125,16 +125,16 @@ public class RegressionTracker {
             detector.setNewReport(nextReport);
 
             File outputReportXml = new File(outputDirectory,"report.xml");
-            System.out.println("\t" + lastReport.toURL());
-            System.out.println("\t" + nextReport.toURL());
+            System.out.println("\t" + lastReport.toURI().toURL());
+            System.out.println("\t" + nextReport.toURI().toURL());
 
             System.out.println("Output reports: ");
-            System.out.println("\t" + outputReportXml.toURL());
+            System.out.println("\t" + outputReportXml.toURI().toURL());
 
             detector.generateXmlReport(outputReportXml);
 
             File outputReportHtml = new File(outputDirectory,"report.html");
-            System.out.println("\t" + outputReportHtml.toURL());
+            System.out.println("\t" + outputReportHtml.toURI().toURL());
 
             detector.generateHtmlReport(outputReportXml,outputReportHtml);
 

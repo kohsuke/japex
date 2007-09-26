@@ -161,8 +161,8 @@ public class RegressionDetector {
 
             System.out.println("Input reports: ");
             transformer.setParameter("threshold", Double.toString(threshold));
-            transformer.setParameter("lastReport", oldReport.toURL().toExternalForm());
-            transformer.setParameter("nextReport", newReport.toURL().toExternalForm());
+            transformer.setParameter("lastReport", oldReport.toURI().toURL().toExternalForm());
+            transformer.setParameter("nextReport", newReport.toURI().toURL().toExternalForm());
             if (baseURL != null) {
                 transformer.setParameter("lastReportHref",getHref(oldReport));
                 transformer.setParameter("nextReportHref",getHref(newReport));
