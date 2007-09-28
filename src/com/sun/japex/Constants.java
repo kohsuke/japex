@@ -50,10 +50,11 @@ public class Constants {
     public static final String RESULT_AXIS_X     = "japex.resultAxisX";     // normal | logarithmic
     public static final String PLOT_DRIVERS      = "japex.plotDrivers";
     public static final String PLOT_GROUP_SIZE   = "japex.plotGroupSize";   // max group size
+    public static final String SINGLE_CLASS_LOADER = "japex.singleClassLoader";
     
     // Global output parameters
     public static final String VERSION         = "japex.version";
-    public static final String VERSION_VALUE   = "1.1.3";
+    public static final String VERSION_VALUE   = "1.1.4";
     public static final String OS_NAME         = "japex.osName";
     public static final String OS_ARCHITECTURE = "japex.osArchitecture";
     public static final String DATE_TIME       = "japex.dateTime";
@@ -123,7 +124,7 @@ public class Constants {
     public static final String DEFAULT_CHART_TYPE         = "barchart";
     public static final String DEFAULT_RESULT_AXIS        = "normal";
     public static final String DEFAULT_PLOT_DRIVERS       = "false";
-    public static final String DEFAULT_PLOT_GROUP_SIZE    = "5";    
-    
+    public static final String DEFAULT_PLOT_GROUP_SIZE    = "5";   
+    public static final String DEFAULT_SINGLE_CLASS_LOADER = "false";        
     public static final String DEFAULT_DATE_TIME_FORMAT   = "dd MMM yyyy/HH:mm:ss z";
 }

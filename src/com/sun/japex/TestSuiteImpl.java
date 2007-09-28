@@ -174,6 +174,12 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
             setParam(Constants.PLOT_GROUP_SIZE, Constants.DEFAULT_PLOT_GROUP_SIZE);
         }
 
+        // Check single class loader flag and set default if necessary
+        if (!hasParam(Constants.SINGLE_CLASS_LOADER)) {
+            setParam(Constants.SINGLE_CLASS_LOADER, 
+                     Constants.DEFAULT_SINGLE_CLASS_LOADER);
+        }
+        
         // Check number of threads 
         if (!hasParam(Constants.NUMBER_OF_THREADS)) {
             setParam(Constants.NUMBER_OF_THREADS,

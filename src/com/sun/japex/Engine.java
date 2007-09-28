@@ -158,6 +158,11 @@ public class Engine {
     private void forEachDriver() {
         try {
             List<DriverImpl> driverList = _testSuite.getDriverInfoList();
+
+            // Init class loader variables
+            JapexClassLoader jcLoader = null;
+            boolean singleClassLoader = 
+                    _testSuite.getBooleanParam(SINGLE_CLASS_LOADER);
             
             // Iterate through each driver in final list
             for (int k = 0; k < driverList.size(); k++) {
@@ -168,10 +173,20 @@ public class Engine {
                 int runsPerDriver = _driverImpl.getIntParam(RUNS_PER_DRIVER);
                 int warmupsPerDriver = _driverImpl.getIntParam(WARMUPS_PER_DRIVER);
 
-                // Create a Japex class loader for this driver
-                JapexClassLoader jcLoader = 
-                    new JapexClassLoader(_driverImpl.getParam(CLASS_PATH));
-		Thread.currentThread().setContextClassLoader(jcLoader);
+                // Create new class loader or extend path of existing one
+                if (singleClassLoader) {
+                    if (jcLoader == null) {
+                        jcLoader = new JapexClassLoader(_driverImpl.getParam(CLASS_PATH));
+                        Thread.currentThread().setContextClassLoader(jcLoader);
+                    }
+                    else {
+                        jcLoader.addClassPath(_driverImpl.getParam(CLASS_PATH));
+                    }
+                }
+                else {
+                    jcLoader = new JapexClassLoader(_driverImpl.getParam(CLASS_PATH));
+                    Thread.currentThread().setContextClassLoader(jcLoader);
+                }
  
                 System.out.print("  " + _driverImpl.getName() + " using " 
                     + nOfThreads + " thread(s) on " + nOfCpus + " cpu(s)");

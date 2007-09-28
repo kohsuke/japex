@@ -53,7 +53,7 @@ class JapexClassLoader extends URLClassLoader {
      */ 
     public JapexClassLoader(String classPath) {
         super(new URL[0], null);
-        initialize(classPath);
+        addClassPath(classPath);
     }
     
     public Class findClass(String name) throws ClassNotFoundException {
@@ -89,8 +89,8 @@ class JapexClassLoader extends URLClassLoader {
                 + "' must extend '" + JapexDriverBase.class.getName() + "'");
         }
     }
-    
-    private void initialize(String classPath) {
+   
+    public void addClassPath(String classPath) {
         if (classPath == null) {
             return;
         }
