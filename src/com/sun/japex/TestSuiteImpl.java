@@ -226,7 +226,7 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
             System.getProperty("java.vm.version"));
         setIntParam(Constants.NUMBER_OF_CPUS,
             Runtime.getRuntime().availableProcessors());
-        String hostName = "<unknown>";
+        String hostName = "localhost";
         try {
             hostName = java.net.InetAddress.getLocalHost().getHostName();
         }
