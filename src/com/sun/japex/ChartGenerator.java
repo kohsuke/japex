@@ -251,30 +251,32 @@ public class ChartGenerator {
 
             int nextPlotIndex = 1;
             CombinedDomainCategoryPlot plot = new CombinedDomainCategoryPlot();
-            
+
+            // Use same renderer in combine charts to get same colors
+            BarRenderer3D renderer = new BarRenderer3D();
+            renderer.setToolTipGenerator(new StandardCategoryToolTipGenerator());
+
             // Bar chart for secondary data set based on japex.resultValueX
             if (hasValueX) {
                 NumberAxis rangeAxisX = new NumberAxis(resultUnitX);
-                BarRenderer3D rendererX = new BarRenderer3D();
-                rendererX.setToolTipGenerator(new StandardCategoryToolTipGenerator());
                 CategoryPlot subplotX = new CategoryPlot(datasetX, null, rangeAxisX,
-                        rendererX);
+                        renderer);
                 
                 // Set transparency and clear legend for this plot
-                subplotX.setForegroundAlpha(0.75f);
+                subplotX.setForegroundAlpha(0.7f);
                 subplotX.setFixedLegendItems(new LegendItemCollection());
                 
                 plot.add(subplotX, nextPlotIndex++);
                 _chartHeight += 50;    // Adjust chart height
             }
+            else {
+            }
             
             // Bar chart for main data set based on japex.resultValue
             NumberAxis rangeAxis = new NumberAxis(resultUnit);
-            BarRenderer3D renderer = new BarRenderer3D();
-            renderer.setToolTipGenerator(new StandardCategoryToolTipGenerator());
             CategoryPlot subplot = new CategoryPlot(dataset, null, rangeAxis,
                     renderer);
-            subplot.setForegroundAlpha(0.75f);      // transparency
+            subplot.setForegroundAlpha(0.7f);      // transparency
             plot.add(subplot, nextPlotIndex);
             
             // Create chart and save it as JPEG
@@ -504,16 +506,18 @@ public class ChartGenerator {
                     int nextPlotIndex = 1;
                     CombinedDomainCategoryPlot plot = new CombinedDomainCategoryPlot();
                     
+                    // Use same renderer in combine charts to get same colors
+                    BarRenderer3D renderer = new BarRenderer3D();
+                    renderer.setToolTipGenerator(new StandardCategoryToolTipGenerator());
+
                     // Bar chart for secondary data set based on japex.resultValueX
                     if (hasValueX) {                        
                         NumberAxis rangeAxisX = new NumberAxis(resultUnitX);
-                        BarRenderer3D rendererX = new BarRenderer3D();
-                        rendererX.setToolTipGenerator(new StandardCategoryToolTipGenerator());
                         CategoryPlot subplotX = new CategoryPlot(datasetX, null, rangeAxisX,
-                            rendererX);
+                            renderer);
                         
                         // Set transparency and clear legend for this plot
-                        subplotX.setForegroundAlpha(0.75f);
+                        subplotX.setForegroundAlpha(0.7f);
                         subplotX.setFixedLegendItems(new LegendItemCollection());
                         
                         plot.add(subplotX, nextPlotIndex++);                        
@@ -522,11 +526,9 @@ public class ChartGenerator {
                     
                     // Bar chart for main data set based on japex.resultValue
                     NumberAxis rangeAxis = new NumberAxis(resultUnit);
-                    BarRenderer3D renderer = new BarRenderer3D();
-                    renderer.setToolTipGenerator(new StandardCategoryToolTipGenerator());
                     CategoryPlot subplot = new CategoryPlot(dataset, null, rangeAxis,
                             renderer);
-                    subplot.setForegroundAlpha(0.75f);      // transparency
+                    subplot.setForegroundAlpha(0.7f);      // transparency
                     plot.add(subplot, nextPlotIndex);
 
                     // Create chart and save it as JPEG
