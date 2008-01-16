@@ -72,8 +72,8 @@ import java.util.Iterator;
 public class RegressionDetector {
 
     /**
-     * Threshold to send e-mail notifications. If the delta of any mean
-     * (of any driver) is greater than the threshold, an e-mail will be
+     * Threshold to send e-mail notifications. If the delta of arithmetic
+     * mean (of any driver) is greater than the threshold, an e-mail will be
      * sent to the list of recipients.
      */
     private double threshold = -1.0;

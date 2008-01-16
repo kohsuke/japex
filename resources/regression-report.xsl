@@ -40,13 +40,12 @@
                 <!-- Calculate conditions to notify regressions -->
                 <xsl:variable name="aritThresholdMet"
                     select="$resultAritMeanDiffAsPercentage &gt; $threshold or -$resultAritMeanDiffAsPercentage &gt; $threshold"/>
-                <xsl:variable name="geomThresholdMet"
-                    select="$resultGeomMeanDiffAsPercentage &gt; $threshold or -$resultGeomMeanDiffAsPercentage &gt; $threshold"/>
-                <xsl:variable name="harmThresholdMet"
-                    select="$resultHarmMeanDiffAsPercentage &gt; $threshold or -$resultHarmMeanDiffAsPercentage &gt; $threshold"/>
                 
-                <!-- Include per-driver section in output report -->
-                <reg:driver name="{$driverName}" notify="{$aritThresholdMet or $geomThresholdMet or $harmThresholdMet}">
+                <!-- 
+                   - Include per-driver section in output report. Notify only if arithmetic mean 
+                   - difference exceeds the threshold 
+                   -->
+                <reg:driver name="{$driverName}" notify="$aritThresholdMet">
                     <reg:resultAritMeanDiff>
                         <xsl:value-of select="format-number($resultAritMeanDiff, '0.000')"/>
                     </reg:resultAritMeanDiff>
