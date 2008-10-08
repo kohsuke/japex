@@ -3,6 +3,7 @@
     xmlns:rep="http://www.sun.com/japex/testSuiteReport"
     xmlns:suite="http://www.sun.com/japex/testSuite"    
     xmlns:extrep="http://www.sun.com/japex/extendedTestSuiteReport"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
     exclude-result-prefixes="xi" version='1.0' >
 
     <xsl:output method="xml" indent="yes"/>
