@@ -162,6 +162,7 @@ public class RegressionTracker {
             detector.setOldReport(lastReport);
             detector.setNewReport(nextReport);
 
+            System.out.println("Input reports: ");
             File outputReportXml = new File(outputDirectory,"report.xml");
             System.out.println("\t" + lastReport.toURI().toURL());
             System.out.println("\t" + nextReport.toURI().toURL());
