@@ -158,7 +158,6 @@ public class RegressionDetector {
         try {
             Transformer transformer = REGRESSION_REPORT.newTransformer();
 
-            System.out.println("Input reports: ");
             transformer.setParameter("threshold", Double.toString(threshold));
             transformer.setParameter("lastReport", oldReport.toURI().toURL().toExternalForm());
             transformer.setParameter("nextReport", newReport.toURI().toURL().toExternalForm());
