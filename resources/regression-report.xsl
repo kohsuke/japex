@@ -45,7 +45,7 @@
                    - Include per-driver section in output report. Notify only if arithmetic mean 
                    - difference exceeds the threshold 
                    -->
-                <reg:driver name="{$driverName}" notify="$aritThresholdMet">
+                <reg:driver name="{$driverName}" notify="{$aritThresholdMet}">
                     <reg:resultAritMeanDiff>
                         <xsl:value-of select="format-number($resultAritMeanDiff, '0.000')"/>
                     </reg:resultAritMeanDiff>
