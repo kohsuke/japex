@@ -8,7 +8,7 @@
     <artheader>
         <title>Japex</title>
         <subtitle>
-            <subscript>Version 1.1.3 - Updated September 12, 2007</subscript>
+            <subscript>Version 1.1.7 - Updated October 12, 2009</subscript>
         </subtitle>
         <author>
             <firstname>Santiago</firstname>
@@ -147,7 +147,7 @@
                 
         <driver name="XDriver">
             <param name="Description" value="Driver for X parser"/>
-            <param name="japex.DriverClass" value="com.foo.XDriver"/>
+            <param name="japex.driverClass" value="com.foo.XDriver"/>
         </driver>
         <driver name="YDriver">
             <param name="Description" value="Driver for Y parser"/>
@@ -230,7 +230,7 @@
         ...
         <driver name="XDriver" normal="true">   <!-- Normalize results using this driver -->
             <param name="Description" value="Driver for X parser"/>
-            <param name="japex.DriverClass" value="com.foo.XDriver"/>
+            <param name="japex.driverClass" value="com.foo.XDriver"/>
         </driver>                    
         ...            
     </testSuite>]]></programlisting>
