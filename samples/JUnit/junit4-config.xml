@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testSuite name="JUnitSample" xmlns="http://www.sun.com/japex/testSuite">
+<testSuite name="JUnit4Sample" xmlns="http://www.sun.com/japex/testSuite">
 
     <param name="japex.classPath" value="dist/classes"/>
     <param name="japex.classPath" value="${JAPEX_HOME}/jdsl/*.jar"/>
@@ -11,18 +11,14 @@
     <driver name="JUnitDriver">
         <param name="japex.driverClass" value="com.sun.japex.jdsl.junit.JUnitDriver"/>
         <param name="description" value="JUnit Driver"/>
+        <param name="testName" value="JUnitSuite"/>  <!-- Required by JUnit4 -->
     </driver>
 
     <testCase name="testHello">
-        <param name="testName" value="JUnitSuite"/>
         <param name="methodName" value="testHello"/>
     </testCase>
     <testCase name="testBye">
-        <param name="testName" value="JUnitSuite"/>
         <param name="methodName" value="testBye"/>
-    </testCase>
-    <testCase name="testHelloAndBye">
-        <param name="testName" value="JUnitSuite"/>
     </testCase>
 
 </testSuite>

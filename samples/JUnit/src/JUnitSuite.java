@@ -36,7 +36,8 @@
  *
  */
 
-import junit.framework.*;
+import junit.framework.TestCase;
+import org.junit.*;
 
 public class JUnitSuite extends TestCase {
     
@@ -44,18 +45,33 @@ public class JUnitSuite extends TestCase {
         super(testName);
     }
 
-    protected void setUp() throws java.lang.Exception {
-    }
-
-    protected void tearDown() throws java.lang.Exception {
-    }
-
     public static junit.framework.Test suite() {
         junit.framework.TestSuite suite = 
             new junit.framework.TestSuite(JUnitSuite.class);
         return suite;
     }
+
+    @BeforeClass
+    public static void beforeClassTest() {
+        System.out.print("\nbeforeClassTest called");
+    }
     
+    @AfterClass
+    public static void afterClassTest() {
+        System.out.println("afterClassTest called");
+    }
+    
+    @Before
+    public void beforeTest() {
+        System.out.print("\nbeforeTest called");
+    }
+
+    @After
+    public void afterTest() {
+        System.out.println("\nafterTest called");
+    }
+
+    @Test
     public void testHello() {
         try {
             Thread.sleep(100);	// Waste some time
@@ -64,7 +80,8 @@ public class JUnitSuite extends TestCase {
             // ignore
         }
     }
-    
+
+    @Test
     public void testBye() {
         try {
             Thread.sleep(200);	// Waste some time
