@@ -1,7 +1,7 @@
 /*
  * Japex software ("Software")
  *
- * Copyright, 2004-2007 Sun Microsystems, Inc. All Rights Reserved.
+ * Copyright, 2004-2009 Sun Microsystems, Inc. All Rights Reserved.
  *
  * Software is licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License. You may
@@ -44,9 +44,24 @@ import java.lang.reflect.Constructor;
 import com.sun.japex.JapexDriverBase;
 import com.sun.japex.TestCase;
 import junit.framework.Test;
-import junit.textui.TestRunner;     
+import junit.textui.TestRunner;
+
+import org.junit.Before;
+import org.junit.After;
+import org.junit.BeforeClass;
+import org.junit.AfterClass;
 
 /**
+ * <p>Implementation of a JUnit driver. The JUnit test class is
+ * defined by the 'testName' parameter, which can be either a 
+ * driver or testcase parameter; the method name is defined by 
+ * the 'methodName' parameter which is always a testcase parameter.
+ * 
+ * This version support JUnit 4.X which requires 'testName' to
+ * be a driver parameter. It supports the following annotations:
+ * @BeforeClass, @AfterClass, @Before and @After.
+ * These methods are called, respectively, from initializeDriver(),
+ * terminateDriver(), prepare(TestCase) and finish(TestCase).</p>
  *
  * @author Sameer.Tyagi@sun.com
  * @author Smitha.Prabhu@sun.com
@@ -54,12 +69,6 @@ import junit.textui.TestRunner;
  * @author Santiago.PericasGeertsen@sun.com
  */
 public class JUnitDriver extends JapexDriverBase {
-
-    /**
-     * The name of the Junit test. It is set as a test case
-     * parameter in the Japex configuration file. 
-     */
-    String _testName;
 
     /**
      * The name of the method in the JUnit test program. It is
@@ -84,25 +93,114 @@ public class JUnitDriver extends JapexDriverBase {
      * specified.
      */
     Method _method;
-    
+
+    /**
+     * JUnit test class loaded.
+     */
+    Class _testClass;
+
+    /**
+     * Method in JUnit4 test class annotated by @BeforeClass.
+     */
+    Method _beforeClassMethod;
+
+    /**
+     * Method in JUnit4 test class annotated by @AfterClass.
+     */
+    Method _afterClassMethod;
+
+    /**
+     * Method in JUnit4 test class annotated by @Before.
+     */
+    Method _beforeMethod;
+
+    /**
+     * Method in JUnit4 test class annotated by @After.
+     */
+    Method _afterMethod;
+
+    @Override
+    public void initializeDriver() {
+        super.initializeDriver();
+
+        try {
+            // Is testName specified as driver param?
+            String testName = getParam("testName");
+            if (testName != null) {
+                _testClass = getClass().getClassLoader().loadClass(testName);
+
+                // JUnit4 annotations @Before(Class) and @After(Class)
+                Method[] mm = _testClass.getDeclaredMethods();
+                for (int i = 0; i < mm.length; i++) {
+                    After after = mm[i].getAnnotation(After.class);
+                    if (after != null) {
+                        _afterMethod = mm[i];
+                    }
+                    Before before = mm[i].getAnnotation(Before.class);
+                    if (before != null) {
+                        _beforeMethod = mm[i];
+                    }
+                    AfterClass afterClass = mm[i].getAnnotation(AfterClass.class);
+                    if (afterClass != null) {
+                        _afterClassMethod = mm[i];
+                    }
+                    BeforeClass beforeClass = mm[i].getAnnotation(BeforeClass.class);
+                    if (beforeClass != null) {
+                        _beforeClassMethod = mm[i];
+                    }
+                }
+
+                // Call @BeforeClass method now
+                if (_beforeClassMethod != null) {
+                    _beforeClassMethod.invoke(null);
+                }
+            }
+        } catch (RuntimeException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public void prepare(TestCase testCase) {
         try {
-            _testName = testCase.getParam("testName");
+            String testName = testCase.getParam("testName");
+            // If testName here, reload class for backward compatibility
+            if (testName != null) {
+                _testClass = getClass().getClassLoader().loadClass(testName);
+            }
+
             _methodName = testCase.getParam("methodName");
-        
-            // Use class loader that loaded this class
-            Class testClass = getClass().getClassLoader().loadClass(_testName);
-            
+
             if (_methodName == null) {
-                Method suiteMethod = testClass.getMethod("suite", (Class[]) null);
-                _testSuite = (junit.framework.Test) 
+                Method suiteMethod = _testClass.getMethod("suite", (Class[]) null);
+                _testSuite = (junit.framework.Test)
                     suiteMethod.invoke((Object) null, (Object[]) null);
-            } 
+            }
             else {
-                _method = testClass.getMethod(_methodName, (Class[]) null);
-                Constructor con = 
-                    testClass.getConstructor(new Class[] { new String().getClass() });
-                _object = con.newInstance(new Object[] { _testName });
+                _method = _testClass.getMethod(_methodName, (Class[]) null);
+
+                // Try <init>(String) first
+                Constructor con = _testClass.getConstructor(
+                        new Class[] { new String().getClass() });
+                if (con == null) {
+                    // Try <init>() default constructor
+                    con = _testClass.getConstructor(new Class[] { });
+                    if (con == null) {
+                        throw new RuntimeException("Unable to find suitable " +
+                            "constructor in class '" + _testClass.getName() + "'");
+                    } else {
+                        _object = con.newInstance(new Object[] { });
+                    }
+                } else {
+                    _object = con.newInstance(new Object[] { testName });
+                }
+            }
+
+            // Call @Before method now
+            if (_beforeMethod != null) {
+                _beforeMethod.invoke(_object);
             }
         }
         catch (RuntimeException e) {
@@ -112,7 +210,8 @@ public class JUnitDriver extends JapexDriverBase {
             throw new RuntimeException(e);
         }
     }
-    
+
+    @Override
     public void run(TestCase testCase) {
         try {
             if (_methodName == null) {
@@ -130,5 +229,34 @@ public class JUnitDriver extends JapexDriverBase {
         catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }    
+    }
+
+    @Override
+    public void finish(TestCase testCase) {
+        super.finish(testCase);
+
+        try {
+            // Call @After method now
+            if (_afterMethod != null) {
+                _afterMethod.invoke(_object);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void terminateDriver() {
+        super.terminateDriver();
+
+        try {
+            // Call @AfterClass method now
+            if (_afterClassMethod != null) {
+                _afterClassMethod.invoke(null);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
