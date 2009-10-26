@@ -130,25 +130,7 @@ public class JUnitDriver extends JapexDriverBase {
                 _testClass = getClass().getClassLoader().loadClass(testName);
 
                 // JUnit4 annotations @Before(Class) and @After(Class)
-                Method[] mm = _testClass.getDeclaredMethods();
-                for (int i = 0; i < mm.length; i++) {
-                    After after = mm[i].getAnnotation(After.class);
-                    if (after != null) {
-                        _afterMethod = mm[i];
-                    }
-                    Before before = mm[i].getAnnotation(Before.class);
-                    if (before != null) {
-                        _beforeMethod = mm[i];
-                    }
-                    AfterClass afterClass = mm[i].getAnnotation(AfterClass.class);
-                    if (afterClass != null) {
-                        _afterClassMethod = mm[i];
-                    }
-                    BeforeClass beforeClass = mm[i].getAnnotation(BeforeClass.class);
-                    if (beforeClass != null) {
-                        _beforeClassMethod = mm[i];
-                    }
-                }
+                findJUnit4Methods(_testClass);
 
                 // Call @BeforeClass method now
                 if (_beforeClassMethod != null) {
@@ -181,12 +163,21 @@ public class JUnitDriver extends JapexDriverBase {
             else {
                 _method = _testClass.getMethod(_methodName, (Class[]) null);
 
-                // Try <init>(String) first
-                Constructor con = _testClass.getConstructor(
-                        new Class[] { new String().getClass() });
+                Constructor con = null;
+                try {
+                    // Try <init>(String) first
+                    con = _testClass.getConstructor(
+                            new Class[] { new String().getClass() });
+                } catch (NoSuchMethodException _) {
+                    // falls through
+                }
                 if (con == null) {
-                    // Try <init>() default constructor
-                    con = _testClass.getConstructor(new Class[] { });
+                    try {
+                        // Try <init>() default constructor
+                        con = _testClass.getConstructor(new Class[] { });
+                    } catch (NoSuchMethodException _) {
+                        // falls through
+                    }
                     if (con == null) {
                         throw new RuntimeException("Unable to find suitable " +
                             "constructor in class '" + _testClass.getName() + "'");
@@ -255,6 +246,51 @@ public class JUnitDriver extends JapexDriverBase {
                 _afterClassMethod.invoke(null);
             }
         } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void findJUnit4Methods(Class testClass) {
+        try {
+            int notFound = 4;       // # of methods to find
+
+            do {
+                Method[] mm = testClass.getDeclaredMethods();
+                for (int i = 0; i < mm.length; i++) {
+                    if (_afterMethod == null) {
+                        After after = mm[i].getAnnotation(After.class);
+                        if (after != null) {
+                            _afterMethod = mm[i];
+                            notFound--;
+                        }
+                    }
+                    if (_beforeMethod == null) {
+                        Before before = mm[i].getAnnotation(Before.class);
+                        if (before != null) {
+                            _beforeMethod = mm[i];
+                            notFound--;
+                        }
+                    }
+                    if (_afterClassMethod == null) {
+                        AfterClass afterClass = mm[i].getAnnotation(AfterClass.class);
+                        if (afterClass != null) {
+                            _afterClassMethod = mm[i];
+                            notFound--;
+                        }
+                    }
+                    if (_beforeClassMethod == null) {
+                        BeforeClass beforeClass = mm[i].getAnnotation(BeforeClass.class);
+                        if (beforeClass != null) {
+                            _beforeClassMethod = mm[i];
+                            notFound--;
+                        }
+                    }
+                }
+                // Now lets inspect super class
+                testClass = testClass.getSuperclass();
+            } while (notFound > 0 && testClass != Object.class);
+        }
+        catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
