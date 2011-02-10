@@ -47,6 +47,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+
 import javax.xml.bind.Marshaller;
 import javax.xml.transform.*;
 import javax.xml.transform.stream.*;
@@ -64,6 +66,8 @@ public class Japex {
     
     public static Date TODAY = new Date();
     
+    private Engine engine;
+    
     private static String identityTx = 
         "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">" +
         "<xsl:template match=\"@*|node()\">" +
@@ -72,6 +76,11 @@ public class Japex {
         "</xsl:stylesheet>";
     
     public Japex() {
+    	engine = new Engine();
+    }
+    
+    public Map<String, ClassLoader> getNamedClasspaths() {
+    	return engine.getNamedClassPaths();
     }
     
     public void setHtml(boolean html) {
@@ -152,7 +161,7 @@ public class Japex {
     public void run(List<String> configFiles) {  
         try {            
             // Create testsuite object from configuration file
-            TestSuiteImpl testSuite = new Engine().start(configFiles);
+            TestSuiteImpl testSuite = engine.start(configFiles);
             
             // If running in test mode, just return
             if (test) return;

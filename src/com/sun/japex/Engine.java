@@ -158,21 +158,21 @@ public class Engine {
     }        
     
     private JapexDriverBase getJapexDriver(ClassLoader loader, String className) throws ClassNotFoundException { 
-    try {
-        // Use 'this' class loader here
-        Class<? extends JapexDriverBase> clazz = Class.forName(className, true, loader).asSubclass(JapexDriverBase.class);
-        return clazz.newInstance();
-    }
-    catch (InstantiationException e) {
-        throw new RuntimeException(e);
-    }
-    catch (IllegalAccessException e) {
-        throw new RuntimeException(e);
-    }
-    catch (ClassCastException e) {
-        throw new RuntimeException("Class '" + className 
-            + "' must extend '" + JapexDriverBase.class.getName() + "'");
-    }
+    	try {
+        // 	Use 'this' class loader here
+    		Class<? extends JapexDriverBase> clazz = Class.forName(className, true, loader).asSubclass(JapexDriverBase.class);
+    		return clazz.newInstance();
+    	}
+    	catch (InstantiationException e) {
+    		throw new RuntimeException(e);
+    	}
+    	catch (IllegalAccessException e) {
+    		throw new RuntimeException(e);
+    	}
+    	catch (ClassCastException e) {
+    		throw new RuntimeException("Class '" + className 
+    				+ "' must extend '" + JapexDriverBase.class.getName() + "'");
+    	}
 }
 
     private void forEachDriver() {
@@ -737,7 +737,7 @@ public class Engine {
         return hms;
     }
     
-    public Map<String, ClassLoader> getNamedCLassPaths() {
+    public Map<String, ClassLoader> getNamedClassPaths() {
     	return _namedClassPaths;
     }
 }
