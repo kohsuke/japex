@@ -42,11 +42,11 @@ import java.util.concurrent.*;
 
 public class JapexThreadFactory implements ThreadFactory {
 
-    JapexClassLoader _classLoader;
+    ClassLoader _classLoader;
     
     ThreadFactory threadFactory = Executors.defaultThreadFactory();
     
-    public JapexThreadFactory(JapexClassLoader classLoader) {
+    public JapexThreadFactory(ClassLoader classLoader) {
         _classLoader = classLoader;
     }
  

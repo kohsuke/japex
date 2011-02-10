@@ -107,8 +107,11 @@ public class Engine {
      */
     long _beforeHeapMemoryUsage;
     
+    private Map<String, ClassLoader> _namedClassPaths;
+    
     public Engine() {
-        _gCCollectors = ManagementFactory.getGarbageCollectorMXBeans();                 
+        _gCCollectors = ManagementFactory.getGarbageCollectorMXBeans();
+        _namedClassPaths = new HashMap<String, ClassLoader>();
     }
     
     public TestSuiteImpl start(List<String> configFiles) {
@@ -153,6 +156,24 @@ public class Engine {
 
         return _testSuite;
     }        
+    
+    private JapexDriverBase getJapexDriver(ClassLoader loader, String className) throws ClassNotFoundException { 
+    try {
+        // Use 'this' class loader here
+        Class<? extends JapexDriverBase> clazz = Class.forName(className, true, loader).asSubclass(JapexDriverBase.class);
+        return clazz.newInstance();
+    }
+    catch (InstantiationException e) {
+        throw new RuntimeException(e);
+    }
+    catch (IllegalAccessException e) {
+        throw new RuntimeException(e);
+    }
+    catch (ClassCastException e) {
+        throw new RuntimeException("Class '" + className 
+            + "' must extend '" + JapexDriverBase.class.getName() + "'");
+    }
+}
 
     private void forEachDriver() {
         try {
@@ -162,6 +183,8 @@ public class Engine {
             JapexClassLoader jcLoader = null;
             boolean singleClassLoader = 
                     _testSuite.getBooleanParam(SINGLE_CLASS_LOADER);
+            ClassLoader effectiveClassLoader = null;
+            boolean contextClassLoader = _testSuite.getBooleanParam(CONTEXT_CLASS_LOADER);
             
             // Iterate through each driver in final list
             for (int k = 0; k < driverList.size(); k++) {
@@ -171,20 +194,33 @@ public class Engine {
                 int nOfThreads = _driverImpl.getIntParam(NUMBER_OF_THREADS);
                 int runsPerDriver = _driverImpl.getIntParam(RUNS_PER_DRIVER);
                 int warmupsPerDriver = _driverImpl.getIntParam(WARMUPS_PER_DRIVER);
-
-                // Create new class loader or extend path of existing one
-                if (singleClassLoader) {
-                    if (jcLoader == null) {
-                        jcLoader = new JapexClassLoader(_driverImpl.getParam(CLASS_PATH));
-                        Thread.currentThread().setContextClassLoader(jcLoader);
-                    }
-                    else {
-                        jcLoader.addClassPath(_driverImpl.getParam(CLASS_PATH));
-                    }
-                }
-                else {
-                    jcLoader = new JapexClassLoader(_driverImpl.getParam(CLASS_PATH));
-                    Thread.currentThread().setContextClassLoader(jcLoader);
+                
+                if (contextClassLoader) {
+                	effectiveClassLoader = Thread.currentThread().getContextClassLoader();
+                } else {
+                	String namedClassPath = _driverImpl.getParam(NAMED_CLASS_PATH);
+                	if (namedClassPath != null) {
+                		effectiveClassLoader = _namedClassPaths.get(namedClassPath);
+                		if (effectiveClassLoader == null) {
+                			throw new RuntimeException("Reference to undefined class path " + namedClassPath);
+                		}
+                	} else {
+                		// Create new class loader or extend path of existing one
+                		if (singleClassLoader) {
+                			if (jcLoader == null) {
+                				jcLoader = new JapexClassLoader(_driverImpl.getParam(CLASS_PATH));
+                				Thread.currentThread().setContextClassLoader(jcLoader);
+                				effectiveClassLoader = jcLoader;
+                			}
+                			else {
+                				jcLoader.addClassPath(_driverImpl.getParam(CLASS_PATH));
+                			}
+                		} else {
+                			jcLoader = new JapexClassLoader(_driverImpl.getParam(CLASS_PATH));
+                			Thread.currentThread().setContextClassLoader(jcLoader);
+                			effectiveClassLoader = jcLoader;
+                		}
+                	}
                 }
  
                 System.out.print("  " + _driverImpl.getName() + " using " 
@@ -196,9 +232,9 @@ public class Engine {
                     _drivers = new JapexDriverBase[nOfThreads][actualRuns];
                     for (int i = 0; i < nOfThreads; i++) {
                         for (int j = 0; j < actualRuns; j++) {
-                            _drivers[i][j] = 
-                                jcLoader.getJapexDriver(
-                                    _driverImpl.getParam(DRIVER_CLASS));   // returns fresh copy
+                        	String driverClassName = _driverImpl.getParam(DRIVER_CLASS);
+                        	_drivers[i][j] = getJapexDriver(effectiveClassLoader, driverClassName); // returns fresh copy.
+
                             _drivers[i][j].setDriver(_driverImpl);
                             _drivers[i][j].setTestSuite(_testSuite);
                             _drivers[i][j].initializeDriver();
@@ -224,7 +260,7 @@ public class Engine {
 		if (nOfThreads > 1) {
 		    _threadPool = new ThreadPoolExecutor(nOfThreads, nOfThreads, 0L,
 			TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(),
-			new JapexThreadFactory(jcLoader));      // Use Japex thread factory
+			new JapexThreadFactory(effectiveClassLoader));      // Use Japex thread factory
 		    _threadPool.prestartAllCoreThreads();
 		}
 
@@ -699,5 +735,9 @@ public class Engine {
         hms[1] = (int) ((seconds / 60) % 60);
         hms[2] = (int) (seconds % 60);
         return hms;
+    }
+    
+    public Map<String, ClassLoader> getNamedCLassPaths() {
+    	return _namedClassPaths;
     }
 }

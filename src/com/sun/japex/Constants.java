@@ -50,6 +50,11 @@ public class Constants {
     public static final String PLOT_DRIVERS      = "japex.plotDrivers";
     public static final String PLOT_GROUP_SIZE   = "japex.plotGroupSize";   // max group size
     public static final String SINGLE_CLASS_LOADER = "japex.singleClassLoader";
+    /**
+     * If set to true, japex simply uses the thread context class loader for all drivers.
+     * This is intended for environments where Japex is embedded.
+     */
+    public static final String CONTEXT_CLASS_LOADER = "japex.contextClassLoader";
     
     // Global output parameters
     public static final String VERSION         = "japex.version";
@@ -65,6 +70,10 @@ public class Constants {
     // Driver input parameters        
     public static final String DRIVER_CLASS       = "japex.driverClass";
     public static final String CLASS_PATH         = "japex.classPath";
+    /**
+     * Specify the class path for a driver by a name for a class loader supplied via API to the engine.
+     */
+    public static final String NAMED_CLASS_PATH = "japex.namedClassPath";
     public static final String NUMBER_OF_THREADS  = "japex.numberOfThreads";
     public static final String RUNS_PER_DRIVER    = "japex.runsPerDriver";
     public static final String WARMUPS_PER_DRIVER = "japex.warmupsPerDriver";
