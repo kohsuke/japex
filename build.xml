@@ -185,6 +185,9 @@
         <ant dir="${basedir}/samples/FastInfoset" target="run" inheritrefs="true">
             <property name="config" value="speed-config.xml"/>
         </ant>
+        <ant dir="${basedir}/samples/EmbeddedSimpleClasspath" target="run" inheritrefs="true">
+            <property name="config" value="japex-config.xml"/>
+        </ant>
     </target>
     
     <target name="run-trendreport" depends="dist" description="Run sample trend report">
