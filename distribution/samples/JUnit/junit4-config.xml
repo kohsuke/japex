@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testSuite name="JUnit4Sample" xmlns="http://www.sun.com/japex/testSuite">
+
+    <param name="japex.classPath" value="dist/classes"/>
+    <param name="japex.classPath" value="${JAPEX_HOME}/jdsl/*.jar"/>
+    
+    <param name="japex.resultUnit" value="ms"/>
+    <param name="japex.warmupTime" value="0"/>
+    <param name="japex.runTime" value="1"/>
+
+    <driver name="JUnitDriver">
+        <param name="japex.driverClass" value="com.sun.japex.jdsl.junit.JUnitDriver"/>
+        <param name="description" value="JUnit Driver"/>
+        <param name="testName" value="JUnitSuite"/>  <!-- Required by JUnit4 -->
+    </driver>
+
+    <testCase name="testHello">
+        <param name="methodName" value="testHello"/>
+    </testCase>
+    <testCase name="testBye">
+        <param name="methodName" value="testBye"/>
+    </testCase>
+
+</testSuite>

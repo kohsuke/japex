@@ -4,40 +4,12 @@
     <groupId>com.sun.japex</groupId>
     <artifactId>jdsl</artifactId>
     <version>1.1.8-SNAPSHOT</version>
-    <name>japex jdsl</name>
+    <name>Japex jdsl</name>
     <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>6</version>
+      <groupId>com.sun.japex</groupId>
+      <artifactId>japex-all</artifactId>
+      <version>1.1.8-SNAPSHOT</version>
     </parent>
-    <!-- eventually inherit from parent, but one piece at a time -->
-    <!-- or we might not want this to be tied together at the top, anyhow -->
-    <scm>
-        <connection>http://svn.java.net/svn/japex~svn/trunk/jdsl</connection>
-        <developerConnection>https://svn.java.net/svn/japex~svn/trunk/jdsl</developerConnection>
-        <!-- no URL, no browse access set up -->
-    </scm>
-    <build>
-        <defaultGoal>install</defaultGoal>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>2.3.2</version>
-                    <configuration>
-                        <source>1.5</source>
-                        <target>1.5</target>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>2.4.3</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-    </build>
     <dependencies>
         <dependency>
             <groupId>com.sun.japex</groupId>
@@ -61,21 +33,17 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.8.2</version>
-            <type>jar</type>
+	    <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.stream</groupId>
             <artifactId>sjsxp</artifactId>
             <version>1.0.1</version>
-            <type>jar</type>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
             <version>2.9.1</version>
-            <type>jar</type>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>
