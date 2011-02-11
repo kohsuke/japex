@@ -49,6 +49,12 @@
 	  <artifactId>jdsl</artifactId>
 	  <version>1.1.8-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.2</version>
+	    <scope>compile</scope>
+        </dependency>
     </dependencies>
     <profiles>
       <profile>
@@ -67,6 +73,7 @@
 		      <property name="env.JAPEX_HOME" value="${project.build.directory}/japex"/>
 		      <property name="runtime_classpath" refid="maven.runtime.classpath"/>
 		      <ant dir="samples/MemoryUsage"/>
+		      <ant dir="samples/JUnit"/>
 		    </target>
 		  </configuration>
 		  <goals>

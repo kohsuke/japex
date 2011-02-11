@@ -8,10 +8,30 @@
   </formats>
   <dependencySets>
     <dependencySet>
+      <includes>
+	<include>com.sun.japex:japex</include>
+	<include>javax.xml.bind:jaxb-api</include>
+	<include>javax.xml.bind:jsr173_api</include>
+	<include>javax.activation:activation</include>
+	<include>javax.mail:mail</include>
+	<include>jfree:*</include>
+	<include>org.apache.ant:*</include>
+      </includes>
       <useProjectArtifact>false</useProjectArtifact>
       <outputDirectory>lib</outputDirectory>
       <unpack>false</unpack>
-      <scope>compile</scope>
+    </dependencySet> 
+    <dependencySet>
+      <includes>
+	<include>com.sun.japex:jdsl</include>
+	<include>com.sun.xml.fastinfoset:*</include>
+	<include>com.sun.xml.stream.buffer:*</include>
+	<include>junit:junit</include>
+	<include>xerces:xercesImpl</include>
+      </includes>
+      <useProjectArtifact>false</useProjectArtifact>
+      <outputDirectory>jdsl</outputDirectory>
+      <unpack>false</unpack>
     </dependencySet> 
   </dependencySets>
   <fileSets>

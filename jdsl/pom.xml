@@ -20,7 +20,6 @@
             <groupId>com.sun.xml.fastinfoset</groupId>
             <artifactId>FastInfoset</artifactId>
             <version>1.2.9-SNAPSHOT</version>
-            <type>jar</type>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.stream.buffer</groupId>
@@ -42,6 +41,12 @@
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
             <version>2.9.1</version>
+	    <exclusions>
+	      <exclusion>
+		<groupId>xml-apis</groupId>
+		<artifactId>xml-apis</artifactId>
+	      </exclusion>
+	    </exclusions>
         </dependency>
     </dependencies>
 </project>

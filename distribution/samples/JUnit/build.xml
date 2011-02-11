@@ -29,7 +29,8 @@
     <target name="run" depends="dist">
         <java dir="." fork="true" classname="com.sun.japex.Japex">
             <classpath refid="class.path"/>
-            <arg line="${config}/"/>
+	    <sysproperty key="java.awt.headless" value="true"/>
+            <arg value="${config}/"/>
         </java>
     </target>
 </project>
