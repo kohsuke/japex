@@ -21,8 +21,6 @@
             <artifactId>FastInfoset</artifactId>
             <version>1.2.9-SNAPSHOT</version>
             <type>jar</type>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/FastInfoset.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.stream.buffer</groupId>

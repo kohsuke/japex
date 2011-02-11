@@ -139,11 +139,11 @@ public class RegressionDetector {
     static {
         try {
             URL stylesheet;
-            stylesheet = RegressionDetector.class.getResource("/resources/regression-report.xsl");
+            stylesheet = RegressionDetector.class.getResource("/regression-report.xsl");
             REGRESSION_REPORT = tf.newTemplates(
                     new StreamSource(stylesheet.toExternalForm()));
 
-            stylesheet = RegressionDetector.class.getResource("/resources/regression-report-html.xsl");
+            stylesheet = RegressionDetector.class.getResource("/regression-report-html.xsl");
             REGRESSION_REPORT_HTML = tf.newTemplates(
                     new StreamSource(stylesheet.toExternalForm()));
         } catch (TransformerConfigurationException e) {

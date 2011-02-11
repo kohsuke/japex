@@ -239,7 +239,7 @@ public class RegressionTracker {
 
         try {
             int c;
-            URL css = getClass().getResource("/resources/" + basename);
+            URL css = getClass().getResource("/" + basename);
             if (css != null) {
                 is = css.openStream();
                 os = new BufferedOutputStream(new FileOutputStream(

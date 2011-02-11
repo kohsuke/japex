@@ -52,6 +52,7 @@
         </pluginManagement>
     </build>
     <modules>
+      <module>fastinfoset-temp</module>
       <module>core</module>
       <module>jdsl</module>
       <module>distribution</module>

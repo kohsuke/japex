@@ -339,7 +339,7 @@ public class Util {
         
         try {
             int c;
-            URL css = Util.class.getResource("/resources/" + basename);
+            URL css = Util.class.getResource("/" + basename);
             if (css != null) {
                 is = css.openStream();
                 os = new BufferedOutputStream(new FileOutputStream(

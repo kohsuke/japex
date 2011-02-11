@@ -50,4 +50,33 @@
 	  <version>1.1.8-SNAPSHOT</version>
         </dependency>
     </dependencies>
+    <profiles>
+      <profile>
+	<id>run-samples</id>
+	<build>
+	  <plugins>
+	    <plugin>
+	      <artifactId>maven-antrun-plugin</artifactId>
+	      <version>1.6</version>
+	      <executions>
+		<execution>
+		  <phase>integration-test</phase>
+		  <configuration>
+		    <target>
+		      <property environment="env" />
+		      <property name="env.JAPEX_HOME" value="${project.build.directory}/japex"/>
+		      <property name="runtime_classpath" refid="maven.runtime.classpath"/>
+		      <ant dir="samples/MemoryUsage"/>
+		    </target>
+		  </configuration>
+		  <goals>
+		    <goal>run</goal>
+		  </goals>
+		</execution>
+	      </executions>
+	    </plugin>
+	  </plugins>
+	</build>
+      </profile>
+    </profiles>
 </project>

@@ -82,7 +82,7 @@ public class ConditionalProcessor {
             }
             propertyList.append(' ');
             
-            URL stylesheet = getClass().getResource("/resources/conditional-inclusion.xsl");
+            URL stylesheet = getClass().getResource("/conditional-inclusion.xsl");
             assert stylesheet != null;
             
             // By default, parser use by transformer does not process XInclude

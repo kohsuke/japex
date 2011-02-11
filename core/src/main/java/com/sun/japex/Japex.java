@@ -229,7 +229,7 @@ public class Japex {
             extendedReport.append("</extendedTestSuiteReport>\n");
 
             // Generate HTML report
-            URL stylesheet = getClass().getResource("/resources/report.xsl");
+            URL stylesheet = getClass().getResource("/report.xsl");
             if (stylesheet != null) {
                 TransformerFactory tf = TransformerFactory.newInstance();  
                 Transformer transformer = tf.newTransformer(
