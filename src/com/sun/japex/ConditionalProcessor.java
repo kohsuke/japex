@@ -75,7 +75,7 @@ public class ConditionalProcessor {
         try {
             // Convert the system props to the string " name1 name2 ... nameN "
             StringBuffer propertyList = new StringBuffer();
-            Enumeration names = System.getProperties().propertyNames();
+            Enumeration<?> names = System.getProperties().propertyNames();
             while (names.hasMoreElements()) {
                 propertyList.append(' ');
                 propertyList.append((String) names.nextElement());

@@ -38,16 +38,16 @@
 
 package com.sun.japex.report;
 
-import com.sun.japex.Util;
+import static com.sun.japex.report.TrendReport.FILE_SEP;
 
 import java.io.File;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
-import org.jfree.chart.*;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
 
-import static java.util.Calendar.*;
-import static com.sun.japex.report.TrendReport.FILE_SEP;
+import com.sun.japex.Util;
 
 /**
  * Trend report generator class.

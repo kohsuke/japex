@@ -41,7 +41,6 @@ package com.sun.japex;
 import java.io.*;
 import javax.xml.bind.*;
 import com.sun.japex.testsuite.*;
-import java.net.URI;
 import javax.xml.transform.sax.SAXSource;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;

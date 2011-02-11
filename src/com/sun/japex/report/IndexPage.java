@@ -75,10 +75,7 @@ public class IndexPage {
         _params = params;
         if (openfile) {
             try {
-                String filename = _params.outputPath() + FILE_SEP 
-                        + "index.html";
-                File file = new File(filename);
-               _content = new StringBuffer();
+                _content = new StringBuffer();
                _content.append(getTemplate());
             } 
             catch (RuntimeException e) {

@@ -36,19 +36,19 @@
 
 package com.sun.japex.jdsl.xml.serialize.dom;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+
 import com.sun.japex.Constants;
-import com.sun.japex.jdsl.xml.TestCaseUtil;
 import com.sun.japex.JapexDriverBase;
 import com.sun.japex.TestCase;
 import com.sun.japex.jdsl.xml.DriverConstants;
-
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import org.w3c.dom.Document;
+import com.sun.japex.jdsl.xml.TestCaseUtil;
 
 
 public abstract class BaseJAXPDOMDriver extends JapexDriverBase {

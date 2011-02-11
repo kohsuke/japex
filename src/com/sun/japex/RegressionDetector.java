@@ -118,7 +118,7 @@ public class RegressionDetector {
                     return prefix.equals("reg") ? "http://www.sun.com/japex/regressionReport" : null;
                 }
                 public String getPrefix(String namespaceURI) { return null; }
-                public Iterator getPrefixes(String namespaceURI) { return null; }
+                public Iterator<String> getPrefixes(String namespaceURI) { return null; }
             });
 
             // Find the value of the notify attribute

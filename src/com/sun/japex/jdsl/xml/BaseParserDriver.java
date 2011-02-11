@@ -65,7 +65,7 @@ public abstract class BaseParserDriver extends JapexDriverBase {
     protected ByteArrayInputStream _inputStream;    
     protected ByteArrayOutputStream _outputStream;
     protected SerializerVocabulary _initialVocabulary;
-    protected HashMap _externalVocabularyMap;
+    protected HashMap<String, ParserVocabulary> _externalVocabularyMap;
     protected DocumentBuilder _builder;
     
     protected String _xmlFile;
@@ -124,7 +124,7 @@ public abstract class BaseParserDriver extends JapexDriverBase {
             _saxSerializer.setVocabulary(_initialVocabulary);
             
             FastInfosetParser fps = ((FastInfosetParserDriver)this).getParser();
-            _externalVocabularyMap = new HashMap();
+            _externalVocabularyMap = new HashMap<String, ParserVocabulary>();
             _externalVocabularyMap.put(externalVocabularyURI, externalParserVocabulary);
             fps.setExternalVocabularies(_externalVocabularyMap);
         }

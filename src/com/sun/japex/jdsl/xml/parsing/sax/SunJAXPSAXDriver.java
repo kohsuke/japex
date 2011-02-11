@@ -36,11 +36,7 @@
 
 package com.sun.japex.jdsl.xml.parsing.sax;
 
-import com.sun.japex.TestCase;
-import com.sun.japex.jdsl.xml.BaseParserDriver;
-import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import org.xml.sax.helpers.DefaultHandler;
 
 public class SunJAXPSAXDriver extends JAXPSAXDriver {    
     

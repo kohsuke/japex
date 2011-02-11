@@ -52,7 +52,7 @@ import java.text.SimpleDateFormat;
  * @author Joe.Wang@sun.com
  * @author Santiago.PericasGeertsen@sun.com
  */
-public class DateComparator implements Comparator {
+public class DateComparator implements Comparator<File> {
     
     public static final int ORDER_DESC = 1;
     public static final int ORDER_ASC = 2;
@@ -68,26 +68,21 @@ public class DateComparator implements Comparator {
         this.order = order;
     }
     
-    public int compare(Object o1, Object o2) {
-        if ((o1 instanceof File) && (o2 instanceof File)) {
-            long lm1, lm2;
-            lm1 = convertDate((File)o1);
-            lm2 = convertDate((File)o2);
+    public int compare(File o1, File o2) {
+    	long lm1, lm2;
+    	lm1 = convertDate(o1);
+    	lm2 = convertDate(o2);
             
-            if (lm1 < lm2) {
-                return (order == ORDER_DESC) ? -1 : 1;
-            } else if (lm1 > lm2) {
-                return (order == ORDER_DESC) ? 1 : -1;
-            } else {
-                return 0;
-            }
-        } else if ((o1 instanceof Comparable) && (o2 instanceof Comparable)) {
-            return ((Comparable)o1).compareTo( ((Comparable)o2) );
+        if (lm1 < lm2) {
+            return (order == ORDER_DESC) ? -1 : 1;
+        } else if (lm1 > lm2) {
+            return (order == ORDER_DESC) ? 1 : -1;
         } else {
-            return -1;
+            return 0;
         }
     }
-    
+
+    // Really?
     public boolean equals(Object obj) {
         return (obj instanceof DateComparator);
     }

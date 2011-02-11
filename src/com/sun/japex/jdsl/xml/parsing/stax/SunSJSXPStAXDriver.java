@@ -36,10 +36,6 @@
 
 package com.sun.japex.jdsl.xml.parsing.stax;
 
-import com.sun.japex.TestCase;
-import com.sun.japex.jdsl.xml.BaseParserDriver;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
 
 
 public class SunSJSXPStAXDriver extends JAXPStAXDriver {    

@@ -36,16 +36,16 @@
 
 package com.sun.japex.jdsl.xml.roundtrip.dom;
 
-import com.sun.japex.jdsl.xml.DriverConstants;
-import com.sun.japex.jdsl.xml.BaseParserDriver;
-import com.sun.japex.jdsl.xml.TestCaseUtil;
-import com.sun.japex.JapexDriverBase;
-import com.sun.japex.TestCase;
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.w3c.dom.Document;
+
+import com.sun.japex.TestCase;
+import com.sun.japex.jdsl.xml.BaseParserDriver;
+import com.sun.japex.jdsl.xml.DriverConstants;
 
 
 public abstract class BaseJAXPDOMDriver extends BaseParserDriver {

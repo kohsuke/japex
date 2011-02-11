@@ -55,7 +55,6 @@ import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
 import org.jfree.data.general.SeriesException;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.BarRenderer3D;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 

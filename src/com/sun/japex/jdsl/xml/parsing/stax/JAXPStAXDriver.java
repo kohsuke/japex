@@ -63,7 +63,8 @@ public class JAXPStAXDriver extends BaseParserDriver {
         }
     }   
         
-    public void run(TestCase testCase) {
+    @SuppressWarnings("unused")
+	public void run(TestCase testCase) {
         try {
             _inputStream.reset();
             XMLStreamReader reader = getXMLStreamReader();

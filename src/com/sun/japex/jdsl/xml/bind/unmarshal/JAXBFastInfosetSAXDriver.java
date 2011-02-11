@@ -36,14 +36,16 @@
 
 package com.sun.japex.jdsl.xml.bind.unmarshal;
 
+import java.io.ByteArrayInputStream;
+
+import javax.xml.bind.Marshaller;
+
+import org.jvnet.fastinfoset.FastInfosetParser;
+import org.jvnet.fastinfoset.FastInfosetSource;
+
 import com.sun.japex.TestCase;
 import com.sun.japex.jdsl.xml.DriverConstants;
 import com.sun.japex.jdsl.xml.FastInfosetParserDriver;
-import org.jvnet.fastinfoset.FastInfosetParser;
-import org.jvnet.fastinfoset.FastInfosetSource;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import java.io.ByteArrayInputStream;
 
 public class JAXBFastInfosetSAXDriver extends BaseUnmarshallerDriver implements FastInfosetParserDriver {
     FastInfosetSource _fis;

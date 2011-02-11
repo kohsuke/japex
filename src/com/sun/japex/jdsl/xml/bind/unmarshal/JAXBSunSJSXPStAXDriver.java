@@ -36,14 +36,10 @@
 
 package com.sun.japex.jdsl.xml.bind.unmarshal;
 
-import com.sun.japex.TestCase;
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import java.io.ByteArrayInputStream;
+
+import com.sun.japex.TestCase;
 
 public class JAXBSunSJSXPStAXDriver extends BaseUnmarshallerDriver {
     XMLInputFactory _factory;

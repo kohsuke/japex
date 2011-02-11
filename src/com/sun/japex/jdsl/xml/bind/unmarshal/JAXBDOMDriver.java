@@ -36,11 +36,11 @@
 
 package com.sun.japex.jdsl.xml.bind.unmarshal;
 
-import com.sun.japex.TestCase;
-import org.w3c.dom.Document;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
-import java.io.ByteArrayInputStream;
+
+import org.w3c.dom.Document;
+
+import com.sun.japex.TestCase;
 
 public class JAXBDOMDriver extends BaseUnmarshallerDriver {
     Document _d;

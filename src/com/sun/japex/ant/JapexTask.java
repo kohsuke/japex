@@ -79,7 +79,7 @@ public class JapexTask extends MatchingTask {
      */
     public Path createClasspath() {
         if (compileClasspath == null) {
-            compileClasspath = new Path(project);
+            compileClasspath = new Path(getProject());
         }
         return compileClasspath.createPath();
     }
@@ -154,7 +154,7 @@ public class JapexTask extends MatchingTask {
         
         Execute exe = null;
         exe = new Execute();
-        exe.setAntRun(project);
+        exe.setAntRun(getProject());
         exe.setCommandline(command);
         
         try {
@@ -165,7 +165,7 @@ public class JapexTask extends MatchingTask {
             return rc;
         } 
         catch (IOException e) {
-            throw new BuildException(e, location);
+            throw new BuildException(e, getLocation());
         }
     }
     

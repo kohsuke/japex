@@ -36,18 +36,19 @@
 
 package com.sun.japex.jdsl.xml.bind.marshal;
 
-import java.io.*;
-import java.net.URLClassLoader;
+import static com.sun.japex.Util.getManifestAsString;
 
-import com.sun.japex.jdsl.xml.TestCaseUtil;
-import static com.sun.japex.Util.*;
-import com.sun.japex.JapexDriverBase;
-import com.sun.japex.TestCase;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.net.URLClassLoader;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+
+import com.sun.japex.JapexDriverBase;
+import com.sun.japex.TestCase;
+import com.sun.japex.jdsl.xml.TestCaseUtil;
 
 public abstract class BaseMarshallerDriver extends JapexDriverBase {
     protected Marshaller _marshaller;

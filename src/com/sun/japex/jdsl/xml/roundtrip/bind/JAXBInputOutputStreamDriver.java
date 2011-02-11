@@ -36,7 +36,6 @@
 
 package com.sun.japex.jdsl.xml.roundtrip.bind;
 
-import javax.xml.bind.Unmarshaller;
 import com.sun.japex.TestCase;
 
 public class JAXBInputOutputStreamDriver extends BaseJAXBDriver {

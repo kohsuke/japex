@@ -97,7 +97,7 @@ public class JUnitDriver extends JapexDriverBase {
     /**
      * JUnit test class loaded.
      */
-    Class _testClass;
+    Class<?> _testClass;
 
     /**
      * Method in JUnit4 test class annotated by @BeforeClass.
@@ -163,7 +163,7 @@ public class JUnitDriver extends JapexDriverBase {
             else {
                 _method = _testClass.getMethod(_methodName, (Class[]) null);
 
-                Constructor con = null;
+                Constructor<?> con = null;
                 try {
                     // Try <init>(String) first
                     con = _testClass.getConstructor(
@@ -250,7 +250,7 @@ public class JUnitDriver extends JapexDriverBase {
         }
     }
 
-    private void findJUnit4Methods(Class testClass) {
+    private void findJUnit4Methods(Class<?> testClass) {
         try {
             int notFound = 4;       // # of methods to find
 

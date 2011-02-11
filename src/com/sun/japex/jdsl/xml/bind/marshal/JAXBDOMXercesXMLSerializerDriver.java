@@ -36,11 +36,13 @@
 
 package com.sun.japex.jdsl.xml.bind.marshal;
 
-import com.sun.japex.TestCase;
-import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.w3c.dom.Document;
+
+import com.sun.japex.TestCase;
+import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
 public class JAXBDOMXercesXMLSerializerDriver extends BaseMarshallerDriver {
     XMLSerializer _xmlSerializer;

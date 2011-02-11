@@ -212,7 +212,7 @@ public class JapexDriverBase implements JapexDriver, Params {
                                 Thread.currentThread().getName() + " sleeping for " +
                                     runIterationDelay + " ms"); 
                         }
-                        Thread.currentThread().sleep(runIterationDelay);
+                        Thread.sleep(runIterationDelay);
                     }
                     catch (InterruptedException e) {
                         throw new RuntimeException(e);
@@ -245,7 +245,7 @@ public class JapexDriverBase implements JapexDriver, Params {
                                 Thread.currentThread().getName() + " sleeping for " +
                                     runIterationDelay + " ms"); 
                         }
-                        Thread.currentThread().sleep(runIterationDelay);
+                        Thread.sleep(runIterationDelay);
                     }
                     catch (InterruptedException e) {
                         throw new RuntimeException(e);

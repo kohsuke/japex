@@ -36,16 +36,18 @@
 
 package com.sun.japex.jdsl.xml.bind.unmarshal;
 
+import java.io.ByteArrayInputStream;
+
+import javax.xml.bind.Marshaller;
+import javax.xml.stream.XMLStreamWriter;
+
+import org.jvnet.fastinfoset.FastInfosetParser;
+
 import com.sun.japex.TestCase;
 import com.sun.japex.jdsl.xml.DriverConstants;
 import com.sun.japex.jdsl.xml.FastInfosetParserDriver;
 import com.sun.xml.fastinfoset.stax.StAXDocumentParser;
 import com.sun.xml.fastinfoset.stax.StAXDocumentSerializer;
-import org.jvnet.fastinfoset.FastInfosetParser;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.stream.XMLStreamWriter;
-import java.io.ByteArrayInputStream;
 
 public class JAXBFastInfosetStAXDriver extends BaseUnmarshallerDriver implements FastInfosetParserDriver {
     StAXDocumentParser _staxParser = null;

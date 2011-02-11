@@ -35,14 +35,13 @@
  */
 
 package com.sun.japex.jdsl.xml.bind.unmarshal;
-import com.sun.japex.TestCase;
-import com.sun.japex.jdsl.xml.DriverConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.w3c.dom.Document;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import java.io.ByteArrayInputStream;
+
+import com.sun.japex.TestCase;
+import com.sun.japex.jdsl.xml.DriverConstants;
 
 public class JAXBDOMJAXPDOMDriver extends BaseUnmarshallerDriver {
     DocumentBuilderFactory _builderFactory;

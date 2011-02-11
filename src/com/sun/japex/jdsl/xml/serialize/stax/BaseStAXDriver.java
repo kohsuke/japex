@@ -36,11 +36,13 @@
 
 package com.sun.japex.jdsl.xml.serialize.stax;
 
-import com.sun.japex.jdsl.xml.XMLStreamReaderToXMLStreamWriter;
 import java.io.ByteArrayOutputStream;
-import javax.xml.stream.*;
-import com.sun.japex.jdsl.xml.BaseParserDriver;
+
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
+
 import com.sun.japex.TestCase;
+import com.sun.japex.jdsl.xml.BaseParserDriver;
 import com.sun.xml.stream.buffer.XMLStreamBuffer;
 
 /**

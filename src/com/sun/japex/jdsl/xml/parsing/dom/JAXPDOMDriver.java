@@ -36,16 +36,17 @@
 
 package com.sun.japex.jdsl.xml.parsing.dom;
 
-import com.sun.japex.TestCase;
-import com.sun.japex.jdsl.xml.DriverConstants;
-import com.sun.japex.jdsl.xml.BaseParserDriver;
-import com.sun.japex.jdsl.xml.DriverConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import com.sun.japex.TestCase;
+import com.sun.japex.jdsl.xml.BaseParserDriver;
+import com.sun.japex.jdsl.xml.DriverConstants;
 
 
 public class JAXPDOMDriver extends BaseParserDriver {
@@ -85,7 +86,8 @@ public class JAXPDOMDriver extends BaseParserDriver {
         }
     }    
     
-    public void traverse(Node n) {
+    @SuppressWarnings("unused")
+	public void traverse(Node n) {
         Object o = n.getNodeValue();
         
         if (n.hasAttributes()) {

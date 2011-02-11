@@ -60,7 +60,7 @@ public class ConfigFileMerger extends ConfigFileLoader {
         TestSuiteElement testSuiteElement = null;
         String testSuiteName = "";
         
-        List objects = new ArrayList();
+        List<Object> objects = new ArrayList<Object>();
         for (String fileName : fileNames) {
             try {
                 if (testSuiteName != "") testSuiteName += ",";

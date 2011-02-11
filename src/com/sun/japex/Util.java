@@ -40,7 +40,6 @@ package com.sun.japex;
 
 import java.io.*;
 import java.util.*;
-import java.lang.reflect.*;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.net.URL;

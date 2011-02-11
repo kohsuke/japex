@@ -38,26 +38,29 @@
 
 package com.sun.japex.report;
 
-import org.jfree.chart.JFreeChart;
-import java.util.Calendar;
-import java.text.SimpleDateFormat;
-import java.awt.Shape;
-import java.awt.BasicStroke;
-import java.awt.Polygon;
-import java.awt.Color;
-import java.util.List;
-import java.util.Collections;
+import static java.util.Calendar.HOUR_OF_DAY;
+import static java.util.Calendar.MINUTE;
+import static java.util.Calendar.SECOND;
 
-import org.jfree.chart.*;
-import org.jfree.chart.plot.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Polygon;
+import java.awt.Shape;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.CategoryLabelPositions;
-import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.DefaultDrawingSupplier;
+import org.jfree.chart.plot.DrawingSupplier;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
-
-import static java.util.Calendar.*;
-import static com.sun.japex.report.TrendReport.FILE_SEP;
+import org.jfree.data.category.DefaultCategoryDataset;
 
 /**
  * Generator for various types of trend charts.

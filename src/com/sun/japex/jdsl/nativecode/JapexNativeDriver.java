@@ -97,7 +97,7 @@ public class JapexNativeDriver extends JapexDriverBase {
 
         TestCaseImpl tc = _testCase;
         
-        double millis, startTime, duration;        
+        double startTime, duration;        
         int runIterations = 0;
         
         if (tc.hasParam(Constants.RUN_TIME)) {

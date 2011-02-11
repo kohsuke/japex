@@ -55,7 +55,7 @@ class JapexClassLoader extends URLClassLoader {
         addClassPath(classPath);
     }
     
-    public Class findClass(String name) throws ClassNotFoundException {
+    public Class<?> findClass(String name) throws ClassNotFoundException {
         // Delegate when loading Japex classes, excluding JDSL drivers
         if (name.startsWith("com.sun.japex.") && !name.startsWith("com.sun.japex.jdsl.")) {
             return DriverImpl.class.getClassLoader().loadClass(name);
@@ -74,7 +74,7 @@ class JapexClassLoader extends URLClassLoader {
     {        
         try {
             // Use 'this' class loader here
-            Class clazz = Class.forName(className, true, this);
+            Class<?> clazz = Class.forName(className, true, this);
             return (JapexDriverBase) clazz.newInstance();
         }
         catch (InstantiationException e) {

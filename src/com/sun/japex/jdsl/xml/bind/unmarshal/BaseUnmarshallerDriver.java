@@ -36,29 +36,27 @@
 
 package com.sun.japex.jdsl.xml.bind.unmarshal;
 
+import static com.sun.japex.Util.getManifestAsString;
+
+import java.io.ByteArrayInputStream;
 import java.net.URLClassLoader;
 
-import com.sun.japex.TestCase;
-import com.sun.japex.jdsl.xml.BaseParserDriver;
-import com.sun.japex.jdsl.xml.TestCaseUtil;
-import com.sun.japex.jdsl.xml.DriverConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-
-import static com.sun.japex.Util.*;
-import com.sun.japex.jdsl.xml.FastInfosetParserDriver;
-import com.sun.xml.fastinfoset.stax.StAXDocumentParser;
-import com.sun.xml.fastinfoset.stax.StAXDocumentSerializer;
-import org.jvnet.fastinfoset.FastInfosetParser;
-import org.jvnet.fastinfoset.FastInfosetSource;
-import java.io.FileInputStream;
-import java.io.ByteArrayInputStream;
-
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
+
+import org.jvnet.fastinfoset.FastInfosetParser;
+import org.jvnet.fastinfoset.FastInfosetSource;
+
+import com.sun.japex.TestCase;
+import com.sun.japex.jdsl.xml.BaseParserDriver;
+import com.sun.japex.jdsl.xml.DriverConstants;
+import com.sun.japex.jdsl.xml.FastInfosetParserDriver;
+import com.sun.xml.fastinfoset.stax.StAXDocumentSerializer;
 
 
 public abstract class BaseUnmarshallerDriver extends BaseParserDriver {

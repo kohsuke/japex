@@ -36,13 +36,7 @@
 
 package com.sun.japex.jdsl.xml;
 
-import java.io.*;
-import java.nio.charset.Charset;
-import com.sun.japex.Util;
-import com.sun.japex.JapexDriverBase;
 import com.sun.japex.TestCase;
-import com.sun.japex.Constants;
-
 import com.sun.xml.fastinfoset.DecoderStateTables;
 
 /**
@@ -73,7 +67,6 @@ public class UTF8StreamDriver extends ByteStreamDriver {
     }
     
     int decodeUTF8ByteBuffer(byte[] buffer, int bytes, char[] charBuffer) {
-        int charBufferIndex = 0;
         for (int j = 0, i = 0; i < bytes; i++) {
             final byte b1 = buffer[i];
             

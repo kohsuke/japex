@@ -59,7 +59,8 @@ public class FastInfosetStAXDriver extends BaseParserDriver implements FastInfos
         return _staxParser;
     }
     
-    public void run(TestCase testCase) {
+    @SuppressWarnings("unused")
+	public void run(TestCase testCase) {
         try {
             _inputStream.reset();
             _staxParser.setInputStream(_inputStream);       // Instead of creating new instance

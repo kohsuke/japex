@@ -36,16 +36,8 @@
 
 package com.sun.japex.jdsl.xml.bind.marshal;
 
-import java.io.*;
-import javax.xml.parsers.*;
-
-import javax.xml.bind.*;
-import com.sun.japex.*;
+import com.sun.japex.TestCase;
 import com.sun.xml.fastinfoset.sax.SAXDocumentSerializer;
-import javax.xml.transform.sax.SAXSource;
-
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
 
 public class JAXBFastInfosetSAXDriver extends BaseMarshallerDriver {
     SAXDocumentSerializer _fiserializer;

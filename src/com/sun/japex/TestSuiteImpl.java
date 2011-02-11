@@ -479,7 +479,7 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
     private void readAndSetSystemProperties() {
         Properties sysProps = System.getProperties();
 
-        for (Iterator i = sysProps.keySet().iterator(); i.hasNext();) {
+        for (Iterator<Object> i = sysProps.keySet().iterator(); i.hasNext();) {
             String name = (String) i.next();
             if (name.startsWith("japex.")) {
                 String value = sysProps.getProperty(name);
