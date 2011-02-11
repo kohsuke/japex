@@ -738,6 +738,6 @@ public class Engine {
     }
     
     public Map<String, ClassLoader> getNamedClassPaths() {
-    	return _namedClassPaths;
+     	return _namedClassPaths;
     }
 }
