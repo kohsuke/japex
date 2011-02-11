@@ -56,6 +56,7 @@
       <module>core</module>
       <module>jdsl</module>
       <module>distribution</module>
+      <module>japex-maven-plugin</module>
     </modules>
     <dependencyManagement>
       <dependencies>
