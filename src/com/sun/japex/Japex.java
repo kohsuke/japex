@@ -39,7 +39,6 @@
 
 package com.sun.japex;
 
-import com.sun.japex.testsuite.TestSuiteElement;
 import java.io.*;
 import java.text.*;
 import java.util.Date;
@@ -53,6 +52,15 @@ import javax.xml.bind.Marshaller;
 import javax.xml.transform.*;
 import javax.xml.transform.stream.*;
 
+/**
+ * Top-level driver for Japex. This class class orchestrates running the benchmarks 
+ * and building the reports of the results.<br/>
+ * In normal operation, Japex builds class loaders for drivers from class paths specified 
+ * in the XML configuration files. However, this class includes support for 'named class loaders'
+ * that allow an outer framework to define class loaders. Use {@link #getNamedClasspaths()}
+ * to obtain a Map&lt;String, ClassLoader&gt;, and class loaders registered here are available
+ * to config files via japex.namedClassPath.
+  */
 public class Japex {
     
     public static boolean html = true;
@@ -68,23 +76,20 @@ public class Japex {
     
     private Engine engine;
     
-    private static String identityTx = 
-        "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">" +
-        "<xsl:template match=\"@*|node()\">" +
-        "<xsl:copy><xsl:apply-templates select=\"@*|node()\"/></xsl:copy>" +
-        "</xsl:template>" +
-        "</xsl:stylesheet>";
-    
     public Japex() {
     	engine = new Engine();
     }
-    
+
+    /**
+     * @return a map that defines named class loaders. Drivers may be defined in terms of these
+     * loaders via japex.namedClassPath.
+     */
     public Map<String, ClassLoader> getNamedClasspaths() {
     	return engine.getNamedClassPaths();
     }
     
     public void setHtml(boolean html) {
-        this.html = html;
+        Japex.html = html;
     }
     
     /**
@@ -97,7 +102,7 @@ public class Japex {
 
         // Parse command-line arguments
         boolean merge = false;
-        List<String> configFiles = new ArrayList();
+        List<String> configFiles = new ArrayList<String>();
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-nohtml")) {
                 html = false;
@@ -190,7 +195,6 @@ public class Japex {
             osw.close();
             
             // Marshall the test suite
-            TestSuiteElement testSuiteElement = testSuite.getTestSuiteElement();
             Marshaller m = ConfigFileLoader.context.createMarshaller();
             File configOutput = new File(outputDir + fileSep + testSuite.getParam(Constants.CONFIG_FILE));
             m.marshal(testSuite.getTestSuiteElement(), new FileOutputStream(configOutput));

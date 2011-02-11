@@ -64,7 +64,7 @@ public class ParamsImpl implements Params {
     }
     
     public ParamsImpl(Properties props) {
-        for (Iterator i = props.keySet().iterator(); i.hasNext(); ) {
+        for (Iterator<?> i = props.keySet().iterator(); i.hasNext(); ) {
             String key = (String) i.next();
             convertAndPut(key, props.getProperty(key));
         }
@@ -110,9 +110,9 @@ public class ParamsImpl implements Params {
             ParamsImpl clone = (ParamsImpl) super.clone();
 
             // Make a deep copy of _mapping
-            clone._mapping = new HashMap();
-            for (Iterator i = _mapping.keySet().iterator(); i.hasNext(); ) {
-                String key = (String) i.next();
+            clone._mapping = new HashMap<String, Object>();
+            for (Iterator<String> i = _mapping.keySet().iterator(); i.hasNext(); ) {
+                String key = i.next();
                 clone._mapping.put(key, _mapping.get(key));
             }
             
@@ -309,7 +309,7 @@ public class ParamsImpl implements Params {
             return;
         }
         else {
-            ArrayList<String> names = new ArrayList(params._mapping.keySet());
+            ArrayList<String> names = new ArrayList<String>(params._mapping.keySet());
             for (String s : names) {
                 if (!groupParams.contains(s)) {
                     groupParams.add(s);
@@ -324,10 +324,10 @@ public class ParamsImpl implements Params {
         // Collect a list of all params and group params in scope
         ArrayList<String> paramNames;        
         if (isGlobal()) {
-            paramNames = new ArrayList(_mapping.keySet());            
+            paramNames = new ArrayList<String>(_mapping.keySet());            
         }
         else {
-            paramNames = new ArrayList();
+            paramNames = new ArrayList<String>();
             collectGroupParams(paramNames, this);
         }
         
@@ -475,7 +475,7 @@ public class ParamsImpl implements Params {
     }
 
     // Use Ant class to get environment
-    private static Vector ENV = Execute.getProcEnvironment();
+    private static Vector<?> ENV = Execute.getProcEnvironment();
     
     private String getEnvVariable(String name) {
         for (int i = 0; i < ENV.size(); i++) {

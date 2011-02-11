@@ -70,7 +70,7 @@ public class DriverImpl extends ParamsImpl implements Driver, Cloneable {
     /**
      * Java class implementing this driver.
      */
-    Class _class = null;
+    Class<? extends JapexDriverBase> _class = null;
     
     /**
      * Array of tests cases for this driver.
@@ -126,7 +126,6 @@ public class DriverImpl extends ParamsImpl implements Driver, Cloneable {
             final int nOfTests = _testCases[0].size();
 
             for (int n = 0; n < nOfTests; n++) {
-                double avgRunsResult = 0.0;
 
                 double[] results = new double[actualRuns];
                 double[] resultsX = new double[actualRuns];
@@ -187,9 +186,9 @@ public class DriverImpl extends ParamsImpl implements Driver, Cloneable {
             boolean setMeansAxisX = false;
             
             // Compute horizontal means based on vertical means
-            Iterator tci = _aggregateTestCases.iterator();
+            Iterator<TestCaseImpl> tci = _aggregateTestCases.iterator();
             while (tci.hasNext()) {
-                TestCaseImpl tc = (TestCaseImpl) tci.next();       
+                TestCaseImpl tc = tci.next();       
                 
                 // Compute running means 
                 double result = tc.getDoubleParam(RESULT_VALUE);
@@ -270,11 +269,11 @@ public class DriverImpl extends ParamsImpl implements Driver, Cloneable {
         }        
     }
     
-    public List getTestCases(int driverRun) {
+    public List<TestCaseImpl> getTestCases(int driverRun) {
         return _testCases[driverRun];
     }
     
-    public List getAggregateTestCases() {
+    public List<TestCaseImpl> getAggregateTestCases() {
         computeMeans();  
         return _aggregateTestCases;
     }
@@ -323,13 +322,13 @@ public class DriverImpl extends ParamsImpl implements Driver, Cloneable {
         }
                 
         // Called before serializing driver params
-        List aggregateTestCases = getAggregateTestCases();
+        List<TestCaseImpl> aggregateTestCases = getAggregateTestCases();
        
         // Serialize driver params
         super.serialize(report, spaces + 2);
 
         // Compute a parameter closure for all test cases
-        Iterator tci = aggregateTestCases.iterator();
+        Iterator<TestCaseImpl> tci = aggregateTestCases.iterator();
         Set<String> paramsClosure = new HashSet<String>();
         while (tci.hasNext()) {
             Set<String> testCaseParams = 

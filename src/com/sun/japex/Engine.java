@@ -45,6 +45,22 @@ import java.lang.management.*;
 
 import static com.sun.japex.Constants.*;
 
+/**
+ * The core engine of JAPEX.
+ * This class is responsible for running benchmarks. It parses XML configuration files and applies
+ * the drivers to the test cases. The results end up in the TestSuiteImpl objects. As specified by
+ * the configuration, this class will also print results on the fly to System.out.
+ * 
+ * Normally, drivers are loaded from isolated class loaders constructed according to the paths
+ * in the XML files. However, to facilitate integration in some environments, this class
+ * supports two classpath alternatives. If japex.contextClassLoader is set to true, this class
+ * simply loads driver classes from the current thread context class loader, and propagates that loader
+ * to any new threads.
+ * 
+ * Alternatively, the user of this class can call {@link Engine#getNamedClassPaths()} to obtain a
+ * Map&lt;String, ClassLoader&gt;. Class loaders registered in this map are available via 
+ * japex.namedClassPath to be called out for individual drivers.
+ */
 public class Engine {
     
     /**
@@ -351,7 +367,7 @@ public class Engine {
             if (actualRuns - startRun > 1) {
                 // Print average for all runs
                 System.out.print("\n     Avgs: ");
-                Iterator tci = _driverImpl.getAggregateTestCases().iterator();
+                Iterator<TestCaseImpl> tci = _driverImpl.getAggregateTestCases().iterator();
                 while (tci.hasNext()) {
                     TestCaseImpl tc = (TestCaseImpl) tci.next();
                     System.out.print(tc.getName() + ",");                        
@@ -404,14 +420,13 @@ public class Engine {
             int nOfThreads = _driverImpl.getIntParam(NUMBER_OF_THREADS);
             
             // Get list of tests
-            List tcList = _driverImpl.getTestCases(_driverRun);
+            List<TestCaseImpl> tcList = _driverImpl.getTestCases(_driverRun);
             int nOfTests = tcList.size();
             
             // Iterate through list of test cases
-            Iterator tci = tcList.iterator();
+            Iterator<TestCaseImpl> tci = tcList.iterator();
             while (tci.hasNext()) {
-                long runTime = 0L;
-                TestCaseImpl tc = (TestCaseImpl) tci.next();
+                TestCaseImpl tc = tci.next();
                 
                 if (Japex.verbose) {
                     System.out.println(tc.getName());
@@ -637,7 +652,7 @@ public class Engine {
     }
     
     private List<Long> getGCAbsoluteTimes() {
-        List<Long> gCTimes = new ArrayList();
+        List<Long> gCTimes = new ArrayList<Long>();
         for (GarbageCollectorMXBean gcc : _gCCollectors) {
             gCTimes.add(gcc.getCollectionTime());
         }        
