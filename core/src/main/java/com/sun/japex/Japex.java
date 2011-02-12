@@ -52,6 +52,9 @@ import javax.xml.bind.Marshaller;
 import javax.xml.transform.*;
 import javax.xml.transform.stream.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Top-level driver for Japex. This class class orchestrates running the benchmarks 
  * and building the reports of the results.<br/>
@@ -62,6 +65,7 @@ import javax.xml.transform.stream.*;
  * to config files via japex.namedClassPath.
   */
 public class Japex {
+	private final static Logger LOG = LoggerFactory.getLogger(Japex.class);
     
     public static boolean html = true;
     public static boolean verbose = false;
@@ -185,8 +189,8 @@ public class Japex {
 
             // Output report to file
             new File(outputDir).mkdirs();
-            System.out.println("Generating reports ...");
-            System.out.println("  " + 
+            LOG.info("Generating reports ...");
+            LOG.info("  " + 
                 new File(outputDir + "/" + "report.xml").toURI().toURL());
             OutputStreamWriter osw = new OutputStreamWriter(
                 new FileOutputStream(
@@ -235,7 +239,7 @@ public class Japex {
                 Transformer transformer = tf.newTransformer(
                     new StreamSource(stylesheet.toExternalForm()));
 
-                System.out.println("  " + 
+                LOG.info("  " + 
                     new File(outputDir + "/" + "report.html").toURI().toURL());
                 
                 File htmlReport = new File(outputDir + fileSep + "report.html");
