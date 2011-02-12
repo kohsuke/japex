@@ -52,9 +52,6 @@ import javax.xml.bind.Marshaller;
 import javax.xml.transform.*;
 import javax.xml.transform.stream.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Top-level driver for Japex. This class class orchestrates running the benchmarks 
  * and building the reports of the results.<br/>
@@ -65,14 +62,13 @@ import org.slf4j.LoggerFactory;
  * to config files via japex.namedClassPath.
   */
 public class Japex {
-	private final static Logger LOG = LoggerFactory.getLogger(Japex.class);
-    
     public static boolean html = true;
     public static boolean verbose = false;
     public static boolean silent = false;
     public static boolean resultPerLine = false;
     public static boolean test = false;
     public static boolean last = false;
+    private PrintWriter outputWriter = new PrintWriter(System.out);
     
     public static int exitCode = 0;
     
@@ -82,6 +78,10 @@ public class Japex {
     
     public Japex() {
     	engine = new Engine();
+    }
+    
+    public void setOutputWriter(PrintWriter outputWriter) {
+    	engine.setOutputWriter(outputWriter);
     }
 
     /**
@@ -189,8 +189,8 @@ public class Japex {
 
             // Output report to file
             new File(outputDir).mkdirs();
-            LOG.info("Generating reports ...");
-            LOG.info("  " + 
+            outputWriter.println("Generating reports ...");
+            outputWriter.println("  " + 
                 new File(outputDir + "/" + "report.xml").toURI().toURL());
             OutputStreamWriter osw = new OutputStreamWriter(
                 new FileOutputStream(
@@ -239,7 +239,7 @@ public class Japex {
                 Transformer transformer = tf.newTransformer(
                     new StreamSource(stylesheet.toExternalForm()));
 
-                LOG.info("  " + 
+                outputWriter.println("  " + 
                     new File(outputDir + "/" + "report.html").toURI().toURL());
                 
                 File htmlReport = new File(outputDir + fileSep + "report.html");
@@ -267,9 +267,6 @@ public class Japex {
                     Util.copyDirectory(new File(outputDir), new File(lastDir));
                 }
             }
-        }
-        catch (RuntimeException e) {
-            throw e;
         }
         catch (Exception e) {
             throw new RuntimeException(e);

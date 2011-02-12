@@ -45,17 +45,17 @@ public class FastInfosetParamSetter {
         String indexedContent = p.getParam(DriverConstants.INDEXED_CONTENT_PROPERTY);
         indexedContent = (indexedContent == null) ? "" : indexedContent.intern();
         if (indexedContent == DriverConstants.INDEXED_CONTENT_PROPERTY_VALUE_FULL) {
-            s.setCharacterContentChunkSizeLimit(Integer.MAX_VALUE);
-            s.setAttributeValueSizeLimit(Integer.MAX_VALUE);
+            s.setMaxCharacterContentChunkSize(Integer.MAX_VALUE);
+            s.setCharacterContentChunkMapMemoryLimit(Integer.MAX_VALUE);
         } else if (indexedContent == DriverConstants.INDEXED_CONTENT_PROPERTY_VALUE_NONE) {
-            s.setCharacterContentChunkSizeLimit(0);
-            s.setAttributeValueSizeLimit(0);
+            s.setMaxCharacterContentChunkSize(0);
+            s.setCharacterContentChunkMapMemoryLimit(0);
         } else if (indexedContent == DriverConstants.INDEXED_CONTENT_PROPERTY_VALUE_DEFAULT) {
         } else {
             try {
                 long v = p.getLongParam(DriverConstants.CHARACTER_CONTENT_CHUNK_SIZE_LIMIY_PROPERTY);
                 if (v > 0) {
-                    s.setCharacterContentChunkSizeLimit((int)v);
+                    s.setMaxCharacterContentChunkSize((int)v);
                 }
             } catch (NumberFormatException e){
             }
@@ -63,7 +63,7 @@ public class FastInfosetParamSetter {
             try {
                 long v = p.getLongParam(DriverConstants.ATTRIBUTE_VALUE_SIZE_LIMIT_PROPERTY);
                 if (v > 0) {
-                    s.setAttributeValueSizeLimit((int)v);
+                    s.setMaxAttributeValueSize((int)v);
                 }
             } catch (NumberFormatException e){
             }

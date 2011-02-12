@@ -19,7 +19,7 @@
         <dependency>
             <groupId>com.sun.xml.fastinfoset</groupId>
             <artifactId>FastInfoset</artifactId>
-            <version>1.2.10-SNAPSHOT</version>
+            <version>1.2.9</version>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.stream.buffer</groupId>

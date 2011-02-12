@@ -35,23 +35,26 @@
  * http://www.apache.org/licenses/
  *
  */
-
 package com.sun.japex;
 
-import java.util.*;
+/**
+ * Exception thrown for fatal error.
+ */
+public class JapexException extends RuntimeException {
 
-public class TestCaseArrayList extends ArrayList<TestCaseImpl> {
-    
-    public TestCaseArrayList() {
-    }
-    
-    public Object clone() {
-        TestCaseArrayList result = new TestCaseArrayList();
-        Iterator<TestCaseImpl> it = iterator();
-        while (it.hasNext()) {
-            result.add((TestCaseImpl) it.next().clone());
-        }
-        return result;
-    }
-    
+	public JapexException() {
+		super();
+	}
+
+	public JapexException(String arg0, Throwable arg1) {
+		super(arg0, arg1);
+	}
+
+	public JapexException(String arg0) {
+		super(arg0);
+	}
+
+	public JapexException(Throwable arg0) {
+		super(arg0);
+	}
 }

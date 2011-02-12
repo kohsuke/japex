@@ -70,11 +70,11 @@ public class UTF8StreamDriver extends ByteStreamDriver {
         for (int j = 0, i = 0; i < bytes; i++) {
             final byte b1 = buffer[i];
             
-            switch(DecoderStateTables.UTF8[b1]) {
-                case DecoderStateTables.UTF8_ONE_BYTE:
+            switch(DecoderStateTables.UTF8(b1)) {
+                case  1 /* DecoderStateTables.UTF8_ONE_BYTE */:
                     charBuffer[j++] = (char) b1;
                 break;
-                case DecoderStateTables.UTF8_TWO_BYTES:
+                case 2 /* DecoderStateTables.UTF8_TWO_BYTES */:
                 {
                     if (i + 1 >= bytes) {
                         return 1;
@@ -90,7 +90,7 @@ public class UTF8StreamDriver extends ByteStreamDriver {
                     charBuffer[j++] = (char) (((b1 & 0x1F) << 6) | (b2 & 0x3F));
                     break;
                 }
-                case DecoderStateTables.UTF8_THREE_BYTES:
+                case 3 /* DecoderStateTables.UTF8_THREE_BYTES */:
                 {
                     if (i + 2 >= bytes) {
                         return 2;
@@ -110,7 +110,7 @@ public class UTF8StreamDriver extends ByteStreamDriver {
                     return (char) ((b1 & 0x0F) << 12 | (b2 & 0x3F) << 6
                             | (b3 & 0x3F));
                 }
-                case DecoderStateTables.UTF8_FOUR_BYTES:
+                case 4 /* DecoderStateTables.UTF8_FOUR_BYTES */:
                 {
                     throw new RuntimeException("High/low surrogates not supported");
                 }

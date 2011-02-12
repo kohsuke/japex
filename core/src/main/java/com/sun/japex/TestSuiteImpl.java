@@ -243,7 +243,7 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
         }
 
         // Create and populate list of test cases
-        TestCaseArrayList testCases = createTestCaseList(
+        ArrayList<TestCaseImpl> testCases = createTestCaseList(
             ts.getTestCaseOrTestCaseGroup(), this);
 
         // If running in test mode just do one iteration
@@ -272,10 +272,10 @@ public class TestSuiteImpl extends ParamsImpl implements TestSuite {
      * case groups, if necessary. The initial value for <code>defaults</code>
      * should be the list of globally defined params.
      */
-    private TestCaseArrayList createTestCaseList(List<Object> testCaseOrTestGroup,
-                                                 ParamsImpl defaults)
+    private ArrayList<TestCaseImpl> createTestCaseList(List<Object> testCaseOrTestGroup,
+    		ParamsImpl defaults)
     {
-        TestCaseArrayList result = new TestCaseArrayList();
+        ArrayList<TestCaseImpl> result = new ArrayList<TestCaseImpl>();
 
         for (Object o : testCaseOrTestGroup) {
             if (o instanceof TestCaseElement) {

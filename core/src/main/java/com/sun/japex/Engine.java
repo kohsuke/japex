@@ -40,8 +40,12 @@ package com.sun.japex;
 
 import java.util.*;
 import java.io.File;
+import java.io.PrintWriter;
 import java.util.concurrent.*;
 import java.lang.management.*;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.sun.japex.Constants.*;
 
@@ -49,7 +53,7 @@ import static com.sun.japex.Constants.*;
  * The core engine of JAPEX.
  * This class is responsible for running benchmarks. It parses XML configuration files and applies
  * the drivers to the test cases. The results end up in the TestSuiteImpl objects. As specified by
- * the configuration, this class will also print results on the fly to System.out.
+ * the configuration, this class will also print results on the fly to outputWriter.
  * 
  * Normally, drivers are loaded from isolated class loaders constructed according to the paths
  * in the XML files. However, to facilitate integration in some environments, this class
@@ -62,6 +66,7 @@ import static com.sun.japex.Constants.*;
  * japex.namedClassPath to be called out for individual drivers.
  */
 public class Engine {
+	private final static Logger LOG = LoggerFactory.getLogger(Engine.class);
     
     /**
      * The test suite being executed by this engine.
@@ -123,11 +128,21 @@ public class Engine {
      */
     long _beforeHeapMemoryUsage;
     
+    private PrintWriter outputWriter = new PrintWriter(System.out);
+    
     private Map<String, ClassLoader> _namedClassPaths;
     
     public Engine() {
         _gCCollectors = ManagementFactory.getGarbageCollectorMXBeans();
         _namedClassPaths = new HashMap<String, ClassLoader>();
+    }
+    
+    public void setOutputWriter(PrintWriter outputWriter) {
+    	this.outputWriter = outputWriter;
+    }
+    
+    public PrintWriter getOutputWriter() {
+    	return outputWriter;
     }
     
     public TestSuiteImpl start(List<String> configFiles) {
@@ -141,13 +156,14 @@ public class Engine {
             if (driverList.size() == 0 
                     || driverList.get(0).getTestCases(0).size() == 0) 
             {
-                System.err.println("Error: A Japex test suite must contain at " +
+                LOG.error("Error: A Japex test suite must contain at " +
                         "least one driver and at least one test case");
-                System.exit(1);                
+                throw new JapexException("Error: A Japex test suite must contain at " +
+                        "least one driver and at least one test case");
             }
             
             if (Japex.test) {
-                System.out.println("Running in test mode without generating reports ...");
+                outputWriter.println("Running in test mode without generating reports ...");
             }
 
             // Print estimated running time
@@ -155,7 +171,7 @@ public class Engine {
                     _testSuite.hasParam(RUN_TIME)) 
             {
                 int[] hms = estimateRunningTime(_testSuite);
-                System.out.println("Estimated warmup time + run time is " +
+                outputWriter.println("Estimated warmup time + run time is " +
                     (hms[0] > 0 ? (hms[0] + " hours ") : "") +
                     (hms[1] > 0 ? (hms[1] + " minutes ") : "") +
                     (hms[2] > 0 ? (hms[2] + " seconds ") : ""));                    
@@ -163,11 +179,8 @@ public class Engine {
 
             forEachDriver();                  
         }
-        catch (RuntimeException e) {
-            throw e;
-        }
         catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new JapexException(e);
         }
 
         return _testSuite;
@@ -180,13 +193,13 @@ public class Engine {
     		return clazz.newInstance();
     	}
     	catch (InstantiationException e) {
-    		throw new RuntimeException(e);
+    		throw new JapexException(e);
     	}
     	catch (IllegalAccessException e) {
-    		throw new RuntimeException(e);
+    		throw new JapexException(e);
     	}
     	catch (ClassCastException e) {
-    		throw new RuntimeException("Class '" + className 
+    		throw new JapexException("Class '" + className 
     				+ "' must extend '" + JapexDriverBase.class.getName() + "'");
     	}
 }
@@ -218,7 +231,7 @@ public class Engine {
                 	if (namedClassPath != null) {
                 		effectiveClassLoader = _namedClassPaths.get(namedClassPath);
                 		if (effectiveClassLoader == null) {
-                			throw new RuntimeException("Reference to undefined class path " + namedClassPath);
+                			throw new JapexException("Reference to undefined class path " + namedClassPath);
                 		}
                 	} else {
                 		// Create new class loader or extend path of existing one
@@ -239,7 +252,7 @@ public class Engine {
                 	}
                 }
  
-                System.out.print("  " + _driverImpl.getName() + " using " 
+                outputWriter.print("  " + _driverImpl.getName() + " using " 
                     + nOfThreads + " thread(s) on " + nOfCpus + " cpu(s)");
                 
                 // Allocate a matrix of nOfThreads * actualRuns size and initialize each instance
@@ -258,9 +271,9 @@ public class Engine {
                     }
                 }
                 catch (Throwable e) {
-                    System.out.println("\n  Warning: Unable to load driver '" 
+                    outputWriter.println("\n  Warning: Unable to load driver '" 
                         + _driverImpl.getName() + "'");
-                    System.out.println("           " + e.toString());
+                    outputWriter.println("           " + e.toString());
                     
                     // Remove driver from final list, adjust k and continue
                     _testSuite.getDriverInfoList().remove(_driverImpl);
@@ -289,7 +302,7 @@ public class Engine {
                 // Set memory usage param and display info
                 if (_driverImpl.getBooleanParam(REPORT_PEAK_HEAP_USAGE)) {
                     setPeakMemoryUsage(_driverImpl);
-                    System.out.println("    Peak heap usage: "
+                    outputWriter.println("    Peak heap usage: "
                         + _driverImpl.getParam(PEAK_HEAP_USAGE)
                         + " KB");
                 }
@@ -309,17 +322,14 @@ public class Engine {
 
             // If number drives is zero, abort as no drivers were loaded
             if (_testSuite.getDriverInfoList().size() == 0) {
-                System.err.println("Error: Unable to load any of the " +
+                LOG.error("Error: Unable to load any of the " +
                         "drivers in the test suite");
-                System.exit(1);
+                throw new JapexException("Error: Unable to load any of the " +
+                        "drivers in the test suite");
             }
-
-        }
-        catch (RuntimeException e) {
-            throw e;
         }
         catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new JapexException(e);
         }
     }
     
@@ -331,14 +341,14 @@ public class Engine {
             int actualRuns = warmupsPerDriver + runsPerDriver;
             for (_driverRun = 0; _driverRun < actualRuns; _driverRun++) {
                 if (_driverRun < warmupsPerDriver) {
-                    System.out.print("\n    Warmup " + (_driverRun + 1) + ": ");
+                    outputWriter.print("\n    Warmup " + (_driverRun + 1) + ": ");
                 }
                 else {
-                    System.out.print("\n    Run " + (_driverRun - warmupsPerDriver + 1) + ": ");                        
+                    outputWriter.print("\n    Run " + (_driverRun - warmupsPerDriver + 1) + ": ");                        
                 }
                 
                 if (Japex.resultPerLine) {
-                    System.out.println("");
+                    outputWriter.println("");
                 }
                 
                 // geometric mean = (sum{i,n} x_i) / n
@@ -351,12 +361,12 @@ public class Engine {
                 forEachTestCase();
 
                 if (Japex.resultPerLine) {
-                    System.out.print(
+                    outputWriter.print(
                             "      aritmean," + Util.formatDouble(_aritMeanresult) +
                             ",\n      geommean," + Util.formatDouble(_geomMeanresult) +
                             ",\n      harmmean," + Util.formatDouble(1.0 / _harmMeanresultInverse));
                 } else {
-                    System.out.print(
+                    outputWriter.print(
                             "aritmean," + Util.formatDouble(_aritMeanresult) +
                             ",geommean," + Util.formatDouble(_geomMeanresult) +
                             ",harmmean," + Util.formatDouble(1.0 / _harmMeanresultInverse));
@@ -366,16 +376,16 @@ public class Engine {
             int startRun = warmupsPerDriver;
             if (actualRuns - startRun > 1) {
                 // Print average for all runs
-                System.out.print("\n     Avgs: ");
+                outputWriter.print("\n     Avgs: ");
                 Iterator<TestCaseImpl> tci = _driverImpl.getAggregateTestCases().iterator();
                 while (tci.hasNext()) {
                     TestCaseImpl tc = (TestCaseImpl) tci.next();
-                    System.out.print(tc.getName() + ",");                        
-                    System.out.print(
+                    outputWriter.print(tc.getName() + ",");                        
+                    outputWriter.print(
                         Util.formatDouble(tc.getDoubleParam(RESULT_VALUE)) 
                         + ",");
                 }
-                System.out.print(
+                outputWriter.print(
                     "aritmean," +
                     _driverImpl.getParam(RESULT_ARIT_MEAN) + 
                     ",geommean," +
@@ -384,16 +394,16 @@ public class Engine {
                     _driverImpl.getParam(RESULT_HARM_MEAN));   
 
                 // Print standardDevs for all runs
-                System.out.print("\n    Stdev: ");
+                outputWriter.print("\n    Stdev: ");
                 tci = _driverImpl.getAggregateTestCases().iterator();
                 while (tci.hasNext()) {
                     TestCaseImpl tc = (TestCaseImpl) tci.next();
-                    System.out.print(tc.getName() + ",");                        
-                    System.out.print(
+                    outputWriter.print(tc.getName() + ",");                        
+                    outputWriter.print(
                         Util.formatDouble(tc.getDoubleParam(RESULT_VALUE_STDDEV)) 
                         + ",");
                 }
-                System.out.println(
+                outputWriter.println(
                     "aritmean," +
                     _driverImpl.getParam(RESULT_ARIT_MEAN_STDDEV) + 
                     ",geommean," +
@@ -402,14 +412,11 @@ public class Engine {
                     _driverImpl.getParam(RESULT_HARM_MEAN_STDDEV));   
             }
             else {
-                System.out.println("");
+                outputWriter.println("");
             }
         }
-        catch (RuntimeException e) {
-            throw e;
-        }
         catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new JapexException(e);
         }
     }
     
@@ -429,13 +436,13 @@ public class Engine {
                 TestCaseImpl tc = tci.next();
                 
                 if (Japex.verbose) {
-                    System.out.println(tc.getName());
+                    outputWriter.println(tc.getName());
                 } 
                 else if (Japex.resultPerLine) {
-                    System.out.print("      " + tc.getName() + ",");
+                    outputWriter.print("      " + tc.getName() + ",");
                 }
                 else {
-                    System.out.print(tc.getName() + ",");
+                    outputWriter.print(tc.getName() + ",");
                 }
                 
                 Future<?>[] futures = null;
@@ -595,23 +602,20 @@ public class Engine {
                 
                 // Display results for this test
                 if (Japex.verbose) {
-                    System.out.println("           " + tc.getParam(RESULT_VALUE));
-                    System.out.print("           ");
+                    outputWriter.println("           " + tc.getParam(RESULT_VALUE));
+                    outputWriter.print("           ");
                 } 
                 else if (Japex.resultPerLine) {
-                    System.out.println(tc.getParam(RESULT_VALUE) + ",");
+                    outputWriter.println(tc.getParam(RESULT_VALUE) + ",");
                 }
                 else {
-                    System.out.print(tc.getParam(RESULT_VALUE) + ",");
-                    System.out.flush();
+                    outputWriter.print(tc.getParam(RESULT_VALUE) + ",");
+                    outputWriter.flush();
                 }
             }
         } 
-        catch (RuntimeException e) {
-            throw e;
-        } 
         catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new JapexException(e);
         }
     }
 
@@ -680,11 +684,11 @@ public class Engine {
         String resultUnit = _testSuite.getParam(RESULT_UNIT);
         
         if (Japex.verbose) {
-            System.out.println("             " + 
+            outputWriter.println("             " + 
                 Thread.currentThread().getName() + 
                     " japex.runIterationsSum = " +
                         tc.getLongParam(RUN_ITERATIONS_SUM)); 
-            System.out.println("             " + 
+            outputWriter.println("             " + 
                 Thread.currentThread().getName() + 
                     " japex.runTimeSum (ms) = " +
                         tc.getDoubleParam(RUN_TIME_SUM));
@@ -711,7 +715,7 @@ public class Engine {
             // Check if japex.inputFile was defined
             String inputFile = tc.getParam(INPUT_FILE);            
             if (inputFile == null) {
-                throw new RuntimeException("Unable to compute japex.resultValue " + 
+                throw new JapexException("Unable to compute japex.resultValue " + 
                     " because japex.inputFile is not defined or refers to an illegal path.");
             }            
             return new File(inputFile).length() * 0.000008d * tps;
@@ -721,7 +725,7 @@ public class Engine {
             return (_gCTime / actualTime) * 100.0;
         }
         else {
-            throw new RuntimeException("Unknown value '" + 
+            throw new JapexException("Unknown value '" + 
                 resultUnit + "' for global param japex.resultUnit.");
         }
     }

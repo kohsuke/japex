@@ -73,7 +73,6 @@
 		      <property name="env.JAPEX_HOME" value="${project.build.directory}/japex"/>
 		      <property name="runtime_classpath" refid="maven.runtime.classpath"/>
 		      <ant dir="samples/MemoryUsage"/>
-		      <ant dir="samples/JUnit"/>
 		    </target>
 		  </configuration>
 		  <goals>

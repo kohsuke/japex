@@ -16,6 +16,7 @@
 	<include>javax.mail:mail</include>
 	<include>jfree:*</include>
 	<include>org.apache.ant:*</include>
+	<include>org.slf4j:*</include>
       </includes>
       <useProjectArtifact>false</useProjectArtifact>
       <outputDirectory>lib</outputDirectory>
