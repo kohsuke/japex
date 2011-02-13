@@ -43,6 +43,7 @@ import java.io.*;
 import java.text.*;
 import java.util.Date;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -69,6 +70,7 @@ public class Japex {
     public static boolean test = false;
     public static boolean last = false;
     private PrintWriter outputWriter = new PrintWriter(System.out);
+    private File outputDirectory;
     
     public static int exitCode = 0;
     
@@ -178,10 +180,14 @@ public class Japex {
             // Create report directory
             String fileSep = System.getProperty("file.separator");
             DateFormat df = new SimpleDateFormat("yyyy_MM_dd_HH_mm");
-            String outputDir = testSuite.getParam(Constants.REPORTS_DIRECTORY) 
-                + fileSep + df.format(TODAY);          
-            String lastDir = testSuite.getParam(Constants.REPORTS_DIRECTORY) 
-                + fileSep + "last";          
+            
+            if (outputDirectory == null) {
+            	outputDirectory = new File(testSuite.getParam(Constants.REPORTS_DIRECTORY));
+            }
+            File thisFile = new File(outputDirectory, df.format(TODAY));
+            String outputDir = thisFile.getAbsolutePath();
+            File lastFile = new File(outputDirectory, "last");
+            String lastDir = lastFile.getAbsolutePath();          
 
             // Generate report to string buffer
             StringBuffer report = new StringBuffer();
@@ -191,10 +197,10 @@ public class Japex {
             new File(outputDir).mkdirs();
             outputWriter.println("Generating reports ...");
             outputWriter.println("  " + 
-                new File(outputDir + "/" + "report.xml").toURI().toURL());
+                new File(outputDir, "report.xml").toURI().toURL());
             OutputStreamWriter osw = new OutputStreamWriter(
                 new FileOutputStream(
-                    new File(outputDir + fileSep + "report.xml")));
+                    new File(outputDir, "report.xml")), Charset.forName("utf-8"));
             osw.write(report.toString());
             osw.close();
             
@@ -269,8 +275,19 @@ public class Japex {
             }
         }
         catch (Exception e) {
-            throw new RuntimeException(e);
+        	if (e instanceof JapexException) {
+        		throw (JapexException)e;
+        	}
+            throw new JapexException(e);
         }
     }
+
+	public void setOutputDirectory(File outputDirectory) {
+		this.outputDirectory = outputDirectory;
+	}
+
+	public File getOutputDirectory() {
+		return outputDirectory;
+	}
     
 }

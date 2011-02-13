@@ -43,16 +43,35 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.StringTokenizer;
 
+/**
+ * A specialized class loader for Japex. The idea here is that we want drivers to operate in an isolated
+ * class loader, but we need the japex overhead classes to be shared between the outer hosting environment
+ * and the driver. This class loader special cases the packages for japex and jdsl for that purpose.
+ * The jsdl delegation is probably not needed, since we would expect any driver using JDSL to include
+ * the JDSL jar in its specific classpath.  
+ */
 class JapexClassLoader extends URLClassLoader {
     
-    /**
-     * Set the parent class loader to null in order to force the use of 
-     * the bootstrap classloader. The bootstrap class loader does not 
-     * have access to the system's class path.
-     */ 
+	/**
+	 * Create a JapexClassLoader using Japex conventions for parsing a class path from a string.
+	 * This constructor forces delegation only from the bootstrap class loader, not the system
+	 * class loader. The special delegation for the japex classes happens by code in here
+	 * asking the class loader *of this class*.
+	 * @param classPath
+	 */
     public JapexClassLoader(String classPath) {
         super(new URL[0], null);
         addClassPath(classPath);
+    }
+    
+    /**
+     * Create a japex class loader. This constructor forces delegation only from the bootstrap class loader, not the system
+	 * class loader. The special delegation for the japex classes happens by code in here
+	 * asking the class loader *of this class*.
+     * @param classPath
+     */
+    public JapexClassLoader(URL[] classPath) {
+    	super(classPath, null);
     }
     
     public Class<?> findClass(String name) throws ClassNotFoundException {
