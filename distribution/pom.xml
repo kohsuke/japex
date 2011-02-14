@@ -3,13 +3,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.sun.japex</groupId>
     <artifactId>japex-distribution</artifactId>
-    <version>1.1.8-SNAPSHOT</version>
+    <version>1.2-SNAPSHOT</version>
     <name>Japex distribution</name>
     <packaging>jar</packaging>
     <parent>
       <groupId>com.sun.japex</groupId>
       <artifactId>japex-all</artifactId>
-      <version>1.1.8-SNAPSHOT</version>
+      <version>1.2-SNAPSHOT</version>
     </parent>
     <build>
         <plugins>
@@ -42,12 +42,12 @@
         <dependency>
 	  <groupId>com.sun.japex</groupId>
 	  <artifactId>japex</artifactId>
-	  <version>1.1.8-SNAPSHOT</version>
+	  <version>1.2-SNAPSHOT</version>
         </dependency>
         <dependency>
 	  <groupId>com.sun.japex</groupId>
 	  <artifactId>jdsl</artifactId>
-	  <version>1.1.8-SNAPSHOT</version>
+	  <version>1.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

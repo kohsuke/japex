@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.sun.japex</groupId>
+    <artifactId>maven-plugin-sample</artifactId>
+    <version>1.2-SNAPSHOT</version>
+    <name>Japex maven plugin sample</name>
+<!-- maybe eliminate parent -->
+    <parent>
+      <groupId>com.sun.japex</groupId>
+      <artifactId>japex-all</artifactId>
+      <version>1.1.8-SNAPSHOT</version>
+    </parent>
+    <licenses>
+      <license>
+	<name>The Apache Software License, Version 2.0</name>
+	<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+	<distribution>repo</distribution>
+      </license>
+    </licenses>
+    <!-- eventually inherit from parent, but one piece at a time -->
+    <!-- or we might not want this to be tied together at the top, anyhow -->
+    <scm>
+        <connection>https://svn.java.net/svn/japex~svn/trunk/maven-plugin-tests/basic</connection>
+        <developerConnection>https://svn.java.net/svn/japex~svn/trunk/maven-plugin-tests/basic</developerConnection>
+        <!-- no URL, no browse access set up -->
+    </scm>
+    <dependencies>
+      <dependency>
+	<groupId>com.sun.japex</groupId>
+	<artifactId>japex</artifactId>
+	<version>1.1.8-SNAPSHOT</version>
+      </dependency>
+    </dependencies>
+    <build>
+        <defaultGoal>test</defaultGoal>
+	<plugins>
+	  <plugin>
+	    <groupId>com.sun.japex</groupId>
+	    <artifactId>japex-maven-plugin</artifactId>
+	    <version>1.1.8-SNAPSHOT</version>
+	    <executions>
+	      <execution>
+		<id>japex</id>
+		<goals><goal>japex</goal></goals>
+	      </execution>
+	    </executions>
+	    <configuration>
+	      <japexConfig>
+		<testSuite name="ParsingPerformance" xmlns="http://www.sun.com/japex/testSuite">
+		  <param name="japex.namedClassPath" value="maven.test.classpath"/>
+		  <param name="japex.resultUnit" value="ms"/>
+		  <param name="japex.warmupIterations" value="0"/>
+		  <param name="japex.runIterations" value="40"/>
+		  <driver name="MemoryUsage1K">
+		    <param name="japex.driverClass" value="MemoryUsage1K"/>
+		    <param name="description" value="Memory usage sample class"/>
+		  </driver>
+		  <driver name="MemoryUsage10K">
+		    <param name="japex.driverClass" value="MemoryUsage10K"/>
+		    <param name="description" value="Memory usage sample class"/>
+		  </driver>
+		  <testCase name="test1"/>
+		  <testCase name="test2"/>
+		  <testCase name="test3"/>
+		</testSuite>
+	      </japexConfig>
+	    </configuration>
+	  </plugin>
+	</plugins>
+    </build>
+</project>
