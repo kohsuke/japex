@@ -16,7 +16,7 @@ Japex Maven Plugin
 
 * Goals Overview
 
-  * {{{./run-mojo.html}japex:japex}} runs Japex micro-benchmarks for Maven 2.
+  * {{{./japex-mojo.html}japex:japex}} runs Japex micro-benchmarks for Maven 2.
 
 * Usage
 

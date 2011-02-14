@@ -50,14 +50,16 @@ public class JapexMojo extends AbstractMojo {
     private File reportDirectory;
     
     /**
-     * The XML of the Japex config to run.
+     * The XML of the Japex config to run. This should contain a single testSuite element. (Multiple test suites is a potential 
+     * future enhancement). If you specify the configuration here, don't use <strong>japexConfigFiles</strong>.
      * 
      * @parameter
      */
     private PlexusConfiguration japexConfig;
     
     /**
-     * Pathnames of one or more japex configuration files.
+     * Pathnames of one or more japex configuration files. If you specify configuration files here, don't 
+     * use <strong>japexConfig</strong>.
      * @parameter
      */
     private File[] japexConfigFiles;
