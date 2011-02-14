@@ -1,0 +1,34 @@
+ ------
+ Introduction
+ ------
+ Benson Margulies
+ ------
+ February 2011
+ ------
+
+
+Japex Maven Plugin
+
+  This plugin integrates the Japex micro-benchmark tool into Maven. The tool runs benchmarks in 
+  in the Maven JVM, but using the Japex isolated class loader scheme. The author hopes
+  at some point to take advantage of future modularity improvements in Maven and Surefire
+  to enhance this plugin to allow for 'forked' execution.
+
+* Goals Overview
+
+  * {{{./run-mojo.html}japex:japex}} runs Japex micro-benchmarks for Maven 2.
+
+* Usage
+
+  General instructions on how to use the Japex Plugin can be found on the {{{./usage.html}usage page}}. Some more
+  specific use cases are described in the examples given below.
+
+* Examples
+
+  To provide you with better understanding on some usages of the Maven AntRun
+  Plugin, you can take a look into the following examples:
+
+  * {{{./examples/basic.html}Basic Japex Example}}
+
+
+  []

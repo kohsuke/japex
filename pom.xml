@@ -21,8 +21,8 @@
     <!-- eventually inherit from parent, but one piece at a time -->
     <!-- or we might not want this to be tied together at the top, anyhow -->
     <scm>
-        <connection>http://svn.java.net/svn/japex~svn/trunk/japex</connection>
-        <developerConnection>https://svn.java.net/svn/japex~svn/trunk/japex</developerConnection>
+        <connection>scm:svn:http://svn.java.net/svn/japex~svn/trunk/japex</connection>
+        <developerConnection>scm:svn:https://svn.java.net/svn/japex~svn/trunk/japex</developerConnection>
         <!-- no URL, no browse access set up -->
     </scm>
     <build>
@@ -54,6 +54,21 @@
 		  <groupId>org.apache.maven.plugins</groupId>
 		  <artifactId>maven-jar-plugin</artifactId>
 		  <version>2.3.1</version>
+		</plugin>
+		<plugin>
+		  <groupId>org.apache.maven.plugins</groupId>
+		  <artifactId>maven-javadoc-plugin</artifactId>
+		  <version>2.7</version>
+		</plugin>
+		<plugin>
+		  <groupId>org.apache.maven.plugins</groupId>
+		  <artifactId>maven-plugin-plugin</artifactId>
+		  <version>2.7</version>
+		</plugin>
+		<plugin>
+		  <groupId>org.apache.maven.plugins</groupId>
+		  <artifactId>maven-site-plugin</artifactId>
+		  <version>2.2</version>
 		</plugin>
             </plugins>
         </pluginManagement>
@@ -126,4 +141,13 @@
 	</distributionManagement>
       </profile>
     </profiles>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.3.1</version>
+      </plugin>
+    </plugins>
+  </reporting>
 </project>

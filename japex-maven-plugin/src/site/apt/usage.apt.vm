@@ -1,0 +1,63 @@
+ ------
+ Usage
+ ------
+ Benson Margulies
+ ------
+ February 2011
+ ------
+
+
+Usage
+
+* japex
+
+  The japex-maven-plugin has only one goal, <<<japex>>>.
+
+  This allows Maven 2 to run Japex micro-benchmarks. You must provide a Japex 
+  configuration, either in the POM or via a separate file.
+
+  Below is the template for
+  <<<japex-maven-plugin>>>'s <<<pom.xml>>>.
+
+------
+<project>
+  [...]
+  <build>
+    <plugins>
+           <plugin>
+	    <groupId>com.sun.japex</groupId>
+	    <artifactId>japex-maven-plugin</artifactId>
+	    <version>${project.version}</version>
+	    <executions>
+	      <execution>
+		<id>japex</id>
+		<goals><goal>japex</goal></goals>
+	      </execution>
+	    </executions>
+	    <configuration>
+	      <japexConfig>
+	        <!-- place a testSuite element in here -->
+
+	      </japexConfig>
+              <-- alternatively, specify config file(s) here -->
+              <japexConfigFiles>
+                 <japexConfigFile>path-to-config.xml</japexConfigFile>
+              </japexConfigFiles>
+	    </configuration>
+	  </plugin>
+    </plugins>
+  </build>
+  [...]
+</project>
+------
+
+* Using the Maven test classpath
+
+    You can construct the classpath for drivers by hand, or you can run your drivers
+    using the Maven test classpath. To use the test classpath, include the following
+    parameter in your testSuite:
+
+    <<<\<param name="japex.namedClassPath" value="maven.test.classpath"/\>>>>
+
+
+  
