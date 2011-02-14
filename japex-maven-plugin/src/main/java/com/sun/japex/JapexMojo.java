@@ -152,7 +152,7 @@ public class JapexMojo extends AbstractMojo {
 			getLog().error(japexOutput.toString());
 			// CONVENTION: there's enough information in the string, we don't need the full backtrace.
 			return;
-		}
+		} 
 		printWriter.close();
 		getLog().info(japexOutput.toString());
     }
