@@ -1,14 +1,15 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <artifactId>japex-all</artifactId>
     <groupId>com.sun.japex</groupId>
-    <version>1.2</version>
+    <version>1.2-SNAPSHOT</version>
   </parent>
   <groupId>com.sun.japex</groupId>
   <artifactId>japex-maven-plugin</artifactId>
-  <version>1.2</version>
+  <version>1.2-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
   <name>japex-maven-plugin Maven Mojo</name>
   <build>
@@ -51,7 +52,7 @@
      <dependency>
      	<groupId>com.sun.japex</groupId>
      	<artifactId>japex</artifactId>
-     	<version>1.2</version>
+     	<version>1.2-SNAPSHOT</version>
      	<type>jar</type>
      	<scope>compile</scope>
      </dependency>
