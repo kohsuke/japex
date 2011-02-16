@@ -38,6 +38,9 @@
 
 package com.sun.japex;
 
+import java.io.IOException;
+import java.util.Properties;
+
 public class Constants {
 
     // Global input parameters
@@ -58,7 +61,17 @@ public class Constants {
     
     // Global output parameters
     public static final String VERSION         = "japex.version";
-    public static final String VERSION_VALUE   = "1.1.7";
+    public static final String VERSION_VALUE;
+    static {
+        Properties props = new Properties();
+        try {
+            props.load(Constants.class.getResourceAsStream("version.properties"));
+            VERSION_VALUE = props.getProperty("japex.version");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        
+    }
     public static final String OS_NAME         = "japex.osName";
     public static final String OS_ARCHITECTURE = "japex.osArchitecture";
     public static final String DATE_TIME       = "japex.dateTime";
