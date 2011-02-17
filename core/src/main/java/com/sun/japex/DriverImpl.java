@@ -75,12 +75,12 @@ public class DriverImpl extends ParamsImpl implements Driver, Cloneable {
     /**
      * Array of tests cases for this driver.
      */     
-    ArrayList<ArrayList<TestCaseImpl>> _testCases;
+    TestCaseArrayList[] _testCases;
     
     /**
      * Aggregate results for this driver.
      */
-    ArrayList<TestCaseImpl> _aggregateTestCases;
+    TestCaseArrayList _aggregateTestCases;
     
     /**
      * Store serialized description for this driver.
@@ -101,16 +101,16 @@ public class DriverImpl extends ParamsImpl implements Driver, Cloneable {
         _description = description;
     }
     
-    public void setTestCases(ArrayList<TestCaseImpl> testCases) {
+    public void setTestCases(TestCaseArrayList testCases) {
         int runsPerDriver = getIntParam(RUNS_PER_DRIVER);
         int warmupsPerDriver = getIntParam(WARMUPS_PER_DRIVER);
         
         int actualRuns = runsPerDriver + warmupsPerDriver;
-        _testCases = new ArrayList<ArrayList<TestCaseImpl>>(actualRuns);
+        _testCases = new TestCaseArrayList[actualRuns];
         for (int i = 0; i < actualRuns; i++) {
-            _testCases.add(new ArrayList<TestCaseImpl>(testCases));
+            _testCases[i] = (TestCaseArrayList) testCases.clone();
         }        
-        _aggregateTestCases = new ArrayList<TestCaseImpl>(testCases);
+        _aggregateTestCases = (TestCaseArrayList) testCases.clone();
     }
         
     private void computeMeans() {
@@ -123,7 +123,7 @@ public class DriverImpl extends ParamsImpl implements Driver, Cloneable {
         
         // Avoid re-computing the driver's aggregates
         if (_computeMeans) {
-            final int nOfTests = _testCases.get(0).size();
+            final int nOfTests = _testCases[0].size();
 
             for (int n = 0; n < nOfTests; n++) {
 
@@ -133,12 +133,12 @@ public class DriverImpl extends ParamsImpl implements Driver, Cloneable {
                 double[] resultTime = new double[actualRuns];
                 
                 // Set hasResultValueX - should be the same for all runs
-                TestCaseImpl startRunTc = (TestCaseImpl) _testCases.get(startRun).get(n);
+                TestCaseImpl startRunTc = (TestCaseImpl) _testCases[startRun].get(n);
                 boolean hasResultValueX = startRunTc.hasParam(RESULT_VALUE_X);
                 
                 // Collect vertical results for this test
                 for (int i = startRun; i < actualRuns; i++) {            
-                    TestCaseImpl tc = (TestCaseImpl) _testCases.get(i).get(n);
+                    TestCaseImpl tc = (TestCaseImpl) _testCases[i].get(n);
                     results[i] = tc.getDoubleParam(RESULT_VALUE);
                     resultTime[i] = tc.getDoubleParam(ACTUAL_RUN_TIME);
                     resultIterations[i] = tc.getLongParam(RUN_ITERATIONS_SUM);
@@ -270,7 +270,7 @@ public class DriverImpl extends ParamsImpl implements Driver, Cloneable {
     }
     
     public List<TestCaseImpl> getTestCases(int driverRun) {
-        return _testCases.get(driverRun);
+        return _testCases[driverRun];
     }
     
     public List<TestCaseImpl> getAggregateTestCases() {
