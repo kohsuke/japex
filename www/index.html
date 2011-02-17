@@ -3,6 +3,7 @@
     <HEAD>
         <META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
         <TITLE>Japex Micro-benchmark Framework</TITLE>
+        <link rel="stylesheet" href="javanet.css"/>
         <META NAME="GENERATOR" CONTENT="NeoOffice/J 1.1  (Unix)">
         <META NAME="CREATED" CONTENT="20051209;13525700">
         <META NAME="CHANGED" CONTENT="20051221;10380700">
@@ -12,20 +13,20 @@
         <SCRIPT>document.getElementById("projecthome").getElementsByTagName("table").item(0).style.display="none";</SCRIPT>
         <H1>Japex Micro-benchmark Framework</H1>
         <p/><p/>
-        <H3><A NAME="Introduction"></A><font face="Verdana, Arial, Helvetica, sans-serif">Introduction</font></H3>
-        <P><font face="Verdana, Arial, Helvetica, sans-serif">Profiling is an art, an art that it is very hard to master.
+        <H3><A NAME="Introduction"></A>Introduction</H3>
+        <P>Profiling is an art, an art that it is very hard to master.
                 Writing micro-benchmarks is one of the many tools available to
                 programmers today. Micro-benchmarks are simple benchmarks that rarely
                 involve complicated deployments and are often used to test specific
                 parts of an application. They are also characterized by the use of
                 <I>wall-clock</I> blocks: start a clock, run the code, stop the clock
-        and report the result.</font></P>
-        <P><font face="Verdana, Arial, Helvetica, sans-serif">The lack of common tools for writing micro-benchmarks makes
+        and report the result.</P>
+        <P>The lack of common tools for writing micro-benchmarks makes
                 comparing results published by different people impractical.
                 Questions such as &quot;When did you start/stop the clock?&quot; or
                 &quot;What exactly did you include in the wall-clock block?&quot; or
-        &quot;Are you reporting latency or throughput?&quot; often arise.</font></P>
-        <P><font face="Verdana, Arial, Helvetica, sans-serif">Japex is a simple yet powerful tool to write Java-based
+        &quot;Are you reporting latency or throughput?&quot; often arise.</P>
+        <P>Japex is a simple yet powerful tool to write Java-based
                 micro-benchmarks. It started as a simple project 
                 primarily aimed at testing XML and <A HREF="https://fi.dev.java.net/">Fast
                 Infoset</A> performance, but has evolved into a rather sophisticated
@@ -37,15 +38,15 @@
                 multiple drivers, warming up the VM, forking multiple threads, timing the inner loop, etc. One
                 of the key design goals for Japex was extensibility. Via the use of a
                 simple model of input and output parameters, it is possible to write
-        micro-benchmarks to test practically anything.</font></P>
-        <H3><A NAME="Overview"></A><font face="Verdana, Arial, Helvetica, sans-serif">Overview</font></H3>
-        <P><font face="Verdana, Arial, Helvetica, sans-serif">A Japex micro-benchmark comprises of a set of Japex Drivers (i.e.,
-                Java classes extending <FONT SIZE=2>com.sun.japex.JapexDriverBase</FONT>)
+        micro-benchmarks to test practically anything.</P>
+        <H3><A NAME="Overview"></A>Overview</H3>
+        <P> Japex micro-benchmark comprises of a set of Japex Drivers (i.e.,
+                Java classes extending <tt>com.sun.japex.JapexDriverBase</tt>)
                 and at least one configuration file to describe the drivers under
                 test, the list of test cases and the various parameters used to
                 control the length of the test, the type of output report, etc. You
                 can click on the image below to see an example of each input and
-        output file.</font></P>
+        output file.</P>
         <CENTER>
             <TABLE WIDTH=75% BORDER=0 CELLPADDING=0 CELLSPACING=0>
                 <COL WIDTH=56*>
@@ -80,11 +81,11 @@
                 </TR>
             </TABLE>
         </CENTER>
-        <P><font face="Verdana, Arial, Helvetica, sans-serif">The type of output chart that is generated as part of the HTML
+        <P>The type of output chart that is generated as part of the HTML
                 report depends on the type of benchmark and the value of
                 <FONT SIZE=2>japex.chartType</FONT>
                 parameter. Click on the images below for an example of the types of
-        charts that are currently supported by Japex.</font></P>
+        charts that are currently supported by Japex.</P>
         <CENTER>
             <TABLE WIDTH=636 BORDER=0 CELLPADDING=0 CELLSPACING=0>
                 <COL WIDTH=212>
@@ -116,36 +117,17 @@
 	    run microbenchmarks from the maven build. For more
 	    information, see <a href="japex-maven-plugin/index.html">the documentation</a>.
 	    </p>
-        <!--
-        <H3><A name="Resources"></A><font face="Verdana, Arial, Helvetica, sans-serif">Resources</font></H3>
-        <UL>
-            <LI><P STYLE="margin-bottom: 0in"><font face="Verdana, Arial, Helvetica, sans-serif"><B>Downloading:</B></font></P>
-            <UL>
-                <LI><P STYLE="margin-bottom: 0in"><font face="Verdana, Arial, Helvetica, sans-serif"><a href="https://japex.dev.java.net/servlets/ProjectDocumentList">Latest Build</a></font></P>
-                <LI><P STYLE="margin-bottom: 0in"><font face="Verdana, Arial, Helvetica, sans-serif"><a href="https://japex.dev.java.net/source/browse/japex">CVS Source Tree</a></font></P>
-            </UL>
-            <LI><P STYLE="margin-bottom: 0in"><font face="Verdana, Arial, Helvetica, sans-serif"><STRONG>Documentation: </STRONG>
-            </font></P>
-            <UL>
-                <LI><P STYLE="margin-bottom: 0in; font-weight: medium"><font face="Verdana, Arial, Helvetica, sans-serif"><a href="docs/manual.html">Japex Manual</a></font></P>
-                <LI><P STYLE="margin-bottom: 0in; font-weight: medium"><font face="Verdana, Arial, Helvetica, sans-serif"><a href="http://weblogs.java.net/mt/search?IncludeBlogs=216&search=japex">Japex in Santiago's Blog</a></font></P> </UL>
-            <LI><P STYLE="margin-bottom: 0in"><font face="Verdana, Arial, Helvetica, sans-serif"><STRONG>Licenses:</STRONG> <A HREF="http://www.apache.org/licenses/LICENSE-2.0">ASL
-            2.0</A></font></P>
-            <LI><P STYLE="margin-bottom: 0in"><font face="Verdana, Arial, Helvetica, sans-serif"><STRONG>Users Mailing List:
-                    </STRONG><A HREF="mailto:users@japex.dev.java.net">users@japex.dev.java.net</A>
-            </font> </P>
-        </UL-->
-        <H2><A NAME="Terms"></A><font face="Verdana, Arial, Helvetica, sans-serif">Terms and Conditions</font></H2>
-        <P><font face="Verdana, Arial, Helvetica, sans-serif">The Japex code is made available under the terms of the Apache
+        <H2><A NAME="Terms"></A>Terms and Conditions</H2>
+        <P>The Japex code is made available under the terms of the Apache
                 Source License, version 2.0 (<A HREF="http://www.apache.org/licenses/LICENSE-2.0">ASL
                 2.0</A>). ASL is a widely accepted and very flexible license; version
                 2.0 adds explicit terms to cover the conditions for accepting
                 contributions, reflecting experience gathered with the previous
                 versions of the ASL. There is a single copyright owner, Oracle;
-                multiple copyright owners can lead to very complicated legal situations. </font></P>
-        <P><font face="Verdana, Arial, Helvetica, sans-serif">This project is governed by
+                multiple copyright owners can lead to very complicated legal situations.</P>
+        <P>This project is governed by
         the same rules defined by Glassfish. For more information, please refer to the 
         <a href="https://glassfish.sjava.net/public/GovernancePolicy.html">Glassfish
-        Project Governance Policy</a> page.</font></P>
+        Project Governance Policy</a> page.</P>
     </BODY>
 </HTML>
