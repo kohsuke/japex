@@ -4,7 +4,7 @@
     <groupId>com.sun.japex</groupId>
     <artifactId>japex-all</artifactId>
     <packaging>pom</packaging>
-    <version>1.2.3-SNAPSHOT</version>
+    <version>1.2.3</version>
     <name>Japex</name>
     <parent>
         <groupId>org.sonatype.oss</groupId>
@@ -21,10 +21,10 @@
     <!-- eventually inherit from parent, but one piece at a time -->
     <!-- or we might not want this to be tied together at the top, anyhow -->
     <scm>
-        <connection>scm:svn:http://svn.java.net/svn/japex~svn/trunk</connection>
-        <developerConnection>scm:svn:https://svn.java.net/svn/japex~svn/trunk</developerConnection>
+        <connection>scm:svn:http://svn.java.net/svn/japex~svn/tags/japex-all-1.2.3</connection>
+        <developerConnection>scm:svn:https://svn.java.net/svn/japex~svn/tags/japex-all-1.2.3</developerConnection>
         <!-- no URL, no browse access set up -->
-      <url>http://svn.sonatype.org/spice/tags/oss-parent-6/japex-all</url>
+      <url>http://svn.sonatype.org/spice/tags/japex-all-1.2.3</url>
   </scm>
     <build>
         <defaultGoal>install</defaultGoal>
