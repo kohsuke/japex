@@ -7,9 +7,9 @@
     <version>1.2.4-SNAPSHOT</version>
     <name>Japex</name>
     <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>6</version>
+        <groupId>net.java</groupId>
+        <artifactId>jvnet-parent</artifactId>
+        <version>1</version>
     </parent>
     <licenses>
         <license>
@@ -18,23 +18,13 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-    <!-- eventually inherit from parent, but one piece at a time -->
-    <!-- or we might not want this to be tied together at the top, anyhow -->
     <scm>
-        <connection>scm:svn:http://svn.java.net/svn/japex~svn/trunk</connection>
-        <developerConnection>scm:svn:https://svn.java.net/svn/japex~svn/trunk</developerConnection>
-        <!-- no URL, no browse access set up -->
-      <url>http://svn.sonatype.org/spice/tags/oss-parent-6/japex-all</url>
-  </scm>
+        <connection>scm:svn:http://svn.java.net/svn/japex~svn/</connection>
+        <developerConnection>scm:svn:https://svn.java.net/svn/japex~svn/</developerConnection>
+        <url>http://java.net/projects/japex/sources/svn/show</url>
+    </scm>
     <build>
         <defaultGoal>install</defaultGoal>
-        <extensions>
-            <extension>
-                <groupId>org.jvnet.wagon-svn</groupId>
-                <artifactId>wagon-svn</artifactId>
-                <version>1.12</version>
-            </extension>
-        </extensions>
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -132,31 +122,7 @@
                 <version>1.7.0</version>
             </dependency>
         </dependencies>
-    </dependencyManagement>
-    <repositories>
-        <repository>
-            <id>maven2-repository.java.net</id>
-            <name>Java.net Repository for Maven</name>
-            <url>http://download.java.net/maven/2/</url>
-            <layout>default</layout>
-        </repository>
-    </repositories>
-    <profiles>
-        <profile>
-            <id>java-net-distro</id>
-            <!-- turn on distro to java.net. We'll push bundles to OSSRH in addition, possibly via a profile -->
-            <distributionManagement>
-                <repository>
-                    <id>java.net-m2-repository</id>
-                    <url>java-net:/maven2-repository~svn/trunk/repository/</url>
-                </repository>
-                <snapshotRepository>
-                    <id>java.net-m2-repository</id>
-                    <url>java-net:/maven2-repository~svn/trunk/repository/</url>
-                </snapshotRepository>
-            </distributionManagement>
-        </profile>
-    </profiles>
+    </dependencyManagement>    
     <reporting>
         <plugins>
             <plugin>

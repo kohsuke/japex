@@ -7,9 +7,9 @@
     <name>Japex distribution</name>
     <packaging>jar</packaging>
     <parent>
-      <groupId>com.sun.japex</groupId>
-      <artifactId>japex-all</artifactId>
-      <version>1.2.4-SNAPSHOT</version>
+        <groupId>com.sun.japex</groupId>
+        <artifactId>japex-all</artifactId>
+        <version>1.2.4-SNAPSHOT</version>
     </parent>
     <build>
         <plugins>
@@ -25,13 +25,13 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
-			    <appendAssemblyId>false</appendAssemblyId>
-			    <finalName>japex</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <finalName>japex</finalName>
                             <ignoreDirFormatExtensions>true</ignoreDirFormatExtensions>
                             <tarLongFileMode>gnu</tarLongFileMode>
-			    <descriptors>
-			      <descriptor>src/main/assembly/binary.xml</descriptor>
-			    </descriptors>
+                            <descriptors>
+                                <descriptor>src/main/assembly/binary.xml</descriptor>
+                            </descriptors>
                         </configuration>
                     </execution>
                 </executions>
@@ -40,49 +40,49 @@
     </build>
     <dependencies>
         <dependency>
-	  <groupId>com.sun.japex</groupId>
-	  <artifactId>japex</artifactId>
-	  <version>1.2.4-SNAPSHOT</version>
+            <groupId>com.sun.japex</groupId>
+            <artifactId>japex</artifactId>
+            <version>1.2.4-SNAPSHOT</version>
         </dependency>
         <dependency>
-	  <groupId>com.sun.japex</groupId>
-	  <artifactId>jdsl</artifactId>
-	  <version>1.2.4-SNAPSHOT</version>
+            <groupId>com.sun.japex</groupId>
+            <artifactId>jdsl</artifactId>
+            <version>1.2.4-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.8.2</version>
-	    <scope>compile</scope>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
     <profiles>
-      <profile>
-	<id>run-samples</id>
-	<build>
-	  <plugins>
-	    <plugin>
-	      <artifactId>maven-antrun-plugin</artifactId>
-	      <version>1.6</version>
-	      <executions>
-		<execution>
-		  <phase>integration-test</phase>
-		  <configuration>
-		    <target>
-		      <property environment="env" />
-		      <property name="env.JAPEX_HOME" value="${project.build.directory}/japex" />
-		      <property name="runtime_classpath" refid="maven.runtime.classpath" />
-		      <ant dir="samples/MemoryUsage" />
-		    </target>
-		  </configuration>
-		  <goals>
-		    <goal>run</goal>
-		  </goals>
-		</execution>
-	      </executions>
-	    </plugin>
-	  </plugins>
-	</build>
-      </profile>
+        <profile>
+            <id>run-samples</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <phase>integration-test</phase>
+                                <configuration>
+                                    <target>
+                                        <property environment="env" />
+                                        <property name="env.JAPEX_HOME" value="${project.build.directory}/japex" />
+                                        <property name="runtime_classpath" refid="maven.runtime.classpath" />
+                                        <ant dir="samples/MemoryUsage" />
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 </project>
