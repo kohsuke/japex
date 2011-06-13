@@ -98,7 +98,9 @@ public class ConfigFileLoader {
         TestSuiteImpl testSuite = new TestSuiteImpl(tse);         
 
         // Defined japex.configFile here
-        testSuite.setParam(Constants.CONFIG_FILE, name);
+        if (testSuite.getParam(Constants.CONFIG_FILE) == null) {
+            testSuite.setParam(Constants.CONFIG_FILE, name);
+        }
         return testSuite;
     }
 }
