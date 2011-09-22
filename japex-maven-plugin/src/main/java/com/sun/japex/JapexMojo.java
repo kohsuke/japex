@@ -39,7 +39,9 @@ import javax.xml.stream.XMLStreamException;
  * Goal to run Japex micro-benchmarks.
  * 
  * @goal japex
+ * @requiresDependencyResolution test
  * @phase test
+ * 
  */
 public class JapexMojo extends AbstractMojo {
     /**

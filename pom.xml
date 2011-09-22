@@ -4,8 +4,18 @@
     <groupId>com.sun.japex</groupId>
     <artifactId>japex-all</artifactId>
     <packaging>pom</packaging>
-    <version>1.2.4-SNAPSHOT</version>
+    <version>1.2.5-SNAPSHOT</version>
     <name>Japex</name>
+    <description>Japex Micro-benchmark Framework</description>
+    <url>http://japex.java.net</url>
+    <developers>
+        <developer>
+            <id>spericas</id>
+            <name>Santiago Pericas-Geertsen</name>
+            <email>santiago.pericasgeertsen@oracle.com</email>
+            <organization>Oracle</organization>
+        </developer>
+    </developers>
     <parent>
         <groupId>net.java</groupId>
         <artifactId>jvnet-parent</artifactId>
@@ -53,8 +63,29 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>2.1.1</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.7</version>
+                    <version>2.5</version>
+                    <executions>
+                        <execution>
+                            <id>attach-javadocs</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -75,6 +106,20 @@
                     <groupId>org.codehaus.modello</groupId>
                     <artifactId>modello-maven-plugin</artifactId>
                     <version>1.4.1</version>
+                </plugin>            
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>1.1</version>
+                    <executions>
+                        <execution>
+                            <id>sign-artifacts</id>
+                            <phase>deploy</phase>
+                            <goals>
+                                <goal>sign</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>
